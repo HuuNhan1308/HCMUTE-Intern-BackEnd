@@ -11,17 +11,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "upload_content")
-public class UploadContent extends BaseEntity {
+@Table(name = "role_permission")
+public class RolePermission extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String UploadContentId;
-
-    String FileName;
-
-    String Path;
-
-    @ManyToOne
-    @JoinColumn(name="ProfileId", nullable = false)
-    Profile Profile;
 }
