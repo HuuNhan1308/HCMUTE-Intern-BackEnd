@@ -1,14 +1,9 @@
 package com.intern.app.controller;
 
-import com.intern.app.dto.request.ProfileAuthenticationRequest;
-import com.intern.app.dto.request.ProfileCreationRequest;
-import com.intern.app.dto.request.TokenRequest;
-import com.intern.app.dto.response.ProfileAuthenticationResponse;
-import com.intern.app.dto.response.ProfileResponse;
-import com.intern.app.dto.response.ReturnResult;
-import com.intern.app.services.AuthenticationService;
+import com.intern.app.models.dto.request.ProfileCreationRequest;
+import com.intern.app.models.dto.response.ProfileResponse;
+import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.services.ProfileService;
-import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,10 @@
-package com.intern.app.entity;
+package com.intern.app.models.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,7 +18,13 @@ public class Permission extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "permission_seq", sequenceName = "permission_sequence", initialValue = 1001, allocationSize = 1)
-    Integer PermissionId;
+    Integer permissionId;
 
-    String Name;
+    String name;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "permission")
+    List<RolePermission> rolePermissions;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "permission")
+    List<ProfilePermission> profilePermissions;
 }

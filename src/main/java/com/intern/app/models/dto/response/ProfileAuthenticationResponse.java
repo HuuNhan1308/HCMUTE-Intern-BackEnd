@@ -1,4 +1,4 @@
-package com.intern.app.dto.response;
+package com.intern.app.models.dto.response;
 
 
 import lombok.*;

@@ -1,4 +1,4 @@
-package com.intern.app.entity;
+package com.intern.app.models.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

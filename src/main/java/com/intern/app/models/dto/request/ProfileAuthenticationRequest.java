@@ -1,4 +1,5 @@
-package com.intern.app.dto.request;
+package com.intern.app.models.dto.request;
+
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProfileCreationRequest {
+public class ProfileAuthenticationRequest {
     String username;
     String password;
 }

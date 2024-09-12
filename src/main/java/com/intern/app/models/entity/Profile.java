@@ -1,4 +1,4 @@
-package com.intern.app.entity;
+package com.intern.app.models.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,26 +13,26 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Profile extends BaseEntity{
-
+public class Profile extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String profileId;
 
-    String FirstName;
-    String LastName;
-    String Gender;
-    String Bio;
-
-
+    String firstName;
+    String lastName;
+    String gender;
+    String bio;
     @Column(unique = true, nullable = false)
     String username;
-
     @Column(nullable = false)
     String password;
 
-
-    @OneToMany(mappedBy = "upload_content")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile")
     List<UploadContent> uploadContents;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile")
+    List<ProfilePermission> profilePermissions;
+
+    @OneToOne(mappedBy = "profile")
+    Student student;
 }

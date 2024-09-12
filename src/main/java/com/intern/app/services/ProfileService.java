@@ -1,9 +1,9 @@
 package com.intern.app.services;
 
-import com.intern.app.dto.request.ProfileCreationRequest;
-import com.intern.app.dto.response.ProfileResponse;
-import com.intern.app.dto.response.ReturnResult;
-import com.intern.app.entity.Profile;
+import com.intern.app.models.dto.request.ProfileCreationRequest;
+import com.intern.app.models.dto.response.ProfileResponse;
+import com.intern.app.models.dto.response.ReturnResult;
+import com.intern.app.models.entity.Profile;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.ProfileMapper;

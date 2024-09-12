@@ -1,8 +1,8 @@
 package com.intern.app.mapper;
 
-import com.intern.app.dto.request.ProfileCreationRequest;
-import com.intern.app.dto.response.ProfileResponse;
-import com.intern.app.entity.Profile;
+import com.intern.app.models.dto.request.ProfileCreationRequest;
+import com.intern.app.models.dto.response.ProfileResponse;
+import com.intern.app.models.entity.Profile;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

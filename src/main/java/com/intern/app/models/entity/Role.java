@@ -1,8 +1,10 @@
-package com.intern.app.entity;
+package com.intern.app.models.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -11,9 +13,15 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "role_permission")
-public class RolePermission extends BaseEntity {
+public class Role extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String UploadContentId;
+    String roleId;
+
+    @Column(nullable = false)
+    String roleName;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
+    List<RolePermission> roles;
 }

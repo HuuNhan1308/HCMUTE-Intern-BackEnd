@@ -1,4 +1,4 @@
-package com.intern.app.entity;
+package com.intern.app.models.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,13 +15,13 @@ import lombok.experimental.FieldDefaults;
 public class UploadContent extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String UploadContentId;
+    String uploadContentId;
 
-    String FileName;
+    String fileName;
 
-    String Path;
+    String path;
 
     @ManyToOne
     @JoinColumn(name="ProfileId", nullable = false)
-    Profile Profile;
+    Profile profile;
 }

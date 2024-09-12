@@ -1,10 +1,10 @@
 package com.intern.app.controller;
 
 
-import com.intern.app.dto.request.ProfileAuthenticationRequest;
-import com.intern.app.dto.request.TokenRequest;
-import com.intern.app.dto.response.ProfileAuthenticationResponse;
-import com.intern.app.dto.response.ReturnResult;
+import com.intern.app.models.dto.request.ProfileAuthenticationRequest;
+import com.intern.app.models.dto.request.TokenRequest;
+import com.intern.app.models.dto.response.ProfileAuthenticationResponse;
+import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.services.AuthenticationService;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
