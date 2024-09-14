@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.intern</groupId>
-	<artifactId>app</artifactId>
+	<artifactId>hcmute-intern</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>app</name>
 	<description>HCMTUE internship</description>
@@ -108,7 +108,6 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<scope>provided</scope>
 							<version>1.18.34</version>
 						</path>
 						<path>
@@ -131,5 +130,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
