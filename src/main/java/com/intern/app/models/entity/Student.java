@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -17,6 +18,10 @@ public class Student extends BaseEntity {
     @Id
     Long studentId;
     String year;
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    Boolean isSeekingIntern = false;
+    Date dob;
+    String classId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FacultyId")

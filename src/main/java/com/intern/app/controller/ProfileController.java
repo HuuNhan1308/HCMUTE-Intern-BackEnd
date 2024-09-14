@@ -5,16 +5,18 @@ import com.intern.app.models.dto.response.ProfileResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.services.ProfileService;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @RestController
 @RequestMapping(path = "/api/profile")
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE,  makeFinal = true)
 public class ProfileController {
-    @Autowired
     ProfileService profileService;
 
     @PostMapping("/CreateProfile")

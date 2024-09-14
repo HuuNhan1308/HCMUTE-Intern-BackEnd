@@ -1,6 +1,5 @@
 package com.intern.app.models.dto.response;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,13 +12,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProfileResponse {
-     String profileId;
-     String username;
-     String firstName;
-     String lastName;
-     String gender;
-     String bio;
-     String phoneNumber;
-     String email;
+public class FacultyResponse {
+    String facultyId;
+    String name;
 }

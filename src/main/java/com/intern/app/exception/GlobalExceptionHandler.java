@@ -16,7 +16,6 @@ public class GlobalExceptionHandler {
 
         result.setCode(Response.SC_BAD_REQUEST);
         result.setMessage(e.getMessage());
-        result.setResult(e.getMessage());
 
         return ResponseEntity.badRequest().body(result);
     }
@@ -46,7 +45,6 @@ public class GlobalExceptionHandler {
 
         result.setCode(errorCode.getCode());
         result.setMessage(errorCode.getMessage());
-        result.setResult(errorCode.getMessage());
 
         return ResponseEntity.badRequest().body(result);
     }

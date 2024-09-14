@@ -21,11 +21,14 @@ public class Profile extends BaseEntity {
     String firstName;
     String lastName;
     String gender;
+    @Column(columnDefinition = "TEXT")
     String bio;
     @Column(unique = true, nullable = false)
     String username;
     @Column(nullable = false)
     String password;
+    String phoneNumber;
+    String email;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile")
     List<UploadContent> uploadContents;
@@ -35,4 +38,14 @@ public class Profile extends BaseEntity {
 
     @OneToOne(mappedBy = "profile")
     Student student;
+
+    @OneToOne(mappedBy = "profile")
+    Instructor instructor;
+
+    @OneToOne(mappedBy = "managedBy")
+    Business business;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "roleId")
+    Role role;
 }

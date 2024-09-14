@@ -19,14 +19,12 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class ProfileService {
-    @Autowired
     ProfileRepository profileRepository;
-    @Autowired
     ProfileMapper profileMapper;
+    PasswordEncoder passwordEncoder;
 
     public ReturnResult<Boolean> CreateUser(ProfileCreationRequest request) {
         ReturnResult<Boolean> result = new ReturnResult<Boolean>();
@@ -37,8 +35,6 @@ public class ProfileService {
         if(isExistProfile) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         Profile savedProfile = profileMapper.toProfile(request);
         savedProfile.setPassword(passwordEncoder.encode(request.getPassword()));

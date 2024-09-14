@@ -38,6 +38,8 @@ public class AuthenticationService {
     protected Long expirationTime;
 
     ProfileRepository profileRepository;
+    PasswordEncoder passwordEncoder;
+
 
     private String GenerateToken(Profile profile) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
@@ -47,6 +49,7 @@ public class AuthenticationService {
                 .subject(profile.getUsername())
                 .issueTime(new Date())
                 .expirationTime(new Date(new Date().getTime() + this.expirationTime))
+                .claim("scope", profile.getRole().getRoleName())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -60,7 +63,6 @@ public class AuthenticationService {
             System.out.print(e.getMessage());
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
-
     }
 
     public ReturnResult<SignedJWT> IntroSpect(String token) {
@@ -97,7 +99,6 @@ public class AuthenticationService {
 
     public ReturnResult<ProfileAuthenticationResponse> Authenticate(ProfileAuthenticationRequest profileAuthenticationRequest) {
         ReturnResult<ProfileAuthenticationResponse> result = new ReturnResult<ProfileAuthenticationResponse>();
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         Profile existProfile = profileRepository.findByUsername(profileAuthenticationRequest.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

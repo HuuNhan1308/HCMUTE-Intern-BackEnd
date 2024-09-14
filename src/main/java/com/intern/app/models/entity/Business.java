@@ -24,11 +24,12 @@ public class Business extends BaseEntity{
     String workingDay;
     String workingHour;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ManagedBy")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ManagedBy", referencedColumnName = "profileId")
     Profile managedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RefInstructorId")
     Instructor refInstructor;
+
 }

@@ -23,6 +23,7 @@ public class BaseEntity {
     protected void onCreate() {
         dateCreated = LocalDateTime.now();
         dateModified = LocalDateTime.now();
+        deleted = false;
     }
 
     @PreUpdate
