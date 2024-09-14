@@ -105,16 +105,21 @@ public class AuthenticationService {
 
         boolean isPwMatch = passwordEncoder.matches(profileAuthenticationRequest.getPassword(), existProfile.getPassword());
 
-        if(!isPwMatch) throw new AppException(ErrorCode.INVALID_PASSWORD);
+        if(!isPwMatch){
+            result.setCode(HttpStatus.BAD_REQUEST.value());
+            result.setMessage("Wrong password...");
+        }
+        else {
+            var token = this.GenerateToken(existProfile);
 
-        var token = this.GenerateToken(existProfile);
+            result.setCode(HttpStatus.OK.value());
+            result.setResult(
+                    ProfileAuthenticationResponse.builder()
+                    .isAuthenticated(true)
+                    .token(token)
+                    .build());
+        }
 
-        result.setCode(HttpStatus.OK.value());
-        result.setResult(
-                ProfileAuthenticationResponse.builder()
-                .isAuthenticated(true)
-                .token(token)
-                .build());
 
         return result;
     }

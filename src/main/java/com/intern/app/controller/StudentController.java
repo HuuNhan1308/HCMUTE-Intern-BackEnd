@@ -32,4 +32,5 @@ public class StudentController {
 
         return ResponseEntity.ok().body(result);
     }
+
 }

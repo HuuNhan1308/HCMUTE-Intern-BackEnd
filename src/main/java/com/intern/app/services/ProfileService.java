@@ -9,13 +9,13 @@ import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.repository.ProfileRepository;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.text.ParseException;
 
 
 @Service
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfileService {
     ProfileRepository profileRepository;
+    AuthenticationService authenticationService;
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
 
@@ -52,5 +53,28 @@ public class ProfileService {
         return ReturnResult.<ProfileResponse>builder().result(profileMapper.toProfileResponse(profile)).build();
     }
 
+    public ReturnResult<Boolean> ChangePassword(String oldPassword, String newPassword, String accessToken) throws ParseException {
+        var result = new ReturnResult<Boolean>();
+        var data = authenticationService.verityToken(accessToken).getJWTClaimsSet();
 
+        String username = data.getSubject();
+        Profile profile = profileRepository.findByUsernameAndDeletedFalse(username).orElse(null);
+
+        if(profile == null) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+
+        if(!passwordEncoder.matches(oldPassword, profile.getPassword())) {
+            result.setResult(false);
+            result.setMessage("Wrong old password...");
+            result.setCode(HttpStatus.BAD_REQUEST.value());
+        }else {
+            profile.setPassword(passwordEncoder.encode(newPassword));
+            profileRepository.save(profile);
+            result.setResult(true);
+            result.setCode(HttpStatus.OK.value());
+        }
+
+        return result;
+    }
 }
