@@ -13,6 +13,7 @@ import com.intern.app.models.entity.Profile;
 import com.intern.app.models.entity.Student;
 import com.intern.app.repository.ProfileRepository;
 import com.intern.app.repository.StudentRepository;
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.Payload;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -52,7 +53,7 @@ public class StudentService {
         return result;
     }
 
-    public ReturnResult<StudentResponse>FindStudentByAccessToken(String token) throws ParseException {
+    public ReturnResult<StudentResponse>FindStudentByAccessToken(String token) throws ParseException, JOSEException {
         var result = new ReturnResult<StudentResponse>();
 
         var data = authenticationService.verityToken(token).getJWTClaimsSet();

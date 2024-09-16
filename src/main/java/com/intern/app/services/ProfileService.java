@@ -8,6 +8,7 @@ import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.repository.ProfileRepository;
+import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -53,7 +54,7 @@ public class ProfileService {
         return ReturnResult.<ProfileResponse>builder().result(profileMapper.toProfileResponse(profile)).build();
     }
 
-    public ReturnResult<Boolean> ChangePassword(String oldPassword, String newPassword, String accessToken) throws ParseException {
+    public ReturnResult<Boolean> ChangePassword(String oldPassword, String newPassword, String accessToken) throws ParseException, JOSEException {
         var result = new ReturnResult<Boolean>();
         var data = authenticationService.verityToken(accessToken).getJWTClaimsSet();
 

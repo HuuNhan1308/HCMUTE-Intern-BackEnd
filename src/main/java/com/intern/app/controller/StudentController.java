@@ -4,6 +4,7 @@ import com.intern.app.models.dto.request.TokenRequest;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
 import com.intern.app.services.StudentService;
+import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +28,7 @@ public class StudentController {
     }
 
     @PostMapping("/MyProfile")
-    public ResponseEntity<ReturnResult<StudentResponse>> FindMyProfile(@RequestBody TokenRequest token) throws ParseException {
+    public ResponseEntity<ReturnResult<StudentResponse>> FindMyProfile(@RequestBody TokenRequest token) throws ParseException, JOSEException {
         ReturnResult<StudentResponse> result = studentService.FindStudentByAccessToken(token.getToken());
 
         return ResponseEntity.ok().body(result);

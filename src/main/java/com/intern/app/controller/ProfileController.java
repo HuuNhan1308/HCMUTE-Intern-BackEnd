@@ -6,6 +6,7 @@ import com.intern.app.models.dto.response.ProfileResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.services.ProfileService;
 
+import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -40,7 +41,7 @@ public class ProfileController {
 
     @PostMapping("/ChangePassword")
     public ResponseEntity<ReturnResult<Boolean>> ChangePassword(@RequestBody ChangePasswordRequest changePasswordRequest, HttpServletRequest request)
-            throws ParseException {
+            throws ParseException, JOSEException {
 
         // Extract Bearer token from Authorization header
         String authorizationHeader = request.getHeader("Authorization");
