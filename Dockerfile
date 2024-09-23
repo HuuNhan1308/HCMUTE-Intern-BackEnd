@@ -20,6 +20,7 @@ RUN chown -R hcmute:hcmute /run
 
 USER hcmute
 
-EXPOSE 8080
+# Render automatically detect port
+# EXPOSE 8080
 
 ENTRYPOINT "java -jar /run/hcmute-intern-0.0.1-SNAPSHOT.jar"
