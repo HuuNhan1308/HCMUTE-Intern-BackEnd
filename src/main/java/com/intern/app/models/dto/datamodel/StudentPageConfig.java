@@ -5,6 +5,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,5 +15,5 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentPageConfig extends PageConfig {
     String fullname;
-    String majorId;
+    List<String> majorIds;
 }
