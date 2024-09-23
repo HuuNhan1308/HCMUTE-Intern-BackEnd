@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN "mvn install -DskipTests=true"
+RUN mvn install -DskipTests=true
 
 #------------------------RUN------------------------
 FROM alpine:3.20.3
@@ -24,4 +24,4 @@ USER hcmute
 
 EXPOSE 8080
 
-ENTRYPOINT "java -jar /run/hcmute-intern-0.0.1-SNAPSHOT.jar"
+ENTRYPOINT java -jar /run/hcmute-intern-0.0.1-SNAPSHOT.jar
