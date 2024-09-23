@@ -54,22 +54,19 @@ public class ProfileService {
         return ReturnResult.<ProfileResponse>builder().result(profileMapper.toProfileResponse(profile)).build();
     }
 
-    public ReturnResult<Boolean> ChangePassword(String oldPassword, String newPassword, String accessToken) throws ParseException, JOSEException {
+    public ReturnResult<Boolean> ChangePassword(String oldPassword, String newPassword, String username) {
         var result = new ReturnResult<Boolean>();
-        var data = authenticationService.verityToken(accessToken).getJWTClaimsSet();
-
-        String username = data.getSubject();
         Profile profile = profileRepository.findByUsernameAndDeletedFalse(username).orElse(null);
 
         if(profile == null) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
 
-        if(!passwordEncoder.matches(oldPassword, profile.getPassword())) {
+        if (!passwordEncoder.matches(oldPassword, profile.getPassword())) {
             result.setResult(false);
             result.setMessage("Wrong old password...");
             result.setCode(HttpStatus.BAD_REQUEST.value());
-        }else {
+        } else {
             profile.setPassword(passwordEncoder.encode(newPassword));
             profileRepository.save(profile);
             result.setResult(true);

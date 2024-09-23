@@ -16,7 +16,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Student extends BaseEntity {
     @Id
-    Long studentId;
+    String studentId;
     String year;
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
     Boolean isSeekingIntern = false;
@@ -26,6 +26,10 @@ public class Student extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FacultyId")
     Faculty faculty;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MajorId")
+    Major major;
 
     @OneToOne()
     @JoinColumn(name = "ProfileId", referencedColumnName = "profileId",nullable = false)

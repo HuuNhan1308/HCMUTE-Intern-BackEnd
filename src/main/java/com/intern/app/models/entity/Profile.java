@@ -18,9 +18,8 @@ public class Profile extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     String profileId;
 
-    String firstName;
-    String lastName;
-    String gender;
+    String fullname;
+    Boolean isMale;
     @Column(columnDefinition = "TEXT")
     String bio;
     @Column(unique = true, nullable = false)

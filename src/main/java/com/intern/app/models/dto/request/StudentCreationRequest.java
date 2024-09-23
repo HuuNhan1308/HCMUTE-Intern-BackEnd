@@ -1,4 +1,4 @@
-package com.intern.app.models.dto.response;
+package com.intern.app.models.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -11,14 +11,11 @@ import java.util.Date;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StudentResponse {
+public class StudentCreationRequest {
     String studentId;
     String year;
     Boolean isSeekingIntern = false;
     Date dob;
     String classId;
-
-    ProfileResponse profile;
-    FacultyResponse faculty;
-    MajorResponse major;
+    ProfileCreationRequest profile;
 }

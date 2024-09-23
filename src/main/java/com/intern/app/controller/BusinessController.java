@@ -1,0 +1,19 @@
+package com.intern.app.controller;
+
+import com.intern.app.services.BusinessService;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping(path = "/api/profile")
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE,  makeFinal = true)
+public class BusinessController {
+    BusinessService businessService;
+
+
+
+}

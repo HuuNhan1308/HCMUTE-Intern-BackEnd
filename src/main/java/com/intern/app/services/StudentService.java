@@ -5,24 +5,30 @@ import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.FacultyMapper;
 import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.mapper.StudentMapper;
-import com.intern.app.models.dto.response.FacultyResponse;
-import com.intern.app.models.dto.response.ProfileResponse;
+import com.intern.app.models.dto.datamodel.PageConfig;
+import com.intern.app.models.dto.datamodel.PagedData;
+import com.intern.app.models.dto.datamodel.StudentPageConfig;
+import com.intern.app.models.dto.request.StudentCreationRequest;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
 import com.intern.app.models.entity.Profile;
 import com.intern.app.models.entity.Student;
 import com.intern.app.repository.ProfileRepository;
 import com.intern.app.repository.StudentRepository;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.Payload;
+import com.intern.app.specification.StudentSpecification;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.text.ParseException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +41,7 @@ public class StudentService {
     ProfileMapper profileMapper;
     private final ProfileRepository profileRepository;
 
-    public ReturnResult<StudentResponse> FindStudentById(Long id) {
+    public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
         Student student = studentRepository.findById(id).orElse(null);
 
@@ -53,11 +59,8 @@ public class StudentService {
         return result;
     }
 
-    public ReturnResult<StudentResponse>FindStudentByAccessToken(String token) throws ParseException, JOSEException {
+    public ReturnResult<StudentResponse> GetStudentByUsername(String username)  {
         var result = new ReturnResult<StudentResponse>();
-
-        var data = authenticationService.verityToken(token).getJWTClaimsSet();
-        String username = data.getSubject();
 
         Profile profile = profileRepository.findByUsername(username).orElse(null);
         if(profile.getDeleted()) {
@@ -75,6 +78,61 @@ public class StudentService {
             result.setResult(studentResponse);
             result.setCode(HttpStatus.OK.value());
         }
+
+        return result;
+    }
+
+    //NOT FINISH
+    public ReturnResult<Boolean> CreateStudent(StudentCreationRequest studentCreationRequest) {
+        ReturnResult<Boolean> result = new ReturnResult<>();
+
+        Boolean isStudentExist = studentRepository.existsById(studentCreationRequest.getStudentId());
+
+        if(isStudentExist) { throw new AppException(ErrorCode.STUDENT_EXISTED_ID);}
+
+        Student student = studentMapper.toStudent(studentCreationRequest);
+
+        return result;
+    }
+
+    public ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetAllStudentPaging(@RequestBody StudentPageConfig page) {
+        var result = new ReturnResult<PagedData<StudentResponse, StudentPageConfig>>();
+
+        Sort sort = page.getSort();
+        Pageable pageable = PageRequest.of(page.getCurrentPage() - 1, page.getPageSize(), sort);
+        // Create the specification
+        Specification<Student> spec = Specification.where(StudentSpecification.hasFullname(page.getFullname()))
+                .and(StudentSpecification.hasMajorId(page.getMajorId()));
+
+        // Fetch the filtered and paginated data from the repository
+        Page<Student> studentPage = studentRepository.findByFullnameContainingAndMajorId(page.getFullname(), page.getMajorId(), pageable);
+//        if(page.getMajorId() != null) {
+//            studentPage = studentRepository.findByFullnameContainingAndMajorId(page.getFullname(), page.getMajorId(), pageable);
+//        }
+
+        // Convert Student entities to StudentResponse DTOs
+        List<StudentResponse> studentResponses = studentPage.getContent().stream()
+                .map(this.studentMapper::toStudentResponse)
+                .toList();
+
+        // Set data for page
+        StudentPageConfig newPageConfig = StudentPageConfig.builder()
+                .currentPage(studentPage.getNumber() + 1)
+                .pageSize(studentPage.getSize())
+                .totalRecords((int) studentPage.getTotalElements())
+                .totalPage(studentPage.getTotalPages())
+                .orders(page.getOrders())
+                .fullname(page.getFullname())
+                .majorId(page.getMajorId())
+                .build();
+
+
+        // Build the PagedData object
+        result.setResult(PagedData.<StudentResponse, StudentPageConfig>builder()
+                .data(studentResponses)
+                .pageConfig(newPageConfig)
+                .build());
+
         return result;
     }
 }

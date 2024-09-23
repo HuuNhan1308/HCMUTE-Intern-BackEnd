@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -40,20 +41,14 @@ public class ProfileController {
     }
 
     @PostMapping("/ChangePassword")
-    public ResponseEntity<ReturnResult<Boolean>> ChangePassword(@RequestBody ChangePasswordRequest changePasswordRequest, HttpServletRequest request)
-            throws ParseException, JOSEException {
-
-        // Extract Bearer token from Authorization header
-        String authorizationHeader = request.getHeader("Authorization");
-        String bearerToken = null;
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            bearerToken = authorizationHeader.substring(7);
-        }
+    public ResponseEntity<ReturnResult<Boolean>> ChangePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
 
         ReturnResult<Boolean> result = profileService.ChangePassword(
                 changePasswordRequest.getOldPassword(),
                 changePasswordRequest.getNewPassword(),
-                bearerToken);
+                username);
         return ResponseEntity.ok().body(result);
     }
 }

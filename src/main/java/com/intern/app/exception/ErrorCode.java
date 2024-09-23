@@ -22,6 +22,7 @@ public enum ErrorCode {
     INVALID_TOKEN(1009, "Token không hợp lệ", HttpStatus.UNAUTHORIZED),
     STUDENT_NOT_FOUND(1010, "Không tìm thấy học sinh", HttpStatus.NOT_FOUND),
     LOGIN_FAIL_CREDENTIALS(1011, "Tài khoản hoặc mật khẩu không đúng, vui lòng thử lại", HttpStatus.BAD_REQUEST),
+    STUDENT_EXISTED_ID(1012, "ID học sinh đã tồn tại, vui lòng đăng nhập", HttpStatus.BAD_REQUEST),
     ;
 
     int code;

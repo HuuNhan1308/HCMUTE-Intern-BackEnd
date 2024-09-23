@@ -2,14 +2,8 @@ package com.intern.app.configuration;
 
 
 import com.github.javafaker.Faker;
-import com.intern.app.models.entity.Faculty;
-import com.intern.app.models.entity.Profile;
-import com.intern.app.models.entity.Role;
-import com.intern.app.models.entity.Student;
-import com.intern.app.repository.FacultyRepository;
-import com.intern.app.repository.ProfileRepository;
-import com.intern.app.repository.RoleRepository;
-import com.intern.app.repository.StudentRepository;
+import com.intern.app.models.entity.*;
+import com.intern.app.repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,27 +26,41 @@ public class DataInitialize {
     ProfileRepository profileRepository;
     FacultyRepository facultyRepository;
     StudentRepository studentRepository;
+    MajorRepository majorRepository;
     PasswordEncoder passwordEncoder;
     Faker faker = new Faker();
 
     @PostConstruct
     public void initializeRoles() {
+
+        // ROLE
         createRoleIfNotExists("ADMIN");
         createRoleIfNotExists("STUDENT");
 
+
+        //FACULTY
         createFacultyIfNotExist("FIE");
         createFacultyIfNotExist("AAA");
         createFacultyIfNotExist("AOA");
         createFacultyIfNotExist("HRM");
 
 
-        createStudentIfNotExists(21110787L, createProfileIfNotExists("nhan", "nhan", "STUDENT").getProfileId());
+        //MAJOR
+        createMajorIfNotExist("Công nghệ thông tin");
+        createMajorIfNotExist("Công nghệ thông tin " + faker.number().randomNumber(3, true));
+        createMajorIfNotExist("Công nghệ thông tin " + faker.number().randomNumber(3, true));
+        createMajorIfNotExist("Công nghệ thông tin " + faker.number().randomNumber(3, true));
+        createMajorIfNotExist("Công nghệ thông tin " + faker.number().randomNumber(3, true));
+
+        //STUDENT
+        createStudentIfNotExists("21110787", createProfileIfNotExists("nhan", "nhan", "STUDENT").getProfileId());
         for (int i = 1; i < 10; ++i) {
             String iAsString = String.valueOf(i);
             Profile newStudentProfile = createProfileIfNotExists("student" + iAsString, iAsString, "STUDENT");
             createStudentIfNotExists(null, newStudentProfile.getProfileId());
         }
 
+        // ADMIN
         createProfileIfNotExists("admin", "1", "ADMIN");
     }
 
@@ -67,15 +76,18 @@ public class DataInitialize {
     private Profile createProfileIfNotExists(String userName, String password, String roleName) {
         Role role = roleRepository.findByRoleName(roleName).orElse(null);
         if(!profileRepository.findByUsernameAndPassword(userName, password).isPresent()) {
+
             Profile profile = Profile.builder()
                     .username(userName)
                     .password(this.passwordEncoder.encode(password))
                     .role(role)
-                    .firstName(faker.name().firstName())
-                    .lastName(faker.name().lastName())
+                    .fullname(faker.name().fullName())
                     .bio(faker.lorem().paragraph(2))
                     .email(faker.internet().emailAddress())
+                    .isMale(faker.bool().bool())
+                    .phoneNumber(faker.phoneNumber().phoneNumber())
                     .build();
+
             return profileRepository.save(profile);
         }
 
@@ -91,12 +103,14 @@ public class DataInitialize {
         }
     }
 
-    private Student createStudentIfNotExists(Long Id, String profileId) {
+    private Student createStudentIfNotExists(String Id, String profileId) {
         Faculty FIE = facultyRepository.findByName("FIE").orElse(null);
         Profile profile = profileRepository.findById(profileId).orElse(null);
+        Major major = majorRepository.findByName("Công nghệ thông tin").orElse(null);
+
 
         while(Id == null || studentRepository.findById(Id).isPresent()) {
-            Id = faker.number().randomNumber(8, true);
+            Id = String.valueOf(faker.number().randomNumber(8, true));
         }
 
         if(!studentRepository.findById(Id).isPresent()) {
@@ -107,10 +121,31 @@ public class DataInitialize {
                     .isSeekingIntern(false)
                     .dob(faker.date().birthday())
                     .profile(profile)
+                    .major(major)
                     .build();
 
             return studentRepository.save(student);
         }
         return null;
+    }
+
+    private Major createMajorIfNotExist(String name) {
+        Optional<Major> major = majorRepository.findByName(name);
+        if(!major.isPresent()) {
+            String Id;
+            do
+                Id = String.valueOf(faker.number().randomNumber(8, true));
+            while(studentRepository.findById(Id).isPresent());
+
+            Major createdMajor = Major.builder()
+                    .majorId(Id)
+                    .name(name)
+                    .build();
+
+            return majorRepository.save(createdMajor);
+        }
+        else {
+            return major.get();
+        }
     }
 }
