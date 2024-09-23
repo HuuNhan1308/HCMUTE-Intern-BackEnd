@@ -9,9 +9,11 @@ COPY . .
 RUN "mvn install -DskipTests=true"
 
 #------------------------RUN------------------------
-FROM openjdk:21
+FROM alpine:3.20.3
 
 RUN adduser -D hcmute
+
+RUN apk add openjdk21
 
 WORKDIR /run
 COPY --from=build /app/target/hcmute-intern-0.0.1-SNAPSHOT.jar /run/hcmute-intern-0.0.1-SNAPSHOT.jar
