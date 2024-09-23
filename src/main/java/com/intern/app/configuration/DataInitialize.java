@@ -30,7 +30,7 @@ public class DataInitialize {
     PasswordEncoder passwordEncoder;
     Faker faker = new Faker();
 
-    @PostConstruct
+//    @PostConstruct
     public void initializeRoles() {
 
         // ROLE
