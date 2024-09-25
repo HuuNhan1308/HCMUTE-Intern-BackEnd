@@ -1,9 +1,5 @@
 package com.intern.app.models.dto.request;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,12 +9,11 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProfileCreationRequest {
+public class ProfileUpdateRequest {
+    String profileId;
     String fullname;
     String gender;
     String bio;
-    String username;
-    String password;
     String phoneNumber;
     String email;
 }

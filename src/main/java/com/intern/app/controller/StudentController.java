@@ -4,6 +4,7 @@ import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.datamodel.StudentPageConfig;
 import com.intern.app.models.dto.request.StudentCreationRequest;
+import com.intern.app.models.dto.request.StudentUpdateRequest;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
 import com.intern.app.services.StudentService;
@@ -49,6 +50,13 @@ public class StudentController {
     @PostMapping("/GetAllStudentPaging")
     public ResponseEntity<ReturnResult<PagedData<StudentResponse, StudentPageConfig>>> GetAllStudentPaging(@RequestBody StudentPageConfig page) {
         ReturnResult<PagedData<StudentResponse, StudentPageConfig>> result = studentService.GetAllStudentPaging(page);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/UpdateStudent")
+    public ResponseEntity<ReturnResult<Boolean>> UpdateStudent(@RequestBody StudentUpdateRequest studentUpdateRequest) {
+        ReturnResult<Boolean> result = studentService.UpdateStudent(studentUpdateRequest);
 
         return ResponseEntity.ok().body(result);
     }

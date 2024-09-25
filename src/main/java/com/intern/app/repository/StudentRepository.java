@@ -26,4 +26,6 @@ public interface StudentRepository extends JpaRepository<Student, String> {
             "WHERE LOWER(p.fullname) LIKE LOWER(CONCAT('%', :fullname, '%'))",
             nativeQuery = true)
     Page<Student> findByFullnameContainingIgnoreCase(@Param("fullname") String fullname, Pageable pageable);
+
+
 }

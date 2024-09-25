@@ -8,10 +8,13 @@ import com.intern.app.mapper.StudentMapper;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.datamodel.StudentPageConfig;
 import com.intern.app.models.dto.request.StudentCreationRequest;
+import com.intern.app.models.dto.request.StudentUpdateRequest;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
 import com.intern.app.models.entity.Profile;
 import com.intern.app.models.entity.Student;
+import com.intern.app.repository.FacultyRepository;
+import com.intern.app.repository.MajorRepository;
 import com.intern.app.repository.ProfileRepository;
 import com.intern.app.repository.StudentRepository;
 import lombok.AccessLevel;
@@ -22,10 +25,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.BeanUtilsBean2;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +44,8 @@ public class StudentService {
     FacultyMapper facultyMapper;
     ProfileMapper profileMapper;
     private final ProfileRepository profileRepository;
+    private final MajorRepository majorRepository;
+    private final FacultyRepository facultyRepository;
 
     public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
@@ -127,6 +136,31 @@ public class StudentService {
                 .data(studentResponses)
                 .pageConfig(newPageConfig)
                 .build());
+
+        return result;
+    }
+
+    public ReturnResult<Boolean> UpdateStudent(StudentUpdateRequest studentUpdateRequest) {
+        var result = new ReturnResult<Boolean>();
+
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Profile profile = profileRepository.findByUsername(username).orElse(null);
+        Student student = profile.getStudent();
+
+        if(profile == null || student == null) {
+            throw new AppException(ErrorCode.STUDENT_NOT_FOUND);
+        }
+
+        studentMapper.updateStudent(student, studentUpdateRequest);
+        profileMapper.updateProfile(profile, studentUpdateRequest.getProfile());
+        student.setMajor(majorRepository.findById(studentUpdateRequest.getMajorId()).orElse(null));
+        student.setFaculty(facultyRepository.findById(studentUpdateRequest.getFacultyId()).orElse(null));
+
+
+        studentRepository.save(student);
+        profileRepository.save(profile);
 
         return result;
     }
