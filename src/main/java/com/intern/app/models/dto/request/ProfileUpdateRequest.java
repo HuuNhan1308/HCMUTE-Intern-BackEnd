@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 public class ProfileUpdateRequest {
     String profileId;
     String fullname;
-    String gender;
+    Boolean isMale;
     String bio;
     String phoneNumber;
     String email;

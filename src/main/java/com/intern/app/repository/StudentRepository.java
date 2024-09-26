@@ -27,5 +27,4 @@ public interface StudentRepository extends JpaRepository<Student, String> {
             nativeQuery = true)
     Page<Student> findByFullnameContainingIgnoreCase(@Param("fullname") String fullname, Pageable pageable);
 
-
 }
