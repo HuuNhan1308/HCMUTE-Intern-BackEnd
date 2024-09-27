@@ -1,6 +1,5 @@
 package com.intern.app.models.dto.response;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

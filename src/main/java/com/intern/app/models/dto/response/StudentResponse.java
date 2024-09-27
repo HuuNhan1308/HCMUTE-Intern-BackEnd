@@ -12,12 +12,11 @@ import java.util.Date;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentResponse {
-    Long studentId;
-    String year;
-    Boolean isSeekingIntern = false;
+    String studentId;
+    Integer year;
+    Boolean isSeekingIntern;
     Date dob;
-    String classId;
 
     ProfileResponse profile;
-    FacultyResponse faculty;
+    MajorResponse major;
 }

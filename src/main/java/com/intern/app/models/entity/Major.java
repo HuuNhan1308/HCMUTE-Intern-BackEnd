@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -11,18 +13,17 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "upload_content")
-public class UploadContent extends BaseEntity {
+public class Major extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String uploadContentId;
+    String majorId;
 
-    String fileName;
+    String name;
 
-    @Column(name = "file_data", columnDefinition = "BYTEA")
-    private byte[] fileData;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "major")
+    List<Student> students;
 
-    @OneToOne
-    @JoinColumn(name = "ProfileId", nullable = false)
-    Profile profile;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FacultyId")
+    Faculty faculty;
 }

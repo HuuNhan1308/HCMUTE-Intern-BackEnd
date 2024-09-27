@@ -17,10 +17,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -65,49 +65,43 @@ public class AuthenticationService {
         }
     }
 
-    public ReturnResult<SignedJWT> IntroSpect(String token) {
-        ReturnResult<SignedJWT> result = new ReturnResult<>();
+    public ReturnResult<Boolean> IntroSpect(String token) throws ParseException, JOSEException {
+        ReturnResult<Boolean> result = new ReturnResult<>();
 
         try {
-            result.setResult(this.verityToken(token));
-            result.setCode(200);
+            this.verityToken(token);
+            result.setResult(true);
         } catch (AppException e) {
-            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+            result.setResult(false);
         }
 
         return result;
     }
 
-    public SignedJWT verityToken(String token) throws AppException {
-            try {
-                JWSVerifier verifier = new MACVerifier(this.singerKey.getBytes());
-                SignedJWT signedJWT = SignedJWT.parse(token);
-                Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+    public SignedJWT verityToken(String token) throws JOSEException, ParseException {
+            JWSVerifier verifier = new MACVerifier(this.singerKey.getBytes());
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
-                var verified = signedJWT.verify(verifier);
+            var verified = signedJWT.verify(verifier);
 
-                if (!(verified && expirationTime.after(new Date()))) {
-                    throw new AppException(ErrorCode.INVALID_TOKEN);
-                }
-
-                return signedJWT;
-
-            } catch (Exception e) {
-                throw new  AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+            if (!(verified && expirationTime.after(new Date()))) {
+                throw new AppException(ErrorCode.INVALID_TOKEN);
             }
+
+            return signedJWT;
     }
 
     public ReturnResult<ProfileAuthenticationResponse> Authenticate(ProfileAuthenticationRequest profileAuthenticationRequest) {
         ReturnResult<ProfileAuthenticationResponse> result = new ReturnResult<ProfileAuthenticationResponse>();
 
         Profile existProfile = profileRepository.findByUsername(profileAuthenticationRequest.getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.LOGIN_FAIL_CREDENTIALS));
 
         boolean isPwMatch = passwordEncoder.matches(profileAuthenticationRequest.getPassword(), existProfile.getPassword());
 
         if(!isPwMatch){
-            result.setCode(HttpStatus.BAD_REQUEST.value());
-            result.setMessage("Wrong password...");
+            throw new AppException(ErrorCode.LOGIN_FAIL_CREDENTIALS);
         }
         else {
             var token = this.GenerateToken(existProfile);
@@ -119,7 +113,6 @@ public class AuthenticationService {
                     .token(token)
                     .build());
         }
-
 
         return result;
     }

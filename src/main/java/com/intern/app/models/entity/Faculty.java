@@ -15,12 +15,12 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Faculty extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     String facultyId;
     String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "faculty")
-    List<Student> students;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "faculty")
     List<Instructor> instructors;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "faculty")
+    List<Major> majors;
 }

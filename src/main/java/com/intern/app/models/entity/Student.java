@@ -16,16 +16,17 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Student extends BaseEntity {
     @Id
-    Long studentId;
-    String year;
-    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    String studentId;
+    Integer year;
+    @Builder.Default
     Boolean isSeekingIntern = false;
+
+    @Temporal(TemporalType.DATE)
     Date dob;
-    String classId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FacultyId")
-    Faculty faculty;
+    @JoinColumn(name = "MajorId")
+    Major major;
 
     @OneToOne()
     @JoinColumn(name = "ProfileId", referencedColumnName = "profileId",nullable = false)

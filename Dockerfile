@@ -1,11 +1,28 @@
-# Use the official OpenJDK image for Java 21
-FROM openjdk:21
 
-# Set the working directory in the container
+#------------------------BUILD------------------------
+FROM maven:3.9.9-ibm-semeru-21-jammy as build
+
 WORKDIR /app
 
-# Copy the JAR file into the container
-COPY target/hcmute-intern-0.0.1-SNAPSHOT.jar /app/my-application.jar
+COPY . .
 
-# Command to run the JAR file
-CMD ["java", "-jar", "/app/my-application.jar"]
+RUN mvn install -DskipTests=true
+
+#------------------------RUN------------------------
+FROM alpine:3.20.3
+
+RUN adduser -D hcmute
+
+RUN apk add openjdk21
+
+WORKDIR /run
+COPY --from=build /app/target/hcmute-intern-0.0.1-SNAPSHOT.jar /run/hcmute-intern-0.0.1-SNAPSHOT.jar
+
+RUN chown -R hcmute:hcmute /run
+
+USER hcmute
+
+# Render automatically detect port
+# EXPOSE 8080
+
+ENTRYPOINT java -jar /run/hcmute-intern-0.0.1-SNAPSHOT.jar

@@ -3,25 +3,40 @@ package com.intern.app.services;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.FacultyMapper;
+import com.intern.app.mapper.MajorMapper;
 import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.mapper.StudentMapper;
-import com.intern.app.models.dto.response.FacultyResponse;
-import com.intern.app.models.dto.response.ProfileResponse;
+import com.intern.app.mapper.UploadContentMapper;
+import com.intern.app.models.dto.datamodel.PagedData;
+import com.intern.app.models.dto.datamodel.StudentPageConfig;
+import com.intern.app.models.dto.request.StudentCreationRequest;
+import com.intern.app.models.dto.request.StudentUpdateRequest;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
 import com.intern.app.models.entity.Profile;
 import com.intern.app.models.entity.Student;
+import com.intern.app.repository.FacultyRepository;
+import com.intern.app.repository.MajorRepository;
 import com.intern.app.repository.ProfileRepository;
 import com.intern.app.repository.StudentRepository;
-import com.nimbusds.jose.Payload;
+
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.BeanUtilsBean2;
 
-import java.text.ParseException;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,17 +47,21 @@ public class StudentService {
     StudentMapper studentMapper;
     FacultyMapper facultyMapper;
     ProfileMapper profileMapper;
-    private final ProfileRepository profileRepository;
+    MajorMapper majorMapper;
+    UploadContentMapper uploadContentMapper;
+    ProfileRepository profileRepository;
+    MajorRepository majorRepository;
+    FacultyRepository facultyRepository;
 
-    public ReturnResult<StudentResponse> FindStudentById(Long id) {
+    public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
         Student student = studentRepository.findById(id).orElse(null);
 
-        if(student == null) {
+        if (student == null) {
             throw new AppException(ErrorCode.STUDENT_NOT_FOUND);
         } else {
             StudentResponse studentResponse = studentMapper.toStudentResponse(student);
-            studentResponse.setFaculty(facultyMapper.toFacultyResponse(student.getFaculty()));
+            studentResponse.setMajor(majorMapper.toMajorResponse(student.getMajor()));
             studentResponse.setProfile(profileMapper.toProfileResponse(student.getProfile()));
 
             result.setResult(studentResponse);
@@ -52,28 +71,109 @@ public class StudentService {
         return result;
     }
 
-    public ReturnResult<StudentResponse>FindStudentByAccessToken(String token) throws ParseException {
+    public ReturnResult<StudentResponse> GetStudentByUsername(String username) {
         var result = new ReturnResult<StudentResponse>();
 
-        var data = authenticationService.verityToken(token).getJWTClaimsSet();
-        String username = data.getSubject();
-
         Profile profile = profileRepository.findByUsername(username).orElse(null);
-        if(profile.getDeleted()) {
+        if (profile.getDeleted()) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
 
         Student student = studentRepository.findByProfile(profile).orElse(null);
-        if(student == null) {
+        if (student == null) {
             throw new AppException(ErrorCode.STUDENT_NOT_FOUND);
         } else {
             StudentResponse studentResponse = studentMapper.toStudentResponse(student);
-            studentResponse.setFaculty(facultyMapper.toFacultyResponse(student.getFaculty()));
+            studentResponse.setMajor(majorMapper.toMajorResponse(student.getMajor()));
             studentResponse.setProfile(profileMapper.toProfileResponse(student.getProfile()));
 
             result.setResult(studentResponse);
             result.setCode(HttpStatus.OK.value());
         }
+
+        return result;
+    }
+
+    // NOT FINISH
+    public ReturnResult<Boolean> CreateStudent(StudentCreationRequest studentCreationRequest) {
+        ReturnResult<Boolean> result = new ReturnResult<>();
+
+        Boolean isStudentExist = studentRepository.existsById(studentCreationRequest.getStudentId());
+
+        if (isStudentExist) {
+            throw new AppException(ErrorCode.STUDENT_EXISTED_ID);
+        }
+
+        Student student = studentMapper.toStudent(studentCreationRequest);
+
+        return result;
+    }
+
+    public ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetAllStudentPaging(
+            @RequestBody StudentPageConfig page) {
+        var result = new ReturnResult<PagedData<StudentResponse, StudentPageConfig>>();
+
+        Sort sort = page.getSort();
+        Pageable pageable = PageRequest.of(page.getCurrentPage() - 1, page.getPageSize(), sort);
+
+        // Fetch the filtered and paginated data from the repository
+        Page<Student> studentPage;
+        if (!page.getMajorIds().isEmpty()) {
+            studentPage = studentRepository.findByFullnameContainingIgnoreCaseAndMajorIdIn(page.getFullname(),
+                    page.getMajorIds(), pageable);
+        } else {
+            studentPage = studentRepository.findByFullnameContainingIgnoreCase(page.getFullname(), pageable);
+        }
+
+        // Convert Student entities to StudentResponse DTOs
+        List<StudentResponse> studentResponses = studentPage.getContent().stream()
+                .map(student -> {
+                    StudentResponse studentResponse = studentMapper.toStudentResponse(student);
+                    studentResponse.setProfile(profileMapper.toProfileResponse(student.getProfile()));
+                    return studentResponse;
+                })
+                .toList();
+
+        // Set data for page
+        StudentPageConfig newPageConfig = StudentPageConfig.builder()
+                .currentPage(studentPage.getNumber() + 1)
+                .pageSize(studentPage.getSize())
+                .totalRecords((int) studentPage.getTotalElements())
+                .totalPage(studentPage.getTotalPages())
+                .orders(page.getOrders())
+                .fullname(page.getFullname())
+                .majorIds(page.getMajorIds())
+                .build();
+
+        // Build the PagedData object
+        result.setResult(PagedData.<StudentResponse, StudentPageConfig>builder()
+                .data(studentResponses)
+                .pageConfig(newPageConfig)
+                .build());
+
+        return result;
+    }
+
+    public ReturnResult<Boolean> UpdateStudent(StudentUpdateRequest studentUpdateRequest) {
+        var result = new ReturnResult<Boolean>();
+
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Profile profile = profileRepository.findByUsername(username).orElse(null);
+        Student student = profile.getStudent();
+
+        if (profile == null || student == null) {
+            throw new AppException(ErrorCode.STUDENT_NOT_FOUND);
+        }
+
+        studentMapper.updateStudent(student, studentUpdateRequest);
+        profileMapper.updateProfile(profile, studentUpdateRequest.getProfile());
+        student.setMajor(majorRepository.findById(studentUpdateRequest.getMajorId()).orElse(null));
+
+        studentRepository.save(student);
+        profileRepository.save(profile);
+
         return result;
     }
 }

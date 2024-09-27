@@ -18,9 +18,8 @@ public class Profile extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     String profileId;
 
-    String firstName;
-    String lastName;
-    String gender;
+    String fullname;
+    Boolean isMale;
     @Column(columnDefinition = "TEXT")
     String bio;
     @Column(unique = true, nullable = false)
@@ -30,8 +29,8 @@ public class Profile extends BaseEntity {
     String phoneNumber;
     String email;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile")
-    List<UploadContent> uploadContents;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "profile")
+    UploadContent uploadContent;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile")
     List<ProfilePermission> profilePermissions;

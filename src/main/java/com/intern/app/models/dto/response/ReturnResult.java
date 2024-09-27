@@ -2,7 +2,6 @@ package com.intern.app.models.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.ResponseEntity;
 
 @Builder
 @NoArgsConstructor
@@ -15,5 +14,4 @@ public class ReturnResult<T> {
     @Builder.Default
     int code = 200;
     T result;
-
 }
