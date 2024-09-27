@@ -6,6 +6,7 @@ import com.intern.app.mapper.FacultyMapper;
 import com.intern.app.mapper.MajorMapper;
 import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.mapper.StudentMapper;
+import com.intern.app.mapper.UploadContentMapper;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.datamodel.StudentPageConfig;
 import com.intern.app.models.dto.request.StudentCreationRequest;
@@ -18,6 +19,7 @@ import com.intern.app.repository.FacultyRepository;
 import com.intern.app.repository.MajorRepository;
 import com.intern.app.repository.ProfileRepository;
 import com.intern.app.repository.StudentRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.BeanUtilsBean2;
 
@@ -45,9 +48,10 @@ public class StudentService {
     FacultyMapper facultyMapper;
     ProfileMapper profileMapper;
     MajorMapper majorMapper;
-    private final ProfileRepository profileRepository;
-    private final MajorRepository majorRepository;
-    private final FacultyRepository facultyRepository;
+    UploadContentMapper uploadContentMapper;
+    ProfileRepository profileRepository;
+    MajorRepository majorRepository;
+    FacultyRepository facultyRepository;
 
     public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
@@ -123,7 +127,11 @@ public class StudentService {
 
         // Convert Student entities to StudentResponse DTOs
         List<StudentResponse> studentResponses = studentPage.getContent().stream()
-                .map(this.studentMapper::toStudentResponse)
+                .map(student -> {
+                    StudentResponse studentResponse = studentMapper.toStudentResponse(student);
+                    studentResponse.setProfile(profileMapper.toProfileResponse(student.getProfile()));
+                    return studentResponse;
+                })
                 .toList();
 
         // Set data for page
