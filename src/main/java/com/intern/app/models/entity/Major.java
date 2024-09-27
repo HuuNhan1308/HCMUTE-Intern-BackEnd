@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -16,10 +15,15 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Major extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     String majorId;
 
     String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "major")
     List<Student> students;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FacultyId")
+    Faculty faculty;
 }

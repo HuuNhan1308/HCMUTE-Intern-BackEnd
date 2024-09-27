@@ -10,11 +10,11 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProfileResponse {
-     String profileId;
-     String username;
-     String fullname;
-     Boolean isMale;
-     String bio;
-     String phoneNumber;
-     String email;
+    String profileId;
+    String username;
+    String fullname;
+    Boolean isMale;
+    String bio;
+    String phoneNumber;
+    String email;
 }

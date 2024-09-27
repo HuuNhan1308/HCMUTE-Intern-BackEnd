@@ -17,15 +17,12 @@ import java.util.List;
 public class Student extends BaseEntity {
     @Id
     String studentId;
-    String year;
-    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    Integer year;
+    @Builder.Default
     Boolean isSeekingIntern = false;
-    Date dob;
-    String classId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FacultyId")
-    Faculty faculty;
+    @Temporal(TemporalType.DATE)
+    Date dob;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MajorId")

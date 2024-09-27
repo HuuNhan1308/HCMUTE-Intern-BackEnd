@@ -12,10 +12,9 @@ import java.util.Date;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentUpdateRequest {
-    String year;
+    Integer year;
     Boolean isSeekingIntern;
     Date dob;
-    String classId;
 
     ProfileUpdateRequest profile;
 
