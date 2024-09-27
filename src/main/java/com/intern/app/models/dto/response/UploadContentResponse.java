@@ -9,14 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProfileResponse {
-    String profileId;
-    String username;
-    String fullname;
-    Boolean isMale;
-    String bio;
-    String phoneNumber;
-    String email;
-
-    UploadContentResponse uploadContent;
+public class UploadContentResponse {
+    String uploadContentId;
+    String fileName;
 }

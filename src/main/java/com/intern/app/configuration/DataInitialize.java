@@ -4,16 +4,12 @@ import com.github.javafaker.Faker;
 import com.intern.app.models.entity.*;
 import com.intern.app.repository.*;
 import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -157,7 +153,7 @@ public class DataInitialize {
         createStudentIfNotExists("21110787", createProfileIfNotExists("21110787", "21110787",
                 "STUDENT").getProfileId());
 
-        for (int i = 21110000; i <= 21110100; i++) {
+        for (int i = 21110000; i <= 21110050; i++) {
             String iAsString = String.valueOf(i);
             createStudentIfNotExists(iAsString, createProfileIfNotExists(iAsString, iAsString,
                     "STUDENT").getProfileId());

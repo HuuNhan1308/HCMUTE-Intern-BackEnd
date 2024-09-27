@@ -29,8 +29,8 @@ public class Profile extends BaseEntity {
     String phoneNumber;
     String email;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile")
-    List<UploadContent> uploadContents;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "profile")
+    UploadContent uploadContent;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile")
     List<ProfilePermission> profilePermissions;

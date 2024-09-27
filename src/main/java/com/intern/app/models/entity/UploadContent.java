@@ -19,9 +19,10 @@ public class UploadContent extends BaseEntity {
 
     String fileName;
 
-    String path;
+    @Column(name = "file_data", columnDefinition = "BYTEA")
+    private byte[] fileData;
 
-    @ManyToOne
-    @JoinColumn(name="ProfileId", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "ProfileId", nullable = false)
     Profile profile;
 }
