@@ -13,9 +13,9 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentCreationRequest {
     String studentId;
-    String year;
+    Integer year;
+    @Builder.Default
     Boolean isSeekingIntern = false;
     Date dob;
-    String classId;
     ProfileCreationRequest profile;
 }

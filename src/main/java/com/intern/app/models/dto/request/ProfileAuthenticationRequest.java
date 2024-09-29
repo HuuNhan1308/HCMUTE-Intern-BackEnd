@@ -1,6 +1,5 @@
 package com.intern.app.models.dto.request;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

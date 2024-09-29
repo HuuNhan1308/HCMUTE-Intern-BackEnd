@@ -12,4 +12,5 @@ import lombok.experimental.FieldDefaults;
 public class MajorResponse {
     String majorId;
     String name;
+    FacultyResponse faculty;
 }

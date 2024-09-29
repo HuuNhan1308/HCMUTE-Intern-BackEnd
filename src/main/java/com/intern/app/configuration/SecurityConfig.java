@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -27,7 +27,8 @@ import javax.crypto.spec.SecretKeySpec;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_ENDPOINTS = {"/api/profile/CreateProfile", "/api/authentication/Authenticate", "/api/authentication/IntroSpect"};
+    private static final String[] PUBLIC_ENDPOINTS = { "/api/profile/CreateProfile", "/api/authentication/Authenticate",
+            "/api/authentication/IntroSpect", "/api/faculty/**", "/api/major/**", "/api/file/**" };
 
     @Value("${jwt.signerKey}")
     private String singerKey;
@@ -41,12 +42,8 @@ public class SecurityConfig {
         // Disable CSRF protection
         http.csrf(AbstractHttpConfigurer::disable);
 
-        http.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(jwtDecoder())
-                )
-        );
-        
+        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
+
         // Configure CORS to allow all origins and certain methods and headers
         http.cors(httpSecurityCorsConfigurer -> {
             CorsConfiguration configuration = new CorsConfiguration();

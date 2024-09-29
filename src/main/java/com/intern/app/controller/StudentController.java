@@ -1,18 +1,22 @@
 package com.intern.app.controller;
 
-import com.intern.app.models.dto.datamodel.PageConfig;
+import com.intern.app.exception.AppException;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.datamodel.StudentPageConfig;
 import com.intern.app.models.dto.request.StudentCreationRequest;
+import com.intern.app.models.dto.request.StudentUpdateRequest;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
 import com.intern.app.services.StudentService;
+import com.intern.app.services.UploadService;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RestController
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class StudentController {
     StudentService studentService;
+    UploadService uploadService;
 
     @PostMapping("/{studentId}")
     public ResponseEntity<ReturnResult<StudentResponse>> FindStudentById(@PathVariable String studentId) {
@@ -38,17 +43,34 @@ public class StudentController {
         return ResponseEntity.ok().body(result);
     }
 
-//    NOT FINISH
+    // NOT FINISH
     @PostMapping("/CreateStudent")
-    public ResponseEntity<ReturnResult<Boolean>> CreateStudent(@RequestBody StudentCreationRequest studentCreationRequest) {
+    public ResponseEntity<ReturnResult<Boolean>> CreateStudent(
+            @RequestBody StudentCreationRequest studentCreationRequest) {
         ReturnResult<Boolean> result = studentService.CreateStudent(studentCreationRequest);
 
         return ResponseEntity.ok().body(result);
     }
 
     @PostMapping("/GetAllStudentPaging")
-    public ResponseEntity<ReturnResult<PagedData<StudentResponse, StudentPageConfig>>> GetAllStudentPaging(@RequestBody StudentPageConfig page) {
+    public ResponseEntity<ReturnResult<PagedData<StudentResponse, StudentPageConfig>>> GetAllStudentPaging(
+            @RequestBody StudentPageConfig page) {
         ReturnResult<PagedData<StudentResponse, StudentPageConfig>> result = studentService.GetAllStudentPaging(page);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/UpdateStudent")
+    public ResponseEntity<ReturnResult<Boolean>> UpdateStudent(@RequestBody StudentUpdateRequest studentUpdateRequest) {
+        ReturnResult<Boolean> result = studentService.UpdateStudent(studentUpdateRequest);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("UploadCV")
+    public ResponseEntity<ReturnResult<Boolean>> UploadCV(@RequestParam("cv") MultipartFile cv) throws AppException {
+
+        ReturnResult<Boolean> result = uploadService.UploadCV(cv);
 
         return ResponseEntity.ok().body(result);
     }
