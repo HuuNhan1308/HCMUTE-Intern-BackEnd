@@ -169,7 +169,6 @@ public class StudentService {
 
         studentMapper.updateStudent(student, studentUpdateRequest);
         profileMapper.updateProfile(profile, studentUpdateRequest.getProfile());
-        student.setMajor(majorRepository.findById(studentUpdateRequest.getMajorId()).orElse(null));
 
         studentRepository.save(student);
         profileRepository.save(profile);
