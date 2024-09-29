@@ -25,6 +25,7 @@ public class DataInitialize {
     StudentRepository studentRepository;
     MajorRepository majorRepository;
     BusinessRepository businessRepository;
+    RecruitmentRepository recruitmentRepository;
 
     ProfileMapper profileMapper;
 
@@ -51,6 +52,9 @@ public class DataInitialize {
 
         // Business
         createBusinesses();
+
+        //Recruitment from Business
+        createRecruitments();
     }
 
     private void createStudents() {
@@ -298,5 +302,125 @@ public class DataInitialize {
             if(roleRepository.findByRoleName(role).isEmpty())
                 roleRepository.save(Role.builder().roleName(role).build());
         });
+    }
+
+    private void createRecruitments() {
+        List<String> recruitmentTitles = List.of(
+                "Thực Tập Sinh Java",
+                "Nhân Viên Quản Trị Mạng (Thu Nhập 12 - 14M)",
+                "Lập Trình Viên Frontend (ReactJS)",
+                "Kỹ Sư Phát Triển Phần Mềm (C#)",
+                "Nhân Viên Hỗ Trợ Kỹ Thuật",
+                "Chuyên Viên Marketing Trực Tuyến",
+                "Thực Tập Sinh Phát Triển Ứng Dụng Di Động",
+                "Quản Lý Dự Án IT",
+                "Nhân Viên Kinh Doanh (Lĩnh Vực Công Nghệ)",
+                "Kỹ Sư Mạng (Mức Lương 15 - 20M)",
+                "Lập Trình Viên Backend (Node.js)",
+                "Chuyên Viên Phân Tích Dữ Liệu",
+                "Nhân Viên Bán Hàng Online",
+                "Thực Tập Sinh Thiết Kế Đồ Họa",
+                "Kỹ Sư Hệ Thống",
+                "Chuyên Viên Quản Lý Sản Phẩm",
+                "Lập Trình Viên Python",
+                "Kỹ Sư Kiểm Thử Phần Mềm",
+                "Nhân Viên Tư Vấn Khách Hàng",
+                "Chuyên Viên Quảng Cáo Trực Tuyến",
+                "Thực Tập Sinh Kế Toán",
+                "Kỹ Sư Điện Tử",
+                "Nhân Viên Phát Triển Thị Trường",
+                "Lập Trình Viên Ruby on Rails",
+                "Quản Trị Viên Cơ Sở Dữ Liệu",
+                "Kỹ Sư Điện Lạnh",
+                "Chuyên Viên SEO",
+                "Nhân Viên Hành Chính Nhân Sự",
+                "Thực Tập Sinh Quản Trị Mạng",
+                "Lập Trình Viên Android",
+                "Kỹ Sư Phần Cứng",
+                "Nhân Viên Dịch Thuật",
+                "Chuyên Viên Bảo Mật Thông Tin",
+                "Thực Tập Sinh Chăm Sóc Khách Hàng",
+                "Kỹ Sư Cơ Khí",
+                "Nhân Viên Telesales",
+                "Chuyên Viên Sản Phẩm Công Nghệ",
+                "Lập Trình Viên PHP",
+                "Kỹ Sư Phát Triển Game",
+                "Nhân Viên Chăm Sóc Khách Hàng",
+                "Chuyên Viên Tư Vấn Tuyển Dụng",
+                "Thực Tập Sinh Thiết Kế UX/UI",
+                "Lập Trình Viên C/C++",
+                "Kỹ Sư Chất Lượng",
+                "Nhân Viên Phát Triển Kinh Doanh",
+                "Chuyên Viên Quản Lý Rủi Ro",
+                "Thực Tập Sinh Phát Triển Web",
+                "Kỹ Sư Nguồn Nhân Lực",
+                "Nhân Viên Chuyên Viên Dữ Liệu",
+                "Chuyên Viên Tư Vấn Tài Chính",
+                "Lập Trình Viên Blockchain",
+                "Kỹ Sư Thông Tin Địa Lý",
+                "Nhân Viên Giao Nhận Hàng Hóa",
+                "Chuyên Viên Truyền Thông",
+                "Thực Tập Sinh Phân Tích Dữ Liệu",
+                "Kỹ Sư Đường Ống",
+                "Nhân Viên Chuyên Viên Pháp Lý",
+                "Chuyên Viên Kế Toán",
+                "Lập Trình Viên C# .NET",
+                "Kỹ Sư Thiết Kế Kỹ Thuật",
+                "Nhân Viên Phân Tích Tài Chính",
+                "Chuyên Viên Tối Ưu Hóa Quá Trình",
+                "Thực Tập Sinh Quản Trị Hệ Thống",
+                "Kỹ Sư Hệ Thống Thông Tin",
+                "Nhân Viên Kinh Doanh Bất Động Sản",
+                "Chuyên Viên Hỗ Trợ Kỹ Thuật",
+                "Thực Tập Sinh Quản Lý Dự Án",
+                "Lập Trình Viên IoT",
+                "Kỹ Sư Phát Triển Ứng Dụng Web",
+                "Nhân Viên Xử Lý Đơn Hàng",
+                "Chuyên Viên Nghiên Cứu Thị Trường",
+                "Thực Tập Sinh Quản Lý Tài Chính",
+                "Kỹ Sư Vận Hành",
+                "Nhân Viên Hỗ Trợ Khách Hàng",
+                "Chuyên Viên Phát Triển Chiến Lược",
+                "Lập Trình Viên JavaScript",
+                "Kỹ Sư Sản Xuất",
+                "Nhân Viên Quản Lý Bán Hàng",
+                "Chuyên Viên Tư Vấn Chiến Lược",
+                "Thực Tập Sinh Đào Tạo",
+                "Kỹ Sư Kinh Doanh",
+                "Nhân Viên Thiết Kế Đồ Họa",
+                "Chuyên Viên Phát Triển Hệ Thống",
+                "Thực Tập Sinh Dữ Liệu Lớn (Big Data)",
+                "Kỹ Sư Bảo Trì",
+                "Nhân Viên Tư Vấn Kinh Doanh",
+                "Chuyên Viên Quản Trị Mạng Xã Hội",
+                "Thực Tập Sinh Tiếp Thị",
+                "Kỹ Sư Công Nghệ Thông Tin",
+                "Nhân Viên Kinh Doanh Quốc Tế",
+                "Chuyên Viên Kỹ Thuật Phần Mềm",
+                "Thực Tập Sinh Hỗ Trợ IT"
+        );
+
+        List<Business> allBusinesses = businessRepository.findAll();
+
+        recruitmentTitles.forEach(title -> {
+            if(recruitmentRepository.findByTitle(title).isEmpty()) {
+                Business randomBusiness = allBusinesses.get(new Random().nextInt(allBusinesses.size()));
+
+                Recruitment recruitment = Recruitment.builder()
+                        .title(title)
+                        .description(faker.lorem().paragraph(4))
+                        .location(faker.address().streetAddress(true))
+                        .type("Part time")
+                        .keySkills("Đẹp trai")
+                        .position("Thực tập sinh")
+                        .workingDay("Thứ 2 - Thứ 6")
+                        .workingHour("9:00 - 18:30")
+                        .business(randomBusiness)
+                        .build();
+
+                recruitmentRepository.save(recruitment);
+            }
+        });
+
     }
 }
