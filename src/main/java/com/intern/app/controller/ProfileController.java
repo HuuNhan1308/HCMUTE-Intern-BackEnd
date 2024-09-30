@@ -26,13 +26,6 @@ import java.text.ParseException;
 public class ProfileController {
     ProfileService profileService;
 
-    @PostMapping("/CreateProfile")
-    public ResponseEntity<ReturnResult<Boolean>> CreateProfile(@RequestBody ProfileCreationRequest profile) {
-        ReturnResult<Boolean> result = profileService.CreateUser(profile);
-
-        return ResponseEntity.ok().body(result);
-    }
-
     @GetMapping("/{profileId}")
     public ResponseEntity<ReturnResult<ProfileResponse>> GetProfileById(@PathVariable String profileId) {
         ReturnResult<ProfileResponse> result = profileService.FindProfileById(profileId);

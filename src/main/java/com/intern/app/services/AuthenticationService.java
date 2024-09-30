@@ -17,11 +17,15 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 @Service
@@ -49,7 +53,7 @@ public class AuthenticationService {
                 .subject(profile.getUsername())
                 .issueTime(new Date())
                 .expirationTime(new Date(new Date().getTime() + this.expirationTime))
-                .claim("scope", profile.getRole().getRoleName())
+                .claim("scope", this.buildScope(profile))
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -63,6 +67,20 @@ public class AuthenticationService {
             System.out.print(e.getMessage());
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+    }
+
+    private String buildScope(Profile profile) {
+        StringJoiner stringJoiner = new StringJoiner(" ");
+
+        stringJoiner.add("ROLE_" + profile.getRole().getRoleName());
+
+        if(!CollectionUtils.isEmpty(profile.getRole().getRolePermissions())) {
+            profile.getRole().getRolePermissions().forEach(permission -> {
+                stringJoiner.add(permission.getPermission().getName());
+            });
+        }
+
+        return stringJoiner.toString();
     }
 
     public ReturnResult<Boolean> IntroSpect(String token) throws ParseException, JOSEException {
@@ -95,7 +113,7 @@ public class AuthenticationService {
     public ReturnResult<ProfileAuthenticationResponse> Authenticate(ProfileAuthenticationRequest profileAuthenticationRequest) {
         ReturnResult<ProfileAuthenticationResponse> result = new ReturnResult<ProfileAuthenticationResponse>();
 
-        Profile existProfile = profileRepository.findByUsername(profileAuthenticationRequest.getUsername())
+        Profile existProfile = profileRepository.findByUsernameAndDeletedFalse(profileAuthenticationRequest.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.LOGIN_FAIL_CREDENTIALS));
 
         boolean isPwMatch = passwordEncoder.matches(profileAuthenticationRequest.getPassword(), existProfile.getPassword());

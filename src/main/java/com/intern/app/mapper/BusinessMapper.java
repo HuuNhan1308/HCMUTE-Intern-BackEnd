@@ -10,5 +10,5 @@ import org.mapstruct.Mapper;
 public interface BusinessMapper {
 //    FacultyResponse toBusinessrespo(Faculty faculty);
 
-    Business toProfile(BusinessCreationRequest businessCreationRequest);
+    Business toBusiness(BusinessCreationRequest businessCreationRequest);
 }

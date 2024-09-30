@@ -25,7 +25,9 @@ public enum ErrorCode {
     STUDENT_EXISTED_ID(1012, "ID học sinh đã tồn tại, vui lòng đăng nhập", HttpStatus.BAD_REQUEST),
     FACULTY_NOT_EXISTED(1013, "Id khoa không tồn tại", HttpStatus.BAD_REQUEST),
     INVALID_FILE(1014, "File không hợp lệ", HttpStatus.BAD_REQUEST),
-    FILE_NOT_FOUND(1015, "Không tìm thấy", HttpStatus.NOT_FOUND);
+    FILE_NOT_FOUND(1015, "Không tìm thấy", HttpStatus.NOT_FOUND),
+    BUSINESS_NOT_FOUND(1016, "Doanh nghiệp không tồn tại", HttpStatus.NOT_FOUND),
+    RECRUITMENT_NOT_FOUND(1017, "Bài tuyển dụng không tồn tại", HttpStatus.NOT_FOUND),
     ;
 
     int code;

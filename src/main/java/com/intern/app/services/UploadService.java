@@ -35,7 +35,7 @@ public class UploadService {
             throw new AppException(ErrorCode.INVALID_FILE);
         }
 
-        Profile profile = profileRepository.findByUsername(username)
+        Profile profile = profileRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         UploadContent uploadContent = profile.getUploadContent();

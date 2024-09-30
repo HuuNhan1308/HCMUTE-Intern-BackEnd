@@ -83,7 +83,7 @@ public class DataInitialize {
 
     private Profile createProfileIfNotExists(String userName, String password, String roleName) {
         Role role = roleRepository.findByRoleName(roleName).orElse(null);
-        if (profileRepository.findByUsername(userName).isEmpty()) {
+        if (profileRepository.findByUsernameAndDeletedFalse(userName).isEmpty()) {
 
             Profile profile = Profile.builder()
                     .username(userName)
@@ -99,7 +99,7 @@ public class DataInitialize {
             return profileRepository.save(profile);
         }
 
-        return profileRepository.findByUsername(userName).get();
+        return profileRepository.findByUsernameAndDeletedFalse(userName).get();
     }
 
     private void createBusinesses() {

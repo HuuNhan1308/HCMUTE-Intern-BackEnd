@@ -27,7 +27,7 @@ public class RecruitmentRequest extends BaseEntity {
     Student student;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RefInstructorId", nullable = true)
+    @JoinColumn(name = "RefInstructorId")
     Instructor refInstructor;
 
     @ManyToOne(fetch = FetchType.LAZY)
