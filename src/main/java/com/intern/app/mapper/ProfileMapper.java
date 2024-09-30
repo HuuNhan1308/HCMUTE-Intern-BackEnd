@@ -12,7 +12,6 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "spring")
 public interface ProfileMapper {
     Profile toProfile(ProfileCreationRequest profileCreationRequest);
-    Profile toProfile(ProfileUpdateRequest profileUpdateRequest);
     ProfileResponse toProfileResponse(Profile profile);
 
     @Mappings({

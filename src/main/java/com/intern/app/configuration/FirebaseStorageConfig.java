@@ -15,7 +15,7 @@ import java.io.IOException;
 @Slf4j
 public class FirebaseStorageConfig {
 
-    @PostConstruct
+//    @PostConstruct
     public void initializeFirebase() throws IOException {
         try {
             FileInputStream serviceAccount = new FileInputStream("src/main/resources/firebase/serviceAccountKey.json");
