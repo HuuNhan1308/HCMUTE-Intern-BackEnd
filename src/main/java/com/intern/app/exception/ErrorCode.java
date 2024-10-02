@@ -28,6 +28,7 @@ public enum ErrorCode {
     FILE_NOT_FOUND(1015, "Không tìm thấy", HttpStatus.NOT_FOUND),
     BUSINESS_NOT_FOUND(1016, "Doanh nghiệp không tồn tại", HttpStatus.NOT_FOUND),
     RECRUITMENT_NOT_FOUND(1017, "Bài tuyển dụng không tồn tại", HttpStatus.NOT_FOUND),
+    PERMISSION_EXISTED(1017, "Quyền đã tồn tại", HttpStatus.BAD_REQUEST),
     ;
 
     int code;

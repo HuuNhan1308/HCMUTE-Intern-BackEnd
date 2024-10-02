@@ -15,6 +15,8 @@ import com.intern.app.repository.StudentRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ import java.util.Optional;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class RecruitmentService {
     RecruitmentMapper recruitmentMapper;
     RecruitmentRequestMapper recruitmentRequestMapper;
@@ -33,6 +36,7 @@ public class RecruitmentService {
     StudentRepository studentRepository;
     InstructorRepository instructorRepository;
 
+    @PreAuthorize("hasRole('BUSINESS')")
     public ReturnResult<Boolean> CreateRecruitment(RecruitmentCreationRequest recruitmentCreationRequest) {
         var result = new ReturnResult<Boolean>();
 
@@ -61,6 +65,7 @@ public class RecruitmentService {
         return result;
     }
 
+    @PreAuthorize("hasAuthority('REQUEST_RECRUITMENT')")
     public ReturnResult<Boolean> RequestRecruitment(RecruitmentRequestCreationRequest recruitmentRequestCreationRequest) {
         var result = new ReturnResult<Boolean>();
 
