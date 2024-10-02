@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
@@ -36,8 +37,13 @@ public class BusinessService {
     RoleRepository roleRepository;
     ProfileService profileService;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ReturnResult<Boolean> CreateBusiness(BusinessCreationRequest businessCreationRequest) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        log.info("Username: {}", authentication.getName());
+        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
+
         var result = new ReturnResult<Boolean>();
 
         Business business = businessMapper.toBusiness(businessCreationRequest);
@@ -46,7 +52,7 @@ public class BusinessService {
         //Get role
         Role businessRole = roleRepository.findByRoleName("BUSINESS").orElse(null);
         if(businessManager == null) {
-            throw  new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
 
         //Create profile with role

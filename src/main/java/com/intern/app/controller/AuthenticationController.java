@@ -7,7 +7,6 @@ import com.intern.app.models.dto.response.ProfileAuthenticationResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.services.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;

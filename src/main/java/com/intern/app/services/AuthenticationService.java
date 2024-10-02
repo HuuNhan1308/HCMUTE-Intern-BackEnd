@@ -17,13 +17,11 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -45,8 +43,8 @@ public class AuthenticationService {
     PasswordEncoder passwordEncoder;
 
 
-    private String GenerateToken(Profile profile) {
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
+    private String generateToken(Profile profile) {
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .jwtID(UUID.randomUUID().toString())
@@ -122,7 +120,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.LOGIN_FAIL_CREDENTIALS);
         }
         else {
-            var token = this.GenerateToken(existProfile);
+            var token = this.generateToken(existProfile);
 
             result.setCode(HttpStatus.OK.value());
             result.setResult(

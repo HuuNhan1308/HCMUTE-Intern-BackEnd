@@ -14,5 +14,5 @@ public interface BusinessMapper {
     Business toBusiness(BusinessCreationRequest businessCreationRequest);
     BusinessResponse toBusinessResponse(Business business);
 
-    void updateBusiness(Business business, BusinessCreationRequest businessCreationRequest);
+//    void updateBusiness(Business business, BusinessCreationRequest businessCreationRequest);
 }

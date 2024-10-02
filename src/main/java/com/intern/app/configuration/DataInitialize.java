@@ -31,12 +31,20 @@ public class DataInitialize {
 
     PasswordEncoder passwordEncoder;
     Faker faker = new Faker();
+    private final PermissionRepository permissionRepository;
+    private final RolePermissionRepository rolePermissionRepository;
 
-    @PostConstruct
+//    @PostConstruct
     public void initializeRoles() {
 
         // ROLE
         createRoles();
+
+        // PERMISSION
+        createPermissions();
+
+        // BIND ROLE WITH PERMISSION
+        bindRolesPermissions();
 
         // FACULTY
         createFaculties();
@@ -55,6 +63,8 @@ public class DataInitialize {
 
         //Recruitment from Business
         createRecruitments();
+
+
     }
 
     private void createStudents() {
@@ -301,6 +311,28 @@ public class DataInitialize {
         roles.forEach(role -> {
             if(roleRepository.findByRoleName(role).isEmpty())
                 roleRepository.save(Role.builder().roleName(role).build());
+        });
+    }
+
+    private void createPermissions() {
+        List<String> permissions = List.of("PERMISSION_1", "PERMISSION_2", "PERMISSION_3", "PERMISSION_4", "PERMISSION_5");
+
+        permissions.forEach(permission -> {
+             if(permissionRepository.findByNameAndDeletedFalse(permission).isEmpty()) {
+                 permissionRepository.save(Permission.builder().name(permission).build());
+             }
+        });
+    }
+
+    private void bindRolesPermissions() {
+        var roles = roleRepository.findAll();
+        var permissions = permissionRepository.findAll();
+
+        roles.forEach(role -> {
+            permissions.forEach(permission -> {
+                if(rolePermissionRepository.findByRoleAndPermissionAndDeletedFalse(role, permission).isEmpty())
+                    rolePermissionRepository.save(RolePermission.builder().role(role).permission(permission).build());
+            });
         });
     }
 
