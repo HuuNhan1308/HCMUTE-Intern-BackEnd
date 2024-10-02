@@ -37,7 +37,7 @@ public class BusinessService {
     RoleRepository roleRepository;
     ProfileService profileService;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateBusiness(BusinessCreationRequest businessCreationRequest) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
