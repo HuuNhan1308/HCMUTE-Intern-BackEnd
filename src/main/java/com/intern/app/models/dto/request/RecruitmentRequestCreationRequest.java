@@ -13,8 +13,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RecruitmentRequestCreationRequest {
 
-    RecruitmentRequestStatus businessStatus;
-    RecruitmentRequestStatus instructorStatus;
     String messageToBusiness;
     String messageToInstructor;
 

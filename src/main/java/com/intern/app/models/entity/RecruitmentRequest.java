@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 public class RecruitmentRequest extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String requestBusinessId;
+    String recruitmentRequestId;
 
     RecruitmentRequestStatus businessStatus;
     RecruitmentRequestStatus instructorStatus;

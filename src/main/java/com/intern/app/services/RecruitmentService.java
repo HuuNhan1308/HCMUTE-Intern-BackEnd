@@ -8,10 +8,8 @@ import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.entity.*;
-import com.intern.app.repository.InstructorRepository;
-import com.intern.app.repository.ProfileRepository;
-import com.intern.app.repository.RecruitmentRepository;
-import com.intern.app.repository.StudentRepository;
+import com.intern.app.models.enums.RecruitmentRequestStatus;
+import com.intern.app.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,6 +33,7 @@ public class RecruitmentService {
     RecruitmentRepository recruitmentRepository;
     StudentRepository studentRepository;
     InstructorRepository instructorRepository;
+    RecruitmentRequestRepository recruitmentRequestRepository;
 
     @PreAuthorize("hasRole('BUSINESS')")
     public ReturnResult<Boolean> CreateRecruitment(RecruitmentCreationRequest recruitmentCreationRequest) {
@@ -85,15 +84,24 @@ public class RecruitmentService {
         if(profile.getStudent() == null) {
             throw new AppException(ErrorCode.STUDENT_NOT_FOUND);
         }
+        recruitmentRequest.setStudent(profile.getStudent());
 
         if(recruitment == null) {
             throw new AppException(ErrorCode.RECRUITMENT_NOT_FOUND);
+        } else {
+            recruitmentRequest.setRecruitment(recruitment);
+            recruitmentRequest.setBusinessStatus(RecruitmentRequestStatus.PENDING);
         }
 
-        recruitmentRequest.setStudent(profile.getStudent());
-        recruitmentRequest.setRecruitment(recruitment);
-        recruitmentRequest.setRefInstructor(instructor);
+        if(instructor != null) {
+            recruitmentRequest.setRefInstructor(instructor);
+            recruitmentRequest.setInstructorStatus(RecruitmentRequestStatus.PENDING);
+        }
 
+        RecruitmentRequest saved = recruitmentRequestRepository.save(recruitmentRequest);
+
+        result.setResult(saved.getRecruitmentRequestId() != null);
+        result.setCode(200);
 
         return result;
     }
