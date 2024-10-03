@@ -13,6 +13,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentUpdateRequest {
     Date dob;
+    Boolean isSeekingIntern;
 
     ProfileUpdateRequest profile;
 }
