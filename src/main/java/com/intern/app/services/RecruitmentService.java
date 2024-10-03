@@ -47,7 +47,7 @@ public class RecruitmentService {
 
         Optional<Profile> profile = profileRepository.findByUsernameAndDeletedFalse(username);
 
-        if(profile.isPresent()) {
+        if(profile.isEmpty()) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
 
