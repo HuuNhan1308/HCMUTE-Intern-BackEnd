@@ -4,10 +4,10 @@ import com.intern.app.models.entity.UploadContent;
 
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.intern.app.repository.CustomRepository.AppRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UploadContentRepository extends JpaRepository<UploadContent, String> {
+public interface UploadContentRepository extends AppRepository<UploadContent, String> {
     Optional<UploadContent> findByUploadContentId(String uploadContentId);
 }

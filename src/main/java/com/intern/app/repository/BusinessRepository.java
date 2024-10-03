@@ -1,13 +1,10 @@
 package com.intern.app.repository;
 
 import com.intern.app.models.entity.Business;
-import com.intern.app.models.entity.Profile;
-import com.intern.app.models.entity.Student;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.intern.app.repository.CustomRepository.AppRepository;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
-public interface BusinessRepository extends JpaRepository<Business, String> {
+public interface BusinessRepository extends AppRepository<Business, String> {
     Optional<Business> findByName(String name);
 }

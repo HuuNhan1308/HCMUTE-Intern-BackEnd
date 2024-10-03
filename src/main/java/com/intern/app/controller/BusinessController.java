@@ -2,20 +2,13 @@ package com.intern.app.controller;
 
 import com.intern.app.models.dto.request.BusinessCreationRequest;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.models.entity.Business;
+import com.intern.app.models.enums.RecruitmentRequestStatus;
 import com.intern.app.services.BusinessService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.Parser;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api/business")
@@ -26,11 +19,18 @@ public class BusinessController {
 
     @PostMapping("/CreateBusiness")
     public ResponseEntity<ReturnResult<Boolean>> CreateBusiness(@RequestBody BusinessCreationRequest businessCreationRequest) {
-
-
         ReturnResult<Boolean> result = businessService.CreateBusiness(businessCreationRequest);
 
         return ResponseEntity.ok().body(result);
     }
+
+    @PostMapping("/SetRecruitmentRequestStatus/{recruitmentRequestId}")
+    public ResponseEntity<ReturnResult<Boolean>> SetRecruitmentRequestStatus(@RequestBody RecruitmentRequestStatus recruitmentRequestStatus, @PathVariable String recruitmentRequestId) {
+        ReturnResult<Boolean> result = businessService.SetRecruitmentRequestStatus(recruitmentRequestStatus, recruitmentRequestId);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+
 
 }

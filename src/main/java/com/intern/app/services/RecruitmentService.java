@@ -18,6 +18,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -102,6 +103,19 @@ public class RecruitmentService {
 
         result.setResult(saved.getRecruitmentRequestId() != null);
         result.setCode(200);
+
+        return result;
+    }
+
+    public ReturnResult<Boolean> ClearAllStudentAvailableRecruitmentRequests(Student student) {
+        var result = new ReturnResult<Boolean>();
+
+        List<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepository.findByStudentAndStatus(student, RecruitmentRequestStatus.PENDING);
+
+        recruitmentRequestRepository.softDeleteRange(recruitmentRequests);
+
+        result.setCode(200);
+        result.setResult(true);
 
         return result;
     }
