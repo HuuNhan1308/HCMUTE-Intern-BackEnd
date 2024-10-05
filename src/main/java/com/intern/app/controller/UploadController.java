@@ -1,8 +1,9 @@
 package com.intern.app.controller;
 
+import com.intern.app.services.interfaces.IUploadService;
 import org.springframework.http.MediaType;
 import com.intern.app.exception.AppException;
-import com.intern.app.services.UploadService;
+import com.intern.app.services.implement.UploadService;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/file")
 @AllArgsConstructor
 public class UploadController {
-    UploadService uploadService;
+    IUploadService uploadService;
 
     @GetMapping("/{fileName}")
     public ResponseEntity<byte[]> GetFile(@PathVariable String fileName) throws AppException {

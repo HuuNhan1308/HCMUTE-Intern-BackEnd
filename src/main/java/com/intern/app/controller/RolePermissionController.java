@@ -1,16 +1,14 @@
 package com.intern.app.controller;
 
-import com.github.javafaker.Bool;
 import com.intern.app.exception.AppException;
 import com.intern.app.models.dto.request.PermissionCreationRequest;
 import com.intern.app.models.dto.request.RolePermissionCreationRequest;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.services.RolePermissionService;
-import com.intern.app.services.UploadService;
+import com.intern.app.services.implement.RolePermissionService;
+import com.intern.app.services.interfaces.IRolePermissionService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/rolepermission")
 @AllArgsConstructor
 public class RolePermissionController {
-
-    RolePermissionService rolePermissionService;
+    IRolePermissionService rolePermissionService;
 
     @PostMapping("/CreatePermission")
     public ResponseEntity<ReturnResult<Boolean>> CreatePermission(@RequestBody PermissionCreationRequest permissionCreationRequest) throws AppException {

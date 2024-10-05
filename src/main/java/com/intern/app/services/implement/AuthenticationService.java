@@ -1,4 +1,4 @@
-package com.intern.app.services;
+package com.intern.app.services.implement;
 
 import com.intern.app.models.dto.request.ProfileAuthenticationRequest;
 import com.intern.app.models.dto.response.ProfileAuthenticationResponse;
@@ -7,6 +7,7 @@ import com.intern.app.models.entity.Profile;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.repository.ProfileRepository;
+import com.intern.app.services.interfaces.IAuthenticationService;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -29,7 +30,7 @@ import java.util.UUID;
 @Service
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthenticationService implements IAuthenticationService {
 
     @NonFinal
     @Value("${jwt.signerKey}")

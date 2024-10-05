@@ -4,12 +4,12 @@ package com.intern.app.controller;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.services.RecruitmentService;
+import com.intern.app.services.implement.RecruitmentService;
+import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class RecruitmentController {
-    RecruitmentService recruitmentService;
+    IRecruitmentService recruitmentService;
 
     @PostMapping("/CreateRecruitment")
     public ResponseEntity<ReturnResult<Boolean>> CreateRecruitment(@RequestBody RecruitmentCreationRequest recruitmentCreationRequest) {

@@ -1,22 +1,18 @@
-package com.intern.app.services;
+package com.intern.app.services.implement;
 
-import com.github.javafaker.Bool;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
-import com.intern.app.mapper.FacultyMapper;
 import com.intern.app.mapper.PermissionMapper;
 import com.intern.app.models.dto.request.PermissionCreationRequest;
 import com.intern.app.models.dto.request.RolePermissionCreationRequest;
-import com.intern.app.models.dto.response.FacultyResponse;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.models.entity.Faculty;
 import com.intern.app.models.entity.Permission;
 import com.intern.app.models.entity.Role;
 import com.intern.app.models.entity.RolePermission;
-import com.intern.app.repository.FacultyRepository;
 import com.intern.app.repository.PermissionRepository;
 import com.intern.app.repository.RolePermissionRepository;
 import com.intern.app.repository.RoleRepository;
+import com.intern.app.services.interfaces.IRolePermissionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,17 +20,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
 @RequiredArgsConstructor
 @EnableMethodSecurity
-public class RolePermissionService {
+public class RolePermissionService implements IRolePermissionService {
     PermissionMapper permissionMapper;
     PermissionRepository permissionRepository;
     RoleRepository roleRepository;
-    private final RolePermissionRepository rolePermissionRepository;
+    RolePermissionRepository rolePermissionRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreatePermission(PermissionCreationRequest permissionCreationRequest) {

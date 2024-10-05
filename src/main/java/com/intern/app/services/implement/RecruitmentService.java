@@ -1,4 +1,4 @@
-package com.intern.app.services;
+package com.intern.app.services.implement;
 
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
@@ -10,6 +10,7 @@ import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.RecruitmentRequestStatus;
 import com.intern.app.repository.*;
+import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,14 +26,12 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @EnableMethodSecurity
-public class RecruitmentService {
+public class RecruitmentService implements IRecruitmentService {
     RecruitmentMapper recruitmentMapper;
     RecruitmentRequestMapper recruitmentRequestMapper;
 
-
     ProfileRepository profileRepository;
     RecruitmentRepository recruitmentRepository;
-    StudentRepository studentRepository;
     InstructorRepository instructorRepository;
     RecruitmentRequestRepository recruitmentRequestRepository;
 

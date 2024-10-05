@@ -1,4 +1,4 @@
-package com.intern.app.services;
+package com.intern.app.services.implement;
 
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
@@ -13,6 +13,8 @@ import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.RecruitmentRequestStatus;
 import com.intern.app.repository.*;
 
+import com.intern.app.services.interfaces.IBusinessService;
+import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +30,7 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @EnableMethodSecurity
-public class BusinessService {
+public class BusinessService implements IBusinessService {
 
     BusinessMapper businessMapper;
     ProfileMapper profileMapper;
@@ -39,7 +41,7 @@ public class BusinessService {
 
     RecruitmentRequestRepository recruitmentRequestRepository;
     StudentRepository studentRepository;
-    RecruitmentService recruitmentService;
+    IRecruitmentService recruitmentService;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateBusiness(BusinessCreationRequest businessCreationRequest) {
