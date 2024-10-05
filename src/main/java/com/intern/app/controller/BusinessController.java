@@ -5,12 +5,12 @@ import com.intern.app.models.dto.request.BusinessUpdateRequest;
 import com.intern.app.models.dto.response.BusinessResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.enums.RecruitmentRequestStatus;
-import com.intern.app.services.BusinessService;
+import com.intern.app.services.implement.BusinessService;
+import com.intern.app.services.interfaces.IBusinessService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE,  makeFinal = true)
 public class BusinessController {
-    BusinessService businessService;
+    IBusinessService businessService;
 
     @PostMapping("/CreateBusiness")
     public ResponseEntity<ReturnResult<Boolean>> CreateBusiness(@RequestBody BusinessCreationRequest businessCreationRequest) {
@@ -54,7 +54,4 @@ public class BusinessController {
 
         return ResponseEntity.ok().body(result);
     }
-
-
-
 }

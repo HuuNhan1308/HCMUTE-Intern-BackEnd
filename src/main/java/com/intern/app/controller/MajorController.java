@@ -2,8 +2,9 @@ package com.intern.app.controller;
 
 import com.intern.app.models.dto.response.MajorResponse;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.services.MajorService;
+import com.intern.app.services.implement.MajorService;
 
+import com.intern.app.services.interfaces.IMajorService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api/major")
 @AllArgsConstructor
 public class MajorController {
-    MajorService majorService;
+    IMajorService majorService;
 
     @GetMapping("/GetMajorsByFacultyId/{facultyId}")
     public ResponseEntity<ReturnResult<List<MajorResponse>>> GetMajorsByFacultyId(@PathVariable String facultyId) {

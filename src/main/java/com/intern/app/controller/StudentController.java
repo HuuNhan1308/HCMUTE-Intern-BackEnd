@@ -7,9 +7,11 @@ import com.intern.app.models.dto.request.StudentCreationRequest;
 import com.intern.app.models.dto.request.StudentUpdateRequest;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
-import com.intern.app.services.StudentService;
-import com.intern.app.services.UploadService;
+import com.intern.app.services.implement.StudentService;
+import com.intern.app.services.implement.UploadService;
 
+import com.intern.app.services.interfaces.IStudentService;
+import com.intern.app.services.interfaces.IUploadService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,8 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(path = "/api/student")
 @AllArgsConstructor
 public class StudentController {
-    StudentService studentService;
-    UploadService uploadService;
+    IStudentService studentService;
+    IUploadService uploadService;
 
     @PostMapping("/{studentId}")
     public ResponseEntity<ReturnResult<StudentResponse>> FindStudentById(@PathVariable String studentId) {

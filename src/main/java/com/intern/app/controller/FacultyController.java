@@ -2,7 +2,8 @@ package com.intern.app.controller;
 
 import com.intern.app.models.dto.response.FacultyResponse;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.services.FacultyService;
+import com.intern.app.services.implement.FacultyService;
+import com.intern.app.services.interfaces.IFacultyService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/faculty")
 @AllArgsConstructor
 public class FacultyController {
-    FacultyService facultyService;
+    IFacultyService facultyService;
 
     @GetMapping("/GetAllFaculties")
     public ResponseEntity<ReturnResult<List<FacultyResponse>>> GetAllFaculties() {

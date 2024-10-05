@@ -1,5 +1,6 @@
-package com.intern.app.services;
+package com.intern.app.services.implement;
 
+import com.intern.app.services.interfaces.IMajorService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
 @RequiredArgsConstructor
-public class MajorService {
+public class MajorService implements IMajorService {
     FacultyRepository facultyRepository;
     MajorRepository majorRepository;
     MajorMapper majorMapper;
