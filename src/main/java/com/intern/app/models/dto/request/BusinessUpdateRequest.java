@@ -1,7 +1,8 @@
-package com.intern.app.models.dto.response;
+package com.intern.app.models.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 
 @Builder
 @NoArgsConstructor
@@ -9,9 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BusinessResponse {
-    String businessId;
-
+public class BusinessUpdateRequest {
     String name;
     String overview;
     String location;
@@ -20,5 +19,5 @@ public class BusinessResponse {
     String workingDay;
     String workingHour;
 
-    ProfileResponse profile;
+    ProfileUpdateRequest managedBy;
 }
