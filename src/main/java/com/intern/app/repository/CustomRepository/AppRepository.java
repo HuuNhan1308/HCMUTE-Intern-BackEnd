@@ -11,4 +11,5 @@ import java.util.List;
 public interface AppRepository<T extends BaseEntity, ID extends Serializable> extends JpaRepository<T, ID> {
     void softDelete(T entity);
     void softDeleteRange(List<T> entities);
+    void enableDeletedFilter();
 }

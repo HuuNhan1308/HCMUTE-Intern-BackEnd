@@ -1,8 +1,11 @@
 package com.intern.app.controller;
 
 
+import com.intern.app.models.dto.datamodel.PageConfig;
+import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
+import com.intern.app.models.dto.response.RecruitmentResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.services.implement.RecruitmentService;
 import com.intern.app.services.interfaces.IRecruitmentService;
@@ -31,8 +34,14 @@ public class RecruitmentController {
 
     @PostMapping("/RequestRecruitment")
     public ResponseEntity<ReturnResult<Boolean>> RequestRecruitment(@RequestBody RecruitmentRequestCreationRequest recruitmentRequestCreationRequest) {
-
         ReturnResult<Boolean> result = recruitmentService.RequestRecruitment(recruitmentRequestCreationRequest);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/GetRecruitmentPaging")
+    public ResponseEntity<ReturnResult<PagedData<RecruitmentResponse, PageConfig>>> GetRecruitmentPaging(@RequestBody PageConfig pageConfig) {
+        ReturnResult<PagedData<RecruitmentResponse, PageConfig>> result = recruitmentService.GetRecruitmentPaging(pageConfig);
 
         return ResponseEntity.ok().body(result);
     }

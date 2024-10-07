@@ -3,6 +3,7 @@ package com.intern.app.repository.CustomRepository;
 import com.intern.app.models.entity.BaseEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import org.hibernate.Session;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
@@ -40,5 +41,12 @@ public class AppRepositoryImpl <T extends BaseEntity, ID extends Serializable>
             this.softDelete(entity);
         }
     }
+
+    @Override
+    public void enableDeletedFilter() {
+        Session session = entityManager.unwrap(Session.class);
+        session.enableFilter("deletedFilter").setParameter("isDeleted", false);
+    }
+
 }
 

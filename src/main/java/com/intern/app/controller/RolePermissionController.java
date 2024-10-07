@@ -32,5 +32,4 @@ public class RolePermissionController {
 
         return ResponseEntity.ok().body(result);
     }
-
 }
