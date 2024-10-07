@@ -10,10 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProfileUpdateRequest {
-    String profileId;
-    String fullname;
     Boolean isMale;
     String bio;
     String phoneNumber;
-    String email;
 }

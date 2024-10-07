@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PagedData<T, P> {
+public class PagedData<T, P extends PageConfig> {
     List<T> data = new ArrayList<>();
     P pageConfig;
 }

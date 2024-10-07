@@ -1,4 +1,4 @@
-package com.intern.app.services;
+package com.intern.app.services.implement;
 
 import com.intern.app.models.dto.request.ProfileCreationRequest;
 import com.intern.app.models.dto.response.ProfileResponse;
@@ -7,8 +7,9 @@ import com.intern.app.models.entity.Profile;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.ProfileMapper;
+import com.intern.app.models.entity.Role;
 import com.intern.app.repository.ProfileRepository;
-import com.nimbusds.jose.JOSEException;
+import com.intern.app.services.interfaces.IProfileService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,20 +17,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public class ProfileService {
+public class ProfileService implements IProfileService {
     ProfileRepository profileRepository;
-    AuthenticationService authenticationService;
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
 
-    public ReturnResult<Boolean> CreateUser(ProfileCreationRequest request) {
-        ReturnResult<Boolean> result = new ReturnResult<Boolean>();
+    public ReturnResult<Profile> CreateUser(ProfileCreationRequest request, Role role) {
+        var result = new ReturnResult<Profile>();
 
         //check exist
         boolean isExistProfile = profileRepository.findByUsername(request.getUsername()).isPresent();
@@ -40,9 +38,11 @@ public class ProfileService {
 
         Profile savedProfile = profileMapper.toProfile(request);
         savedProfile.setPassword(passwordEncoder.encode(request.getPassword()));
+        savedProfile.setRole(role);
+
         savedProfile = profileRepository.save(savedProfile);
 
-        result.setResult(savedProfile.getProfileId() != null);
+        result.setResult(savedProfile);
         result.setCode(200);
 
         return result;

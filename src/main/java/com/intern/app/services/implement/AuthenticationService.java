@@ -1,4 +1,4 @@
-package com.intern.app.services;
+package com.intern.app.services.implement;
 
 import com.intern.app.models.dto.request.ProfileAuthenticationRequest;
 import com.intern.app.models.dto.response.ProfileAuthenticationResponse;
@@ -7,6 +7,7 @@ import com.intern.app.models.entity.Profile;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.repository.ProfileRepository;
+import com.intern.app.services.interfaces.IAuthenticationService;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -19,15 +20,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 @Service
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthenticationService implements IAuthenticationService {
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -41,15 +44,15 @@ public class AuthenticationService {
     PasswordEncoder passwordEncoder;
 
 
-    private String GenerateToken(Profile profile) {
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
+    private String generateToken(Profile profile) {
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .jwtID(UUID.randomUUID().toString())
                 .subject(profile.getUsername())
                 .issueTime(new Date())
                 .expirationTime(new Date(new Date().getTime() + this.expirationTime))
-                .claim("scope", profile.getRole().getRoleName())
+                .claim("scope", this.buildScope(profile))
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -63,6 +66,20 @@ public class AuthenticationService {
             System.out.print(e.getMessage());
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+    }
+
+    private String buildScope(Profile profile) {
+        StringJoiner stringJoiner = new StringJoiner(" ");
+
+        stringJoiner.add("ROLE_" + profile.getRole().getRoleName());
+
+        if(!CollectionUtils.isEmpty(profile.getRole().getRolePermissions())) {
+            profile.getRole().getRolePermissions().forEach(permission -> {
+                stringJoiner.add(permission.getPermission().getName());
+            });
+        }
+
+        return stringJoiner.toString();
     }
 
     public ReturnResult<Boolean> IntroSpect(String token) throws ParseException, JOSEException {
@@ -95,7 +112,7 @@ public class AuthenticationService {
     public ReturnResult<ProfileAuthenticationResponse> Authenticate(ProfileAuthenticationRequest profileAuthenticationRequest) {
         ReturnResult<ProfileAuthenticationResponse> result = new ReturnResult<ProfileAuthenticationResponse>();
 
-        Profile existProfile = profileRepository.findByUsername(profileAuthenticationRequest.getUsername())
+        Profile existProfile = profileRepository.findByUsernameAndDeletedFalse(profileAuthenticationRequest.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.LOGIN_FAIL_CREDENTIALS));
 
         boolean isPwMatch = passwordEncoder.matches(profileAuthenticationRequest.getPassword(), existProfile.getPassword());
@@ -104,7 +121,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.LOGIN_FAIL_CREDENTIALS);
         }
         else {
-            var token = this.GenerateToken(existProfile);
+            var token = this.generateToken(existProfile);
 
             result.setCode(HttpStatus.OK.value());
             result.setResult(

@@ -5,10 +5,11 @@ import com.intern.app.models.dto.request.ProfileAuthenticationRequest;
 import com.intern.app.models.dto.request.TokenRequest;
 import com.intern.app.models.dto.response.ProfileAuthenticationResponse;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.services.AuthenticationService;
+import com.intern.app.services.implement.AuthenticationService;
+import com.intern.app.services.interfaces.IAuthenticationService;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,10 @@ import java.text.ParseException;
 
 @RestController
 @RequestMapping("/api/authentication")
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthenticationController {
-    @Autowired
-    AuthenticationService authenticationService;
+    IAuthenticationService authenticationService;
 
     @PostMapping("/Authenticate")
     public ResponseEntity<ReturnResult<ProfileAuthenticationResponse>> Login(@RequestBody ProfileAuthenticationRequest profileAuthenticationRequest) {

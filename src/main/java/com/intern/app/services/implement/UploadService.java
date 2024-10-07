@@ -1,7 +1,8 @@
-package com.intern.app.services;
+package com.intern.app.services.implement;
 
 import java.util.Optional;
 
+import com.intern.app.services.interfaces.IUploadService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +22,7 @@ import lombok.experimental.FieldDefaults;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UploadService {
+public class UploadService implements IUploadService {
     ProfileRepository profileRepository;
     UploadContentRepository uploadContentRepository;
 
@@ -35,7 +36,7 @@ public class UploadService {
             throw new AppException(ErrorCode.INVALID_FILE);
         }
 
-        Profile profile = profileRepository.findByUsername(username)
+        Profile profile = profileRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         UploadContent uploadContent = profile.getUploadContent();

@@ -19,4 +19,6 @@ public class BusinessResponse {
     String industry;
     String workingDay;
     String workingHour;
+
+    ProfileResponse profile;
 }

@@ -18,6 +18,8 @@ public class Recruitment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     String recruitmentId;
 
+    String title;
+    @Column(length = 1000)
     String description;
     String location;
     String type;

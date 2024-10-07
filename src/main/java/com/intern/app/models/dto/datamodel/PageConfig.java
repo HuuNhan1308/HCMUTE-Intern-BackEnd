@@ -9,6 +9,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
+import org.hibernate.query.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,6 +29,7 @@ public class PageConfig {
     int totalRecords;
     int currentPage;
     int pageSize;
+    List<FilterMapping> filters;
     List<OrderMapping> orders;
 
     // Method to build Sort for multiple fields

@@ -1,12 +1,10 @@
 package com.intern.app.repository;
 
 import com.intern.app.models.entity.Instructor;
-import com.intern.app.models.entity.Profile;
-import com.intern.app.models.entity.Student;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.intern.app.repository.CustomRepository.AppRepository;
 
 import java.util.Optional;
 
-public interface InstructorRepository extends JpaRepository<Instructor, String> {
-
+public interface InstructorRepository extends AppRepository<Instructor, String> {
+    Optional<Instructor> findByInstructorIdAndDeletedFalse(String id);
 }

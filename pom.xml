@@ -82,6 +82,23 @@
 			<version>1.10.0</version> <!-- Use the latest version from https://mvnrepository.com/artifact/com.google.auth/google-auth-library-oauth2-http -->
 		</dependency>
 
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-storage</artifactId>
+			<version>2.10.0</version>
+		</dependency>
+
+
 		<!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
 		<dependency>
 			<groupId>com.github.javafaker</groupId>

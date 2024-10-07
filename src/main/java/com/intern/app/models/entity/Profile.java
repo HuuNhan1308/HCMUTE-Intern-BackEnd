@@ -41,7 +41,7 @@ public class Profile extends BaseEntity {
     @OneToOne(mappedBy = "profile")
     Instructor instructor;
 
-    @OneToOne(mappedBy = "managedBy")
+    @OneToOne(mappedBy = "managedBy", cascade = CascadeType.ALL)
     Business business;
 
     @ManyToOne(fetch = FetchType.LAZY)

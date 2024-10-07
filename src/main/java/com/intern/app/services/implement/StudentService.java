@@ -1,4 +1,4 @@
-package com.intern.app.services;
+package com.intern.app.services.implement;
 
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
@@ -20,6 +20,7 @@ import com.intern.app.repository.MajorRepository;
 import com.intern.app.repository.ProfileRepository;
 import com.intern.app.repository.StudentRepository;
 
+import com.intern.app.services.interfaces.IStudentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,17 +32,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.BeanUtilsBean2;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class StudentService {
+public class StudentService implements IStudentService {
     StudentRepository studentRepository;
     AuthenticationService authenticationService;
     StudentMapper studentMapper;
@@ -109,8 +106,7 @@ public class StudentService {
         return result;
     }
 
-    public ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetAllStudentPaging(
-            @RequestBody StudentPageConfig page) {
+    public ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetAllStudentPaging(StudentPageConfig page) {
         var result = new ReturnResult<PagedData<StudentResponse, StudentPageConfig>>();
 
         Sort sort = page.getSort();
@@ -169,7 +165,6 @@ public class StudentService {
 
         studentMapper.updateStudent(student, studentUpdateRequest);
         profileMapper.updateProfile(profile, studentUpdateRequest.getProfile());
-        student.setMajor(majorRepository.findById(studentUpdateRequest.getMajorId()).orElse(null));
 
         studentRepository.save(student);
         profileRepository.save(profile);
