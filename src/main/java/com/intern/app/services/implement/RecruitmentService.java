@@ -2,10 +2,15 @@ package com.intern.app.services.implement;
 
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
+import com.intern.app.mapper.BusinessMapper;
 import com.intern.app.mapper.RecruitmentMapper;
 import com.intern.app.mapper.RecruitmentRequestMapper;
+import com.intern.app.models.dto.datamodel.FilterSpecification;
+import com.intern.app.models.dto.datamodel.PageConfig;
+import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
+import com.intern.app.models.dto.response.RecruitmentResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.RecruitmentRequestStatus;
@@ -14,11 +19,17 @@ import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +45,7 @@ public class RecruitmentService implements IRecruitmentService {
     RecruitmentRepository recruitmentRepository;
     InstructorRepository instructorRepository;
     RecruitmentRequestRepository recruitmentRequestRepository;
+    private final BusinessMapper businessMapper;
 
     @PreAuthorize("hasRole('BUSINESS')")
     public ReturnResult<Boolean> CreateRecruitment(RecruitmentCreationRequest recruitmentCreationRequest) {
@@ -115,6 +127,49 @@ public class RecruitmentService implements IRecruitmentService {
 
         result.setCode(200);
         result.setResult(true);
+
+        return result;
+    }
+
+    public ReturnResult<PagedData<RecruitmentResponse, PageConfig>> GetRecruitmentPaging(PageConfig pageConfig) {
+        var result = new ReturnResult<PagedData<RecruitmentResponse, PageConfig>>();
+
+        FilterSpecification<Recruitment> filter = new FilterSpecification<>();
+        Specification<Recruitment> recruitmentFilter = filter.GetSearchSpecification(pageConfig.getFilters());
+
+        Sort sort = pageConfig.getSort();
+        Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+
+        Page<Recruitment> recruitmentPage = recruitmentRepository.findAll(recruitmentFilter, pageable);
+
+        //Convert result to response
+        List<RecruitmentResponse> recruitmentResponses = recruitmentPage.getContent().stream()
+                .map(recruitment -> {
+                    RecruitmentResponse recruitmentResponse = recruitmentMapper.toRecruitmentResponse(recruitment);
+                    recruitmentResponse.setBusiness(businessMapper.toBusinessResponse(recruitment.getBusiness()));
+                    return recruitmentResponse;
+                }).toList();
+
+        // Set data for page
+        PageConfig pageConfigResult = PageConfig
+                .builder()
+                .pageSize(recruitmentPage.getSize())
+                .totalRecords((int) recruitmentPage.getTotalElements())
+                .totalPage(recruitmentPage.getTotalPages())
+                .currentPage(recruitmentPage.getNumber())
+                .orders(pageConfig.getOrders())
+                .filters(pageConfig.getFilters())
+                .build();
+
+        // Build the PagedData object
+        result.setResult(
+                PagedData.<RecruitmentResponse, PageConfig>builder()
+                        .data(recruitmentResponses)
+                        .pageConfig(pageConfigResult)
+                        .build()
+        );
+
+        result.setCode(200);
 
         return result;
     }
