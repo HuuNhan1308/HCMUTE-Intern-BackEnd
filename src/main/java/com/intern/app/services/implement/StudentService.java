@@ -7,6 +7,8 @@ import com.intern.app.mapper.MajorMapper;
 import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.mapper.StudentMapper;
 import com.intern.app.mapper.UploadContentMapper;
+import com.intern.app.models.dto.datamodel.FilterSpecification;
+import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.datamodel.StudentPageConfig;
 import com.intern.app.models.dto.request.StudentCreationRequest;
@@ -14,6 +16,7 @@ import com.intern.app.models.dto.request.StudentUpdateRequest;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
 import com.intern.app.models.entity.Profile;
+import com.intern.app.models.entity.Recruitment;
 import com.intern.app.models.entity.Student;
 import com.intern.app.repository.FacultyRepository;
 import com.intern.app.repository.MajorRepository;
@@ -28,6 +31,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -106,20 +110,16 @@ public class StudentService implements IStudentService {
         return result;
     }
 
-    public ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetAllStudentPaging(StudentPageConfig page) {
+    public ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetStudentPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<StudentResponse, StudentPageConfig>>();
 
-        Sort sort = page.getSort();
-        Pageable pageable = PageRequest.of(page.getCurrentPage() - 1, page.getPageSize(), sort);
+        FilterSpecification<Student> filter = new FilterSpecification<Student>();
+        Specification<Student> studentFilter = filter.GetSearchSpecification(pageConfig.getFilters());
 
-        // Fetch the filtered and paginated data from the repository
-        Page<Student> studentPage;
-        if (!page.getMajorIds().isEmpty()) {
-            studentPage = studentRepository.findByFullnameContainingIgnoreCaseAndMajorIdIn(page.getFullname(),
-                    page.getMajorIds(), pageable);
-        } else {
-            studentPage = studentRepository.findByFullnameContainingIgnoreCase(page.getFullname(), pageable);
-        }
+        Sort sort = pageConfig.getSort();
+        Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+
+        Page<Student> studentPage = studentRepository.findAll(studentFilter, pageable);
 
         // Convert Student entities to StudentResponse DTOs
         List<StudentResponse> studentResponses = studentPage.getContent().stream()
@@ -136,9 +136,8 @@ public class StudentService implements IStudentService {
                 .pageSize(studentPage.getSize())
                 .totalRecords((int) studentPage.getTotalElements())
                 .totalPage(studentPage.getTotalPages())
-                .orders(page.getOrders())
-                .fullname(page.getFullname())
-                .majorIds(page.getMajorIds())
+                .orders(pageConfig.getOrders())
+                .filters(pageConfig.getFilters())
                 .build();
 
         // Build the PagedData object

@@ -1,6 +1,7 @@
 package com.intern.app.services.interfaces;
 
 
+import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.datamodel.StudentPageConfig;
 import com.intern.app.models.dto.request.StudentCreationRequest;
@@ -14,6 +15,6 @@ public interface IStudentService {
     ReturnResult<StudentResponse> GetStudentByUsername(String username);
     // NOT FINISH
     ReturnResult<Boolean> CreateStudent(StudentCreationRequest studentCreationRequest);
-    ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetAllStudentPaging(StudentPageConfig page);
+    ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetStudentPaging(PageConfig page);
     ReturnResult<Boolean> UpdateStudent(StudentUpdateRequest studentUpdateRequest);
 }
