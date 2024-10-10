@@ -7,6 +7,7 @@ import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
 import com.intern.app.models.dto.response.RecruitmentResponse;
+import com.intern.app.models.dto.response.RecruitmentResponseShort;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.RecruitmentRequestStatus;
@@ -23,6 +24,8 @@ public interface IRecruitmentService {
 
     ReturnResult<Boolean> ClearAllStudentAvailableRecruitmentRequests(Student student);
 
-    ReturnResult<PagedData<RecruitmentResponse, PageConfig>> GetRecruitmentPaging(PageConfig pageConfig);
+    ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetRecruitmentPaging(PageConfig pageConfig);
+
+    ReturnResult<RecruitmentResponse> GetRecruitmentById(String recruitmentId);
 
 }

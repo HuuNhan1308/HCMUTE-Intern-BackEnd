@@ -6,6 +6,7 @@ import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
 import com.intern.app.models.dto.response.RecruitmentResponse;
+import com.intern.app.models.dto.response.RecruitmentResponseShort;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.services.implement.RecruitmentService;
 import com.intern.app.services.interfaces.IRecruitmentService;
@@ -13,10 +14,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/recruitment")
@@ -40,8 +38,15 @@ public class RecruitmentController {
     }
 
     @PostMapping("/GetRecruitmentPaging")
-    public ResponseEntity<ReturnResult<PagedData<RecruitmentResponse, PageConfig>>> GetRecruitmentPaging(@RequestBody PageConfig pageConfig) {
-        ReturnResult<PagedData<RecruitmentResponse, PageConfig>> result = recruitmentService.GetRecruitmentPaging(pageConfig);
+    public ResponseEntity<ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>>> GetRecruitmentPaging(@RequestBody PageConfig pageConfig) {
+        ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> result = recruitmentService.GetRecruitmentPaging(pageConfig);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/GetRecruitmentById")
+    public ResponseEntity<ReturnResult<RecruitmentResponse>> GetRecruitmentById(@RequestParam String recruitmentId) {
+        ReturnResult<RecruitmentResponse> result = recruitmentService.GetRecruitmentById(recruitmentId);
 
         return ResponseEntity.ok().body(result);
     }
