@@ -15,6 +15,6 @@ public interface IStudentService {
     ReturnResult<StudentResponse> GetStudentByUsername(String username);
     // NOT FINISH
     ReturnResult<Boolean> CreateStudent(StudentCreationRequest studentCreationRequest);
-    ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetStudentPaging(PageConfig page);
+    ReturnResult<PagedData<StudentResponse, PageConfig>> GetStudentPaging(PageConfig page);
     ReturnResult<Boolean> UpdateStudent(StudentUpdateRequest studentUpdateRequest);
 }

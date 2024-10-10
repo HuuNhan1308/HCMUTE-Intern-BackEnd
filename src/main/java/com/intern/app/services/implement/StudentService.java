@@ -110,8 +110,8 @@ public class StudentService implements IStudentService {
         return result;
     }
 
-    public ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetStudentPaging(PageConfig pageConfig) {
-        var result = new ReturnResult<PagedData<StudentResponse, StudentPageConfig>>();
+    public ReturnResult<PagedData<StudentResponse, PageConfig>> GetStudentPaging(PageConfig pageConfig) {
+        var result = new ReturnResult<PagedData<StudentResponse, PageConfig>>();
 
         FilterSpecification<Student> filter = new FilterSpecification<Student>();
         Specification<Student> studentFilter = filter.GetSearchSpecification(pageConfig.getFilters());
@@ -131,7 +131,7 @@ public class StudentService implements IStudentService {
                 .toList();
 
         // Set data for page
-        StudentPageConfig newPageConfig = StudentPageConfig.builder()
+        PageConfig newPageConfig = PageConfig.builder()
                 .currentPage(studentPage.getNumber() + 1)
                 .pageSize(studentPage.getSize())
                 .totalRecords((int) studentPage.getTotalElements())
@@ -141,7 +141,7 @@ public class StudentService implements IStudentService {
                 .build();
 
         // Build the PagedData object
-        result.setResult(PagedData.<StudentResponse, StudentPageConfig>builder()
+        result.setResult(PagedData.<StudentResponse, PageConfig>builder()
                 .data(studentResponses)
                 .pageConfig(newPageConfig)
                 .build());

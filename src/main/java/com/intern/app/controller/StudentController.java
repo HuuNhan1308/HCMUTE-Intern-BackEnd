@@ -56,9 +56,9 @@ public class StudentController {
     }
 
     @PostMapping("/GetStudentPaging")
-    public ResponseEntity<ReturnResult<PagedData<StudentResponse, StudentPageConfig>>> GetStudentPaging(
+    public ResponseEntity<ReturnResult<PagedData<StudentResponse, PageConfig>>> GetStudentPaging(
             @RequestBody PageConfig page) {
-        ReturnResult<PagedData<StudentResponse, StudentPageConfig>> result = studentService.GetStudentPaging(page);
+        ReturnResult<PagedData<StudentResponse, PageConfig>> result = studentService.GetStudentPaging(page);
 
         return ResponseEntity.ok().body(result);
     }
