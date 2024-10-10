@@ -52,13 +52,13 @@ public class FilterSpecification<T extends BaseEntity> {
     private Predicate getTextPredicate(FilterMapping filter, CriteriaBuilder criteriaBuilder, Path<String> objectPath) {
         switch (filter.getOperator()) {
             case CONTAINS -> {
-                return criteriaBuilder.like(objectPath, "%" + filter.getValue() + "%");
+                return criteriaBuilder.like(criteriaBuilder.lower(objectPath), "%" + filter.getValue().toLowerCase() + "%");
             }
             case END_WITH -> {
-                return criteriaBuilder.like(objectPath, "%" + filter.getValue());
+                return criteriaBuilder.like(criteriaBuilder.lower(objectPath), "%" + filter.getValue().toLowerCase());
             }
             case START_WITH -> {
-                return criteriaBuilder.like(objectPath, filter.getValue() + "%");
+                return criteriaBuilder.like(criteriaBuilder.lower(objectPath), filter.getValue().toLowerCase() + "%");
             }
             case null, default -> throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }

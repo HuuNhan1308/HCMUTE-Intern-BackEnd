@@ -1,6 +1,7 @@
 package com.intern.app.controller;
 
 import com.intern.app.exception.AppException;
+import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.datamodel.StudentPageConfig;
 import com.intern.app.models.dto.request.StudentCreationRequest;
@@ -56,7 +57,7 @@ public class StudentController {
 
     @PostMapping("/GetAllStudentPaging")
     public ResponseEntity<ReturnResult<PagedData<StudentResponse, StudentPageConfig>>> GetAllStudentPaging(
-            @RequestBody StudentPageConfig page) {
+            @RequestBody PageConfig page) {
         ReturnResult<PagedData<StudentResponse, StudentPageConfig>> result = studentService.GetAllStudentPaging(page);
 
         return ResponseEntity.ok().body(result);
