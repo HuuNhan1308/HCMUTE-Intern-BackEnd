@@ -147,7 +147,7 @@ public class StudentService implements IStudentService {
                 .build());
 
         return result;
-    }
+}
 
     public ReturnResult<Boolean> UpdateStudent(StudentUpdateRequest studentUpdateRequest) {
         var result = new ReturnResult<Boolean>();
