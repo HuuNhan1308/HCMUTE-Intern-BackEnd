@@ -1,5 +1,6 @@
 package com.intern.app.models.dto.datamodel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.intern.app.models.entity.Profile;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
@@ -33,6 +34,7 @@ public class PageConfig {
     List<OrderMapping> orders;
 
     // Method to build Sort for multiple fields
+    @JsonIgnore
     public Sort getSort() {
         List<Sort.Order> sortOrders = new ArrayList<>();
         for (OrderMapping order : orders) {
