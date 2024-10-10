@@ -110,7 +110,7 @@ public class StudentService implements IStudentService {
         return result;
     }
 
-    public ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetAllStudentPaging(PageConfig pageConfig) {
+    public ReturnResult<PagedData<StudentResponse, StudentPageConfig>> GetStudentPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<StudentResponse, StudentPageConfig>>();
 
         FilterSpecification<Student> filter = new FilterSpecification<Student>();
