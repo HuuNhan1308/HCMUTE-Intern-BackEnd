@@ -136,7 +136,7 @@ public class BusinessService implements IBusinessService {
         ProfileResponse profileResponse = profileMapper.toProfileResponse(profile);
         BusinessResponse businessResponse =  businessMapper.toBusinessResponse(business);
 
-        businessResponse.setProfile(profileResponse);
+        businessResponse.setManagedBy(profileResponse);
 
         result.setResult(businessResponse);
         result.setCode(200);
