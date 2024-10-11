@@ -120,7 +120,7 @@ public class BusinessService implements IBusinessService {
         return result;
     }
 
-    public ReturnResult<BusinessResponse> GetBusinessProfileById(String businessId) {
+    public ReturnResult<BusinessResponse> GetBusinessData(String businessId) {
         var result = new ReturnResult<BusinessResponse>();
 
         Business business = businessRepository.findById(businessId).orElse(null);
