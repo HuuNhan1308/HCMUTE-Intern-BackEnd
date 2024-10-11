@@ -20,5 +20,5 @@ public class BusinessResponse {
     String workingDay;
     String workingHour;
 
-    ProfileResponse profile;
+    ProfileResponse managedBy;
 }

@@ -120,26 +120,31 @@ public class BusinessService implements IBusinessService {
         return result;
     }
 
-    public ReturnResult<BusinessResponse> GetBusinessProfileById(String businessId) {
+    public ReturnResult<BusinessResponse> GetBusinessData(String businessId) {
         var result = new ReturnResult<BusinessResponse>();
 
-        Business business = businessRepository.findById(businessId).orElse(null);
-        if(business == null) {
-            throw new AppException(ErrorCode.BUSINESS_NOT_FOUND);
-        }
+       try {
+           Business business = businessRepository.findById(businessId).orElse(null);
+           if(business == null) {
+               throw new AppException(ErrorCode.BUSINESS_NOT_FOUND);
+           }
 
-        Profile profile = business.getManagedBy();
-        if(profile == null) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
+           Profile profile = business.getManagedBy();
+           if(profile == null) {
+               throw new AppException(ErrorCode.USER_NOT_EXISTED);
+           }
 
-        ProfileResponse profileResponse = profileMapper.toProfileResponse(profile);
-        BusinessResponse businessResponse =  businessMapper.toBusinessResponse(business);
+           ProfileResponse profileResponse = profileMapper.toProfileResponse(profile);
+           BusinessResponse businessResponse =  businessMapper.toBusinessResponse(business);
 
-        businessResponse.setProfile(profileResponse);
+           businessResponse.setManagedBy(profileResponse);
 
-        result.setResult(businessResponse);
-        result.setCode(200);
+           result.setResult(businessResponse);
+           result.setCode(200);
+       }
+       catch(Exception e) {
+           log.error(e.getMessage());
+       }
 
         return result;
     }

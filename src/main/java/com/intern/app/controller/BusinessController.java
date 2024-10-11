@@ -27,9 +27,9 @@ public class BusinessController {
         return ResponseEntity.ok().body(result);
     }
 
-    @GetMapping("/BusinessProfile/{businessId}")
-    public ResponseEntity<ReturnResult<BusinessResponse>> BusinessProfile(@PathVariable String businessId) {
-        ReturnResult<BusinessResponse> result = businessService.GetBusinessProfileById(businessId);
+    @GetMapping("/GetBusinessData")
+    public ResponseEntity<ReturnResult<BusinessResponse>> GetBusinessData(@RequestParam String businessId) {
+        ReturnResult<BusinessResponse> result = businessService.GetBusinessData(businessId);
 
         return ResponseEntity.ok().body(result);
     }
@@ -54,4 +54,5 @@ public class BusinessController {
 
         return ResponseEntity.ok().body(result);
     }
+
 }
