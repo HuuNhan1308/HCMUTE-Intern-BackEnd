@@ -60,6 +60,9 @@ public class FilterSpecification<T extends BaseEntity> {
             case START_WITH -> {
                 return criteriaBuilder.like(criteriaBuilder.lower(objectPath), filter.getValue().toLowerCase() + "%");
             }
+            case EQUALS -> {
+                return criteriaBuilder.equal(criteriaBuilder.lower(objectPath), filter.getValue());
+            }
             case null, default -> throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
     }
