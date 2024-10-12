@@ -63,8 +63,6 @@ public class DataInitialize {
 
         //Recruitment from Business
         createRecruitments();
-
-
     }
 
     private void createStudents() {
@@ -136,7 +134,7 @@ public class DataInitialize {
                         .builder()
                         .fullname(faker.name().fullName())
                         .username("business" + index)
-                        .password("business" + index)
+                        .password(this.passwordEncoder.encode(("business" + index)))
                         .isMale(faker.bool().bool())
                         .bio(faker.lorem().paragraph(2))
                         .email(faker.internet().emailAddress())
