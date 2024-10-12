@@ -44,5 +44,17 @@ public class PageConfig {
         }
         return Sort.by(sortOrders);
     }
+
+    @JsonIgnore
+    public Sort getSortAndNewItem() {
+        // Get the original sorting criteria
+        Sort originalSort = this.getSort();
+
+        // Add the 'dateModified' descending sort
+        Sort newItemSort = Sort.by(Sort.Order.desc("dateModified"));
+
+        // Combine the two Sort objects
+        return originalSort.and(newItemSort);
+    }
 }
 

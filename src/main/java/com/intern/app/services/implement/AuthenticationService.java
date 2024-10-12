@@ -13,6 +13,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -28,7 +29,7 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 @Service
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class AuthenticationService implements IAuthenticationService {
 
@@ -43,9 +44,25 @@ public class AuthenticationService implements IAuthenticationService {
     ProfileRepository profileRepository;
     PasswordEncoder passwordEncoder;
 
-
     private String generateToken(Profile profile) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+
+        // String subId = "";
+        // switch (profile.getRole().getRoleName()) {
+        //     case "MANAGER":
+        //         break;
+        //     case "ADMIN":
+        //         break;
+        //     case "STUDENT":
+        //         subId = profile.getStudent().getStudentId();
+        //         break;
+        //     case "INSTRUCTOR":
+        //         subId = profile.getInstructor().getInstructorId();
+        //         break;
+        //     case "BUSINESS":
+        //         subId = profile.getBusiness().getBusinessId();
+        //         break;
+        // }
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .jwtID(UUID.randomUUID().toString())
@@ -53,6 +70,7 @@ public class AuthenticationService implements IAuthenticationService {
                 .issueTime(new Date())
                 .expirationTime(new Date(new Date().getTime() + this.expirationTime))
                 .claim("scope", this.buildScope(profile))
+                // .claim(profile.getRole().getRoleName().toLowerCase(), subId)
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -73,7 +91,7 @@ public class AuthenticationService implements IAuthenticationService {
 
         stringJoiner.add("ROLE_" + profile.getRole().getRoleName());
 
-        if(!CollectionUtils.isEmpty(profile.getRole().getRolePermissions())) {
+        if (!CollectionUtils.isEmpty(profile.getRole().getRolePermissions())) {
             profile.getRole().getRolePermissions().forEach(permission -> {
                 stringJoiner.add(permission.getPermission().getName());
             });
@@ -96,39 +114,41 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
     public SignedJWT verityToken(String token) throws JOSEException, ParseException {
-            JWSVerifier verifier = new MACVerifier(this.singerKey.getBytes());
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        JWSVerifier verifier = new MACVerifier(this.singerKey.getBytes());
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
-            var verified = signedJWT.verify(verifier);
+        var verified = signedJWT.verify(verifier);
 
-            if (!(verified && expirationTime.after(new Date()))) {
-                throw new AppException(ErrorCode.INVALID_TOKEN);
-            }
+        if (!(verified && expirationTime.after(new Date()))) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
 
-            return signedJWT;
+        return signedJWT;
     }
 
-    public ReturnResult<ProfileAuthenticationResponse> Authenticate(ProfileAuthenticationRequest profileAuthenticationRequest) {
+    public ReturnResult<ProfileAuthenticationResponse> Authenticate(
+            ProfileAuthenticationRequest profileAuthenticationRequest) {
         ReturnResult<ProfileAuthenticationResponse> result = new ReturnResult<ProfileAuthenticationResponse>();
 
-        Profile existProfile = profileRepository.findByUsernameAndDeletedFalse(profileAuthenticationRequest.getUsername())
+        Profile existProfile = profileRepository
+                .findByUsernameAndDeletedFalse(profileAuthenticationRequest.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.LOGIN_FAIL_CREDENTIALS));
 
-        boolean isPwMatch = passwordEncoder.matches(profileAuthenticationRequest.getPassword(), existProfile.getPassword());
+        boolean isPwMatch = passwordEncoder.matches(profileAuthenticationRequest.getPassword(),
+                existProfile.getPassword());
 
-        if(!isPwMatch){
+        if (!isPwMatch) {
             throw new AppException(ErrorCode.LOGIN_FAIL_CREDENTIALS);
-        }
-        else {
+        } else {
             var token = this.generateToken(existProfile);
 
             result.setCode(HttpStatus.OK.value());
             result.setResult(
                     ProfileAuthenticationResponse.builder()
-                    .isAuthenticated(true)
-                    .token(token)
-                    .build());
+                            .isAuthenticated(true)
+                            .token(token)
+                            .build());
         }
 
         return result;
