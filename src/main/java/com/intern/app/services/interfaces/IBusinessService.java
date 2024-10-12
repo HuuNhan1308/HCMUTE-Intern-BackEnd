@@ -11,9 +11,11 @@ public interface IBusinessService {
 
     ReturnResult<Boolean> SetRecruitmentRequestStatus(RecruitmentRequestStatus recruitmentRequestStatus, String recruitmentRequestId);
 
-    ReturnResult<BusinessResponse> GetBusinessProfileById(String businessId);
+    ReturnResult<BusinessResponse> GetBusinessData(String businessId);
 
     ReturnResult<Boolean> UpdateBusinessProfile(BusinessUpdateRequest businessUpdateRequest);
 
     ReturnResult<Boolean> UpdateBusinessProfileById(String businessId, BusinessUpdateRequest businessUpdateRequest);
+
+    ReturnResult<BusinessResponse> GetMyBusinessData();
 }

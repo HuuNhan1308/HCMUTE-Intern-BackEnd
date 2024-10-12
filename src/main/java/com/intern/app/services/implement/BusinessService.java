@@ -120,7 +120,7 @@ public class BusinessService implements IBusinessService {
         return result;
     }
 
-    public ReturnResult<BusinessResponse> GetBusinessProfileById(String businessId) {
+    public ReturnResult<BusinessResponse> GetBusinessData(String businessId) {
         var result = new ReturnResult<BusinessResponse>();
 
         Business business = businessRepository.findById(businessId).orElse(null);
@@ -136,7 +136,28 @@ public class BusinessService implements IBusinessService {
         ProfileResponse profileResponse = profileMapper.toProfileResponse(profile);
         BusinessResponse businessResponse =  businessMapper.toBusinessResponse(business);
 
-        businessResponse.setProfile(profileResponse);
+        businessResponse.setManagedBy(profileResponse);
+
+        result.setResult(businessResponse);
+        result.setCode(200);
+
+        return result;
+    }
+
+    public ReturnResult<BusinessResponse> GetMyBusinessData() {
+        var result = new ReturnResult<BusinessResponse>();
+
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Business business = profile.getBusiness();
+        if(business == null) {
+            throw new AppException(ErrorCode.BUSINESS_NOT_FOUND);
+        }
+
+        BusinessResponse businessResponse =  businessMapper.toBusinessResponse(business);
+        businessResponse.setManagedBy(profileMapper.toProfileResponse(profile));
 
         result.setResult(businessResponse);
         result.setCode(200);

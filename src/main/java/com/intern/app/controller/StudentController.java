@@ -55,10 +55,10 @@ public class StudentController {
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("/GetAllStudentPaging")
-    public ResponseEntity<ReturnResult<PagedData<StudentResponse, StudentPageConfig>>> GetAllStudentPaging(
+    @PostMapping("/GetStudentPaging")
+    public ResponseEntity<ReturnResult<PagedData<StudentResponse, PageConfig>>> GetStudentPaging(
             @RequestBody PageConfig page) {
-        ReturnResult<PagedData<StudentResponse, StudentPageConfig>> result = studentService.GetAllStudentPaging(page);
+        ReturnResult<PagedData<StudentResponse, PageConfig>> result = studentService.GetStudentPaging(page);
 
         return ResponseEntity.ok().body(result);
     }

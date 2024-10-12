@@ -12,4 +12,5 @@ public enum FilterOperator {
     CONTAINS,
     START_WITH,
     END_WITH,
+    EQUALS,
 }
