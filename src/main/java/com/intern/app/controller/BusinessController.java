@@ -34,6 +34,13 @@ public class BusinessController {
         return ResponseEntity.ok().body(result);
     }
 
+    @GetMapping("/GetMyBusinessData")
+    public ResponseEntity<ReturnResult<BusinessResponse>> GetMyBusinessData() {
+        ReturnResult<BusinessResponse> result = businessService.GetMyBusinessData();
+
+        return ResponseEntity.ok().body(result);
+    }
+
     @PostMapping("/UpdateProfile")
     public ResponseEntity<ReturnResult<Boolean>> UpdateProfile(@RequestBody BusinessUpdateRequest businessUpdateRequest) {
         ReturnResult<Boolean> result = businessService.UpdateBusinessProfile(businessUpdateRequest);

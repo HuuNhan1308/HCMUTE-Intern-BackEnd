@@ -16,4 +16,6 @@ public interface IBusinessService {
     ReturnResult<Boolean> UpdateBusinessProfile(BusinessUpdateRequest businessUpdateRequest);
 
     ReturnResult<Boolean> UpdateBusinessProfileById(String businessId, BusinessUpdateRequest businessUpdateRequest);
+
+    ReturnResult<BusinessResponse> GetMyBusinessData();
 }
