@@ -11,4 +11,5 @@ import java.util.Optional;
 @Repository
 public interface InstructorRequestRepository extends AppRepository<InstructorRequest, String> {
     Optional<InstructorRequest> findByStudentStudentIdAndInstructorInstructorId(String studentId, Instructor instructor);
+    Optional<InstructorRequest> findByInstructorRequestId(String instructorRequestId);
 }
