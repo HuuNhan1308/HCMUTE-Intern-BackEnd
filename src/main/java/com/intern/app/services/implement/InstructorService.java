@@ -113,4 +113,21 @@ public class InstructorService implements IInstructorService {
 
         return result;
     }
+
+    @PreAuthorize("hasAuthority('SET_INSTRUCTOR_REQUEST_STATUS')")
+    public ReturnResult<Boolean> SetRequestStatus(RequestStatus requestStatus, String instructorRequestId) {
+        var result = new ReturnResult<Boolean>();
+
+        InstructorRequest instructorRequest = instructorRequestRepository.findByInstructorRequestId(instructorRequestId)
+                .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_REQUEST_NOT_FOUND));
+
+        instructorRequest.setInstructorStatus(requestStatus);
+
+        instructorRequestRepository.save(instructorRequest);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
+
+        return result;
+    }
 }
