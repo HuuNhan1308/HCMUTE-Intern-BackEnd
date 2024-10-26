@@ -47,30 +47,13 @@ public class AuthenticationService implements IAuthenticationService {
     private String generateToken(Profile profile) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
-        // String subId = "";
-        // switch (profile.getRole().getRoleName()) {
-        //     case "MANAGER":
-        //         break;
-        //     case "ADMIN":
-        //         break;
-        //     case "STUDENT":
-        //         subId = profile.getStudent().getStudentId();
-        //         break;
-        //     case "INSTRUCTOR":
-        //         subId = profile.getInstructor().getInstructorId();
-        //         break;
-        //     case "BUSINESS":
-        //         subId = profile.getBusiness().getBusinessId();
-        //         break;
-        // }
-
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .jwtID(UUID.randomUUID().toString())
                 .subject(profile.getUsername())
+                .claim("id", profile.getProfileId())
                 .issueTime(new Date())
                 .expirationTime(new Date(new Date().getTime() + this.expirationTime))
                 .claim("scope", this.buildScope(profile))
-                // .claim(profile.getRole().getRoleName().toLowerCase(), subId)
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());

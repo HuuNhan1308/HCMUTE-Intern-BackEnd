@@ -4,12 +4,12 @@ import com.intern.app.models.dto.request.BusinessCreationRequest;
 import com.intern.app.models.dto.request.BusinessUpdateRequest;
 import com.intern.app.models.dto.response.BusinessResponse;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.models.enums.RecruitmentRequestStatus;
+import com.intern.app.models.enums.RequestStatus;
 
 public interface IBusinessService {
     ReturnResult<Boolean> CreateBusiness(BusinessCreationRequest businessCreationRequest);
 
-    ReturnResult<Boolean> SetRecruitmentRequestStatus(RecruitmentRequestStatus recruitmentRequestStatus, String recruitmentRequestId);
+    ReturnResult<Boolean> SetRecruitmentRequestStatus(RequestStatus requestStatus, String recruitmentRequestId);
 
     ReturnResult<BusinessResponse> GetBusinessData(String businessId);
 

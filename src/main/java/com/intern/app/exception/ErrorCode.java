@@ -31,6 +31,8 @@ public enum ErrorCode {
     PERMISSION_EXISTED(1017, "Quyền đã tồn tại", HttpStatus.BAD_REQUEST),
     RECRUITMENT_REQUEST_NOT_EXIST(1018, "Bài tuyển dụng không tồn tại", HttpStatus.BAD_REQUEST),
     NOT_EXCEL_FORMAT(1019, "Định dạng nội dung không phải excel, vui lòng kiểm tra lại", HttpStatus.BAD_REQUEST),
+    INSTRUCTOR_NOT_FOUND(1020, "Không tìm thấy giảng viên...", HttpStatus.BAD_REQUEST),
+    INSTRUCTOR_REQUEST_NOT_FOUND(1021, "Yêu cầu không tồn tại", HttpStatus.BAD_REQUEST),
     ;
 
     int code;

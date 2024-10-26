@@ -5,17 +5,14 @@ import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.FacultyMapper;
 import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
+import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
 import com.intern.app.models.dto.response.FacultyResponse;
 import com.intern.app.models.dto.response.InstructorResponse;
 import com.intern.app.models.dto.response.ProfileResponse;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.models.entity.Faculty;
-import com.intern.app.models.entity.Instructor;
-import com.intern.app.models.entity.Profile;
-import com.intern.app.models.entity.Role;
-import com.intern.app.repository.FacultyRepository;
-import com.intern.app.repository.InstructorRepository;
-import com.intern.app.repository.RoleRepository;
+import com.intern.app.models.entity.*;
+import com.intern.app.models.enums.RequestStatus;
+import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IInstructorService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +20,12 @@ import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -37,8 +36,10 @@ public class InstructorService implements IInstructorService {
     RoleRepository roleRepository;
     FacultyRepository facultyRepository;
     InstructorRepository instructorRepository;
-    private final ProfileMapper profileMapper;
-    private final FacultyMapper facultyMapper;
+    ProfileMapper profileMapper;
+    FacultyMapper facultyMapper;
+    StudentRepository studentRepository;
+    InstructorRequestRepository instructorRequestRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateInstructor(InstructorCreationRequest instructorCreationRequest) {
@@ -85,6 +86,78 @@ public class InstructorService implements IInstructorService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+
+        return result;
+    }
+
+    @PreAuthorize("hasAuthority('REQUEST_INSTRUCTOR')")
+    public ReturnResult<Boolean> RequestInstructor(InstructorRequestCreationRequest instructorRequestCreationRequest) {
+        var result = new ReturnResult<Boolean>();
+
+        var context = SecurityContextHolder.getContext();
+        Student student = studentRepository.findById(context.getAuthentication().getName())
+                .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
+        Instructor instructor = instructorRepository.findByInstructorId(instructorRequestCreationRequest.getInstructorId())
+                .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_NOT_FOUND));
+
+        InstructorRequest instructorRequest = InstructorRequest.builder()
+                .student(student)
+                .instructor(instructor)
+                .messageToInstructor(instructorRequestCreationRequest.getMessageToInstructor())
+                .instructorStatus(RequestStatus.PENDING)
+                .build();
+
+        instructorRequestRepository.save(instructorRequest);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
+
+        return result;
+    }
+
+    @PreAuthorize("hasAuthority('SET_INSTRUCTOR_REQUEST_STATUS')")
+    public ReturnResult<Boolean> SetRequestStatus(RequestStatus requestStatus, String instructorRequestId) {
+        var result = new ReturnResult<Boolean>();
+
+        InstructorRequest instructorRequest = instructorRequestRepository.findByInstructorRequestId(instructorRequestId)
+                .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_REQUEST_NOT_FOUND));
+
+        boolean isApproved = instructorRequestRepository.findAllByStudentStudentId(instructorRequest.getStudent().getStudentId())
+                .stream()
+                .anyMatch((req) -> req.getInstructorStatus().equals(RequestStatus.APPROVED));
+
+        if(isApproved) {
+            result.setResult(Boolean.FALSE);
+            result.setMessage("Học sinh đã được giảng viên khác chọn, vui lòng tải lại trang");
+            result.setCode(200);
+        }
+        else {
+            instructorRequest.setInstructorStatus(requestStatus);
+
+            instructorRequestRepository.save(instructorRequest);
+
+            this.ClearAllStudentAvailableInstructorRequests(instructorRequestId);
+
+            result.setResult(Boolean.TRUE);
+            result.setCode(200);
+        }
+
+        return result;
+    }
+
+    @Override
+    public ReturnResult<Boolean> ClearAllStudentAvailableInstructorRequests(String instructorRequestId) {
+        var result = new ReturnResult<Boolean>();
+
+        InstructorRequest instructorRequest = instructorRequestRepository.findByInstructorRequestId(instructorRequestId)
+                .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_REQUEST_NOT_FOUND));
+
+        List<InstructorRequest> pendingInstructorRequests = instructorRequestRepository.findAllByStudentStudentIdAndInstructorStatus(instructorRequest.getStudent().getStudentId(), RequestStatus.PENDING);
+
+        instructorRequestRepository.softDeleteRange(pendingInstructorRequests);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
 
         return result;
     }

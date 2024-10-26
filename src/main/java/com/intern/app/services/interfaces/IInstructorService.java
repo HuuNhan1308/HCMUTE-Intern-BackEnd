@@ -2,9 +2,11 @@ package com.intern.app.services.interfaces;
 
 import com.github.javafaker.Bool;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
+import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
 import com.intern.app.models.dto.response.InstructorResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.entity.Instructor;
+import com.intern.app.models.enums.RequestStatus;
 
 import java.util.List;
 
@@ -12,4 +14,9 @@ public interface IInstructorService {
     ReturnResult<Boolean> CreateInstructor(InstructorCreationRequest instructorCreationRequest);
 
     ReturnResult<List<InstructorResponse>> GetAllInstrutors();
+
+    ReturnResult<Boolean> RequestInstructor(InstructorRequestCreationRequest instructorRequestCreationRequest);
+
+    ReturnResult<Boolean> SetRequestStatus(RequestStatus requestStatus, String instructorRequestId);
+    ReturnResult<Boolean> ClearAllStudentAvailableInstructorRequests(String instructorRequestId);
 }
