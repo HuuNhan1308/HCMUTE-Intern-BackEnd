@@ -1,9 +1,10 @@
 package com.intern.app.models.entity;
 
-import com.intern.app.models.enums.RecruitmentRequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Date;
 
 @Entity
 @Getter
@@ -12,20 +13,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RecruitmentRequest extends BaseEntity {
+public class Internship extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String recruitmentRequestId;
+    String internshipId;
 
-    RecruitmentRequestStatus businessStatus;
-    String messageToBusiness;
+    Date startDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "StudentId", nullable = false)
     Student student;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RecruitmentId")
-    Recruitment recruitment;
 }
-

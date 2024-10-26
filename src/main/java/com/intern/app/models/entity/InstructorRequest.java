@@ -12,20 +12,19 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RecruitmentRequest extends BaseEntity {
+public class InstructorRequest extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String recruitmentRequestId;
 
-    RecruitmentRequestStatus businessStatus;
-    String messageToBusiness;
+    RecruitmentRequestStatus instructorStatus;
+    String messageToInstructor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "StudentId", nullable = false)
     Student student;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RecruitmentId")
-    Recruitment recruitment;
+    @JoinColumn(name = "RefInstructorId")
+    Instructor refInstructor;
 }
-
