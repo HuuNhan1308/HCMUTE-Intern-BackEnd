@@ -25,6 +25,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -121,9 +122,39 @@ public class InstructorService implements IInstructorService {
         InstructorRequest instructorRequest = instructorRequestRepository.findByInstructorRequestId(instructorRequestId)
                 .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_REQUEST_NOT_FOUND));
 
-        instructorRequest.setInstructorStatus(requestStatus);
+        boolean isApproved = instructorRequestRepository.findAllByStudentStudentId(instructorRequest.getStudent().getStudentId())
+                .stream()
+                .anyMatch((req) -> req.getInstructorStatus().equals(RequestStatus.APPROVED));
 
-        instructorRequestRepository.save(instructorRequest);
+        if(isApproved) {
+            result.setResult(Boolean.FALSE);
+            result.setMessage("Học sinh đã được giảng viên khác chọn, vui lòng tải lại trang");
+            result.setCode(200);
+        }
+        else {
+            instructorRequest.setInstructorStatus(requestStatus);
+
+            instructorRequestRepository.save(instructorRequest);
+
+            this.ClearAllStudentAvailableInstructorRequests(instructorRequestId);
+
+            result.setResult(Boolean.TRUE);
+            result.setCode(200);
+        }
+
+        return result;
+    }
+
+    @Override
+    public ReturnResult<Boolean> ClearAllStudentAvailableInstructorRequests(String instructorRequestId) {
+        var result = new ReturnResult<Boolean>();
+
+        InstructorRequest instructorRequest = instructorRequestRepository.findByInstructorRequestId(instructorRequestId)
+                .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_REQUEST_NOT_FOUND));
+
+        List<InstructorRequest> pendingInstructorRequests = instructorRequestRepository.findAllByStudentStudentIdAndInstructorStatus(instructorRequest.getStudent().getStudentId(), RequestStatus.PENDING);
+
+        instructorRequestRepository.softDeleteRange(pendingInstructorRequests);
 
         result.setResult(Boolean.TRUE);
         result.setCode(200);

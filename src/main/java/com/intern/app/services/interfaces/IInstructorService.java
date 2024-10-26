@@ -18,4 +18,5 @@ public interface IInstructorService {
     ReturnResult<Boolean> RequestInstructor(InstructorRequestCreationRequest instructorRequestCreationRequest);
 
     ReturnResult<Boolean> SetRequestStatus(RequestStatus requestStatus, String instructorRequestId);
+    ReturnResult<Boolean> ClearAllStudentAvailableInstructorRequests(String instructorRequestId);
 }
