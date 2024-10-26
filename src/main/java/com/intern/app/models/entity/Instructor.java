@@ -28,7 +28,4 @@ public class Instructor extends BaseEntity{
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "refInstructor")
     List<Business> recommendedBusinesses;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "refInstructor")
-    List<RecruitmentRequest> recruitmentRequests;
 }
