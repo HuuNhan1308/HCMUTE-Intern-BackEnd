@@ -92,7 +92,6 @@ public class RecruitmentService implements IRecruitmentService {
 
         Profile profile = profileRepository.findByUsernameAndDeletedFalse(username).orElse(null);
         Recruitment recruitment = recruitmentRepository.findByRecruitmentIdAndDeletedFalse(recruitmentRequestCreationRequest.getRecruitmentId()).orElse(null);
-        Instructor instructor = instructorRepository.findByInstructorIdAndDeletedFalse(recruitmentRequestCreationRequest.getInstructorId()).orElse(null);
 
         if(profile == null) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
@@ -108,11 +107,6 @@ public class RecruitmentService implements IRecruitmentService {
         } else {
             recruitmentRequest.setRecruitment(recruitment);
             recruitmentRequest.setBusinessStatus(RecruitmentRequestStatus.PENDING);
-        }
-
-        if(instructor != null) {
-            recruitmentRequest.setRefInstructor(instructor);
-            recruitmentRequest.setInstructorStatus(RecruitmentRequestStatus.PENDING);
         }
 
         RecruitmentRequest saved = recruitmentRequestRepository.save(recruitmentRequest);
