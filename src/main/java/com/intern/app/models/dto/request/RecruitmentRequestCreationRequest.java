@@ -1,7 +1,6 @@
 package com.intern.app.models.dto.request;
 
 
-import com.intern.app.models.enums.RecruitmentRequestStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

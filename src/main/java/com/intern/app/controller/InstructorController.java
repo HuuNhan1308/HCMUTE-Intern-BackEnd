@@ -1,8 +1,10 @@
 package com.intern.app.controller;
 
 import com.intern.app.models.dto.request.InstructorCreationRequest;
+import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
 import com.intern.app.models.dto.response.InstructorResponse;
 import com.intern.app.models.dto.response.ReturnResult;
+import com.intern.app.models.entity.InstructorRequest;
 import com.intern.app.services.interfaces.IInstructorService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,4 +34,12 @@ public class InstructorController {
 
         return ResponseEntity.ok().body(result);
     }
+
+    @PostMapping("/RequestInstructor")
+    ResponseEntity<ReturnResult<Boolean>> RequestInstructor(@RequestBody InstructorRequestCreationRequest instructorRequestCreationRequest) {
+        ReturnResult<Boolean> result = instructorService.RequestInstructor(instructorRequestCreationRequest);
+
+        return ResponseEntity.ok().body(result);
+    }
+
 }

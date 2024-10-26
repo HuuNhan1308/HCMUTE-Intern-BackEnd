@@ -18,7 +18,7 @@ import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.FilterOperator;
 import com.intern.app.models.enums.FilterType;
-import com.intern.app.models.enums.RecruitmentRequestStatus;
+import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
@@ -106,7 +106,7 @@ public class RecruitmentService implements IRecruitmentService {
             throw new AppException(ErrorCode.RECRUITMENT_NOT_FOUND);
         } else {
             recruitmentRequest.setRecruitment(recruitment);
-            recruitmentRequest.setBusinessStatus(RecruitmentRequestStatus.PENDING);
+            recruitmentRequest.setBusinessStatus(RequestStatus.PENDING);
         }
 
         RecruitmentRequest saved = recruitmentRequestRepository.save(recruitmentRequest);
@@ -120,7 +120,7 @@ public class RecruitmentService implements IRecruitmentService {
     public ReturnResult<Boolean> ClearAllStudentAvailableRecruitmentRequests(Student student) {
         var result = new ReturnResult<Boolean>();
 
-        List<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepository.findByStudentAndStatus(student, RecruitmentRequestStatus.PENDING);
+        List<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepository.findByStudentAndStatus(student, RequestStatus.PENDING);
 
         recruitmentRequestRepository.softDeleteRange(recruitmentRequests);
 
