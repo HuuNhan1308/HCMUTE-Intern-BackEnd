@@ -10,7 +10,7 @@ import com.intern.app.models.dto.response.BusinessResponse;
 import com.intern.app.models.dto.response.ProfileResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.entity.*;
-import com.intern.app.models.enums.RecruitmentRequestStatus;
+import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
 
 import com.intern.app.services.interfaces.IBusinessService;
@@ -78,7 +78,7 @@ public class BusinessService implements IBusinessService {
 
     //Cần phải test các case RecruitmentRequestStatus khác nhau khi gửi từ postman
     @PreAuthorize("hasAuthority('SET_RECRUITMENT_BUSINESS_STATUS')")
-    public ReturnResult<Boolean> SetRecruitmentRequestStatus(RecruitmentRequestStatus recruitmentRequestStatus, String recruitmentRequestId) {
+    public ReturnResult<Boolean> SetRecruitmentRequestStatus(RequestStatus requestStatus, String recruitmentRequestId) {
         var result = new ReturnResult<Boolean>();
 
         var context = SecurityContextHolder.getContext();
@@ -103,11 +103,11 @@ public class BusinessService implements IBusinessService {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
-        recruitmentRequest.setBusinessStatus(recruitmentRequestStatus);
+        recruitmentRequest.setBusinessStatus(requestStatus);
         recruitmentRequestRepository.save(recruitmentRequest);
 
         // switch student IsSeekingIntern to false if approve
-        if(recruitmentRequestStatus == RecruitmentRequestStatus.APPROVED) {
+        if(requestStatus == RequestStatus.APPROVED) {
             Student student = recruitmentRequest.getStudent();
             recruitmentService.ClearAllStudentAvailableRecruitmentRequests(student);
             student.setIsSeekingIntern(false);

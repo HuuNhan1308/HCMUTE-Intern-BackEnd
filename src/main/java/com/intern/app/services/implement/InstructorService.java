@@ -5,17 +5,14 @@ import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.FacultyMapper;
 import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
+import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
 import com.intern.app.models.dto.response.FacultyResponse;
 import com.intern.app.models.dto.response.InstructorResponse;
 import com.intern.app.models.dto.response.ProfileResponse;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.models.entity.Faculty;
-import com.intern.app.models.entity.Instructor;
-import com.intern.app.models.entity.Profile;
-import com.intern.app.models.entity.Role;
-import com.intern.app.repository.FacultyRepository;
-import com.intern.app.repository.InstructorRepository;
-import com.intern.app.repository.RoleRepository;
+import com.intern.app.models.entity.*;
+import com.intern.app.models.enums.RequestStatus;
+import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IInstructorService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +35,10 @@ public class InstructorService implements IInstructorService {
     RoleRepository roleRepository;
     FacultyRepository facultyRepository;
     InstructorRepository instructorRepository;
-    private final ProfileMapper profileMapper;
-    private final FacultyMapper facultyMapper;
+    ProfileMapper profileMapper;
+    FacultyMapper facultyMapper;
+    StudentRepository studentRepository;
+    InstructorRequestRepository instructorRequestRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateInstructor(InstructorCreationRequest instructorCreationRequest) {
@@ -85,6 +85,31 @@ public class InstructorService implements IInstructorService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+
+        return result;
+    }
+
+    @PreAuthorize("hasAuthority('REQUEST_INSTRUCTOR')")
+    public ReturnResult<Boolean> RequestInstructor(InstructorRequestCreationRequest instructorRequestCreationRequest) {
+        var result = new ReturnResult<Boolean>();
+
+        var context = SecurityContextHolder.getContext();
+        Student student = studentRepository.findById(context.getAuthentication().getName())
+                .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
+        Instructor instructor = instructorRepository.findByInstructorId(instructorRequestCreationRequest.getInstructorId())
+                .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_NOT_FOUND));
+
+        InstructorRequest instructorRequest = InstructorRequest.builder()
+                .student(student)
+                .instructor(instructor)
+                .messageToInstructor(instructorRequestCreationRequest.getMessageToInstructor())
+                .instructorStatus(RequestStatus.PENDING)
+                .build();
+
+        instructorRequestRepository.save(instructorRequest);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
 
         return result;
     }

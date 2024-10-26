@@ -23,6 +23,7 @@ public class Major extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "major")
     List<Student> students;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FacultyId")
     Faculty faculty;

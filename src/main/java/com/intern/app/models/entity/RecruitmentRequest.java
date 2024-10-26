@@ -1,6 +1,6 @@
 package com.intern.app.models.entity;
 
-import com.intern.app.models.enums.RecruitmentRequestStatus;
+import com.intern.app.models.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +17,7 @@ public class RecruitmentRequest extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     String recruitmentRequestId;
 
-    RecruitmentRequestStatus businessStatus;
+    RequestStatus businessStatus;
     String messageToBusiness;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,6 +1,6 @@
 package com.intern.app.models.entity;
 
-import com.intern.app.models.enums.RecruitmentRequestStatus;
+import com.intern.app.models.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,9 +15,9 @@ import lombok.experimental.FieldDefaults;
 public class InstructorRequest extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String recruitmentRequestId;
+    String instructorRequestId;
 
-    RecruitmentRequestStatus instructorStatus;
+    RequestStatus instructorStatus;
     String messageToInstructor;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,6 +25,6 @@ public class InstructorRequest extends BaseEntity {
     Student student;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RefInstructorId")
-    Instructor refInstructor;
+    @JoinColumn(name = "InstructorId")
+    Instructor instructor;
 }
