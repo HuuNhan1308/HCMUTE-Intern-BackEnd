@@ -12,6 +12,7 @@ import com.intern.app.models.enums.FilterOperator;
 import com.intern.app.models.enums.FilterType;
 import com.intern.app.repository.*;
 
+import com.intern.app.services.interfaces.IPagingService;
 import com.intern.app.services.interfaces.IStudentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class StudentService implements IStudentService {
     ProfileMapper profileMapper;
     MajorMapper majorMapper;
     ProfileRepository profileRepository;
-    PagingService pagingService;
+    IPagingService pagingService;
 
     public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
