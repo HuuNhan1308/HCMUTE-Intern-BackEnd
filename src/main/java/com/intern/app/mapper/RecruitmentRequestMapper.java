@@ -4,6 +4,7 @@ import com.intern.app.models.dto.request.ProfileUpdateRequest;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
 import com.intern.app.models.dto.response.InstructorRequestResponse;
+import com.intern.app.models.dto.response.RecruitmentRequestResponse;
 import com.intern.app.models.entity.InstructorRequest;
 import com.intern.app.models.entity.Profile;
 import com.intern.app.models.entity.Recruitment;
@@ -22,5 +23,7 @@ public interface RecruitmentRequestMapper {
             @Mapping(target = "student", ignore = true),
     })
     void updateRecruitmentRequest(@MappingTarget RecruitmentRequest recruitmentRequest, RecruitmentRequestCreationRequest recruitmentRequestCreationRequest);
+
+    RecruitmentRequestResponse toRecruitmentRequestResponse(RecruitmentRequest recruitmentRequest);
 }
 

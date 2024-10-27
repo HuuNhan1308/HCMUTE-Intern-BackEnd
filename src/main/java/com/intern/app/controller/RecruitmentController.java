@@ -8,7 +8,9 @@ import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
 import com.intern.app.models.dto.response.RecruitmentResponse;
 import com.intern.app.models.dto.response.RecruitmentResponseShort;
 import com.intern.app.models.dto.response.ReturnResult;
+import com.intern.app.services.implement.PagingService;
 import com.intern.app.services.implement.RecruitmentService;
+import com.intern.app.services.interfaces.IPagingService;
 import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class RecruitmentController {
+    IPagingService pagingService;
     IRecruitmentService recruitmentService;
 
     @PostMapping("/CreateRecruitment")
@@ -39,7 +42,7 @@ public class RecruitmentController {
 
     @PostMapping("/GetRecruitmentPaging")
     public ResponseEntity<ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>>> GetRecruitmentPaging(@RequestBody PageConfig pageConfig) {
-        ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> result = recruitmentService.GetRecruitmentPaging(pageConfig);
+        ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> result = pagingService.GetRecruitmentPaging(pageConfig);
 
         return ResponseEntity.ok().body(result);
     }
