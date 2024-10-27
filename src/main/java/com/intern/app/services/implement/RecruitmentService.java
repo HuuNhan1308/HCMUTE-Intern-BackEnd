@@ -6,7 +6,6 @@ import com.intern.app.mapper.BusinessMapper;
 import com.intern.app.mapper.RecruitmentMapper;
 import com.intern.app.mapper.RecruitmentRequestMapper;
 import com.intern.app.models.dto.datamodel.FilterMapping;
-import com.intern.app.models.dto.datamodel.FilterSpecification;
 import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
@@ -24,11 +23,6 @@ import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -63,7 +58,7 @@ public class RecruitmentService implements IRecruitmentService {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
-        Optional<Profile> profile = profileRepository.findByUsernameAndDeletedFalse(username);
+        Optional<Profile> profile = profileRepository.findByUsername(username);
 
         if(profile.isEmpty()) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
@@ -108,6 +103,9 @@ public class RecruitmentService implements IRecruitmentService {
             RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
                     .findByRecruitmentRequestId(recruitmentRequestCreationRequest.getRecruitmentRequestId())
                     .orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_REQUEST_NOT_EXIST));
+
+            if(!Objects.equals(recruitmentRequest.getStudent(), student))
+                throw new AppException(ErrorCode.UNAUTHORIZED);
 
             recruitmentRequestMapper.updateRecruitmentRequest(recruitmentRequest, recruitmentRequestCreationRequest);
 

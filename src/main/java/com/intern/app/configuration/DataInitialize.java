@@ -5,7 +5,6 @@ import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.models.dto.request.ProfileCreationRequest;
 import com.intern.app.models.entity.*;
 import com.intern.app.repository.*;
-import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -91,7 +90,7 @@ public class DataInitialize {
 
     private Profile createProfileIfNotExists(String userName, String password, String roleName) {
         Role role = roleRepository.findByRoleName(roleName).orElse(null);
-        if (profileRepository.findByUsernameAndDeletedFalse(userName).isEmpty()) {
+        if (profileRepository.findByUsername(userName).isEmpty()) {
 
             Profile profile = Profile.builder()
                     .username(userName)
@@ -107,7 +106,7 @@ public class DataInitialize {
             return profileRepository.save(profile);
         }
 
-        return profileRepository.findByUsernameAndDeletedFalse(userName).get();
+        return profileRepository.findByUsername(userName).get();
     }
 
     private void createBusinesses() {

@@ -115,7 +115,7 @@ public class AuthenticationService implements IAuthenticationService {
         ReturnResult<ProfileAuthenticationResponse> result = new ReturnResult<ProfileAuthenticationResponse>();
 
         Profile existProfile = profileRepository
-                .findByUsernameAndDeletedFalse(profileAuthenticationRequest.getUsername())
+                .findByUsername(profileAuthenticationRequest.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.LOGIN_FAIL_CREDENTIALS));
 
         boolean isPwMatch = passwordEncoder.matches(profileAuthenticationRequest.getPassword(),

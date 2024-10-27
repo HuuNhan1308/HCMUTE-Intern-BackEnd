@@ -19,7 +19,7 @@ public class Student extends BaseEntity {
     String studentId;
     Integer year;
     @Builder.Default
-    Boolean isSeekingIntern = false;
+    Boolean isSeekingIntern = true;
 
     @Temporal(TemporalType.DATE)
     Date dob;
