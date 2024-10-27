@@ -51,6 +51,7 @@ public class RecruitmentService implements IRecruitmentService {
     InstructorRepository instructorRepository;
     RecruitmentRequestRepository recruitmentRequestRepository;
     private final BusinessMapper businessMapper;
+    private final PagingService pagingService;
 
     @PreAuthorize("hasRole('BUSINESS')")
     public ReturnResult<Boolean> CreateRecruitment(RecruitmentCreationRequest recruitmentCreationRequest) {
@@ -122,7 +123,11 @@ public class RecruitmentService implements IRecruitmentService {
 
         List<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepository.findByStudentAndStatus(student, RequestStatus.PENDING);
 
-        recruitmentRequestRepository.softDeleteRange(recruitmentRequests);
+        recruitmentRequests = recruitmentRequests.stream()
+                .peek(recruitmentRequest -> recruitmentRequest.setBusinessStatus(RequestStatus.REJECT))
+                .toList();
+
+        recruitmentRequestRepository.saveAll(recruitmentRequests);
 
         result.setCode(200);
         result.setResult(true);
@@ -130,48 +135,7 @@ public class RecruitmentService implements IRecruitmentService {
         return result;
     }
 
-    public ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetRecruitmentPaging(PageConfig pageConfig) {
-        var result = new ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>>();
 
-        FilterSpecification<Recruitment> filter = new FilterSpecification<>();
-        Specification<Recruitment> recruitmentFilter = filter.GetSearchSpecification(pageConfig.getFilters());
-
-        Sort sort = pageConfig.getSortAndNewItem();
-        Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
-
-        Page<Recruitment> recruitmentPage = recruitmentRepository.findAll(recruitmentFilter, pageable);
-
-        //Convert result to response
-        List<RecruitmentResponseShort> recruitmentResponsesShort = recruitmentPage.getContent().stream()
-                .map(recruitment -> {
-                    RecruitmentResponseShort recruitmentResponseShort = recruitmentMapper.toRecruitmentResponseShort(recruitment);
-                    recruitmentResponseShort.setBusinessName(recruitment.getBusiness().getName());
-                    return recruitmentResponseShort;
-                }).toList();
-
-        // Set data for page
-        PageConfig pageConfigResult = PageConfig
-                .builder()
-                .pageSize(recruitmentPage.getSize())
-                .totalRecords((int) recruitmentPage.getTotalElements())
-                .totalPage(recruitmentPage.getTotalPages())
-                .currentPage(recruitmentPage.getNumber())
-                .orders(pageConfig.getOrders())
-                .filters(pageConfig.getFilters())
-                .build();
-
-        // Build the PagedData object
-        result.setResult(
-                PagedData.<RecruitmentResponseShort, PageConfig>builder()
-                        .data(recruitmentResponsesShort)
-                        .pageConfig(pageConfigResult)
-                        .build()
-        );
-
-        result.setCode(200);
-
-        return result;
-    }
 
     public ReturnResult<RecruitmentResponse> GetRecruitmentById(String recruitmentId){
         var result = new ReturnResult<RecruitmentResponse>();
@@ -223,7 +187,7 @@ public class RecruitmentService implements IRecruitmentService {
 
         customPageConfig.setFilters(filterMappings);
 
-        var data = this.GetRecruitmentPaging(customPageConfig).getResult();
+        var data = pagingService.GetRecruitmentPaging(customPageConfig).getResult();
 
         // Set data for page
         PageConfig pageConfigResult = PageConfig
