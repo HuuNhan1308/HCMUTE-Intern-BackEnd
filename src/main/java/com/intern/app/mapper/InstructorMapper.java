@@ -9,8 +9,13 @@ import com.intern.app.models.entity.Student;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
 public interface InstructorMapper {
+    @Mappings({
+            @Mapping(target = "recommendedBusinesses", ignore = true),
+            @Mapping(target = "instructorRequests", ignore = true),
+    })
     InstructorResponse toInstructorResponse(Instructor instructor);
 }

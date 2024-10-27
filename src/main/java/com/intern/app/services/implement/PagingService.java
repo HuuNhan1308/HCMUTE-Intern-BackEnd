@@ -1,18 +1,14 @@
 package com.intern.app.services.implement;
 
+import com.intern.app.exception.AppException;
+import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.*;
 import com.intern.app.models.dto.datamodel.FilterSpecification;
 import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.response.*;
-import com.intern.app.models.entity.InstructorRequest;
-import com.intern.app.models.entity.Recruitment;
-import com.intern.app.models.entity.RecruitmentRequest;
-import com.intern.app.models.entity.Student;
-import com.intern.app.repository.InstructorRequestRepository;
-import com.intern.app.repository.RecruitmentRepository;
-import com.intern.app.repository.RecruitmentRequestRepository;
-import com.intern.app.repository.StudentRepository;
+import com.intern.app.models.entity.*;
+import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IPagingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +39,8 @@ public class PagingService implements IPagingService {
     InstructorMapper instructorMapper;
     RecruitmentMapper recruitmentMapper;
     RecruitmentRequestMapper recruitmentRequestMapper;
+    InstructorRepository instructorRepository;
+    FacultyMapper facultyMapper;
 
     public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetInstructorsRequestPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>();
@@ -214,6 +212,78 @@ public class PagingService implements IPagingService {
                         .pageConfig(pageConfigResult)
                         .build()
         );
+        return result;
+    }
+
+    public ReturnResult<PagedData<InstructorResponse, PageConfig>> GetInstructorsPaging(PageConfig pageConfig) {
+        var result = new ReturnResult<PagedData<InstructorResponse, PageConfig>>();
+
+        //Specification
+        FilterSpecification<Instructor> filter = new FilterSpecification<>();
+        Specification<Instructor> instructorSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
+
+        //Sort
+        Sort sort = pageConfig.getSortAndNewItem();
+
+        List<Instructor> instructors;
+        Page<Instructor> instructorPage = null;
+        if (pageConfig.getPageSize() == -1) {
+            // Fetch all elements when pageSize is -1
+            pageConfig.setCurrentPage(1);
+            instructors= instructorRepository.findAll(instructorSpecification, sort);
+        } else {
+            // Fetch paginated data
+            Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+            instructorPage = instructorRepository.findAll(instructorSpecification, pageable);
+            instructors = instructorPage.getContent();
+        }
+
+        // transform data to response DTO
+        List<InstructorResponse> instructorResponses = instructors.stream().map(instructor -> {
+            InstructorResponse instructorResponse = instructorMapper.toInstructorResponse(instructor);
+            ProfileResponse profileResponse = profileMapper.toProfileResponse(instructor.getProfile());
+            FacultyResponse facultyResponse = facultyMapper.toFacultyResponse(instructor.getFaculty());
+
+            instructorResponse.setProfile(profileResponse);
+            instructorResponse.setFaculty(facultyResponse);
+
+            return instructorResponse;
+        }).toList();
+
+        // Set data for page
+        PageConfig pageConfigResult;
+        if(pageConfig.getPageSize() == -1) {
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(instructors.size())
+                    .totalRecords(instructors.size())
+                    .totalPage(1)
+                    .currentPage(1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+
+        } else {
+            if(instructorPage == null) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+            pageConfigResult = PageConfig
+                    .builder()
+                    .pageSize(instructorPage.getSize())
+                    .totalRecords((int) instructorPage.getTotalElements())
+                    .totalPage(instructorPage.getTotalPages())
+                    .currentPage(instructorPage.getNumber())
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        }
+
+        // Build the PagedData object
+        result.setResult(
+                PagedData.<InstructorResponse, PageConfig>builder()
+                        .data(instructorResponses)
+                        .pageConfig(pageConfigResult)
+                        .build()
+        );
+
         return result;
     }
 }
