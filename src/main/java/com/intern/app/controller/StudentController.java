@@ -3,16 +3,15 @@ package com.intern.app.controller;
 import com.intern.app.exception.AppException;
 import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
-import com.intern.app.models.dto.datamodel.StudentPageConfig;
 import com.intern.app.models.dto.request.StudentCreationRequest;
 import com.intern.app.models.dto.request.StudentUpdateRequest;
 import com.intern.app.models.dto.response.InstructorRequestResponse;
+import com.intern.app.models.dto.response.RecruitmentRequestResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
-import com.intern.app.services.implement.ExcelUploadService;
-import com.intern.app.services.implement.StudentService;
-import com.intern.app.services.implement.UploadService;
 
+import com.intern.app.services.interfaces.IExcelUploadService;
+import com.intern.app.services.interfaces.IPagingService;
 import com.intern.app.services.interfaces.IStudentService;
 import com.intern.app.services.interfaces.IUploadService;
 import lombok.AccessLevel;
@@ -28,7 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(path = "/api/student")
 @AllArgsConstructor
 public class StudentController {
-    private final ExcelUploadService excelUploadService;
+    IExcelUploadService excelUploadService;
+    IPagingService pagingService;
     IStudentService studentService;
     IUploadService uploadService;
 
@@ -61,7 +61,7 @@ public class StudentController {
     @PostMapping("/GetStudentPaging")
     public ResponseEntity<ReturnResult<PagedData<StudentResponse, PageConfig>>> GetStudentPaging(
             @RequestBody PageConfig page) {
-        ReturnResult<PagedData<StudentResponse, PageConfig>> result = studentService.GetStudentPaging(page);
+        ReturnResult<PagedData<StudentResponse, PageConfig>> result = pagingService.GetStudentPaging(page);
 
         return ResponseEntity.ok().body(result);
     }
@@ -90,6 +90,13 @@ public class StudentController {
     @PostMapping("GetAllStudentInstructorsRequestPaging")
     public ResponseEntity<ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>> GetAllStudentInstructorsRequestPaging(@RequestBody PageConfig page) {
         ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> result = studentService.GetAllStudentInstructorsRequestPaging(page);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("GetAllStudentRecruitmentsRequestPaging")
+    public ResponseEntity<ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>>> GetAllStudentRecruitmentsRequestPaging(@RequestBody PageConfig page) {
+        ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> result = studentService.GetAllStudentRecruitmentsRequestPaging(page);
 
         return ResponseEntity.ok().body(result);
     }
