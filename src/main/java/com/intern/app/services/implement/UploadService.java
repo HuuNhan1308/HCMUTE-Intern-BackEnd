@@ -36,7 +36,7 @@ public class UploadService implements IUploadService {
             throw new AppException(ErrorCode.INVALID_FILE);
         }
 
-        Profile profile = profileRepository.findByUsernameAndDeletedFalse(username)
+        Profile profile = profileRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         UploadContent uploadContent = profile.getUploadContent();

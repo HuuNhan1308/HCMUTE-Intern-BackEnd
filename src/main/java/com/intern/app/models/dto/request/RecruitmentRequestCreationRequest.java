@@ -11,8 +11,9 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RecruitmentRequestCreationRequest {
-    String messageToBusiness;
+    String recruitmentRequestId;
 
+    String messageToBusiness;
     String recruitmentId;
 }
 
