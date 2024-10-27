@@ -6,6 +6,7 @@ import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.datamodel.StudentPageConfig;
 import com.intern.app.models.dto.request.StudentCreationRequest;
 import com.intern.app.models.dto.request.StudentUpdateRequest;
+import com.intern.app.models.dto.response.InstructorRequestResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
 import com.intern.app.services.implement.ExcelUploadService;
@@ -82,6 +83,13 @@ public class StudentController {
     @PostMapping("/ImportStudents")
     public ResponseEntity<ReturnResult<Boolean>> ImportStudents(@RequestParam("file")MultipartFile file) {
         ReturnResult<Boolean> result = excelUploadService.ImportStudents(file);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("GetAllStudentInstructorsRequestPaging")
+    public ResponseEntity<ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>> GetAllStudentInstructorsRequestPaging(@RequestBody PageConfig page) {
+        ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> result = studentService.GetAllStudentInstructorsRequestPaging(page);
 
         return ResponseEntity.ok().body(result);
     }
