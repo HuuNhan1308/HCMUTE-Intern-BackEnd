@@ -152,9 +152,14 @@ public class InstructorService implements IInstructorService {
         InstructorRequest instructorRequest = instructorRequestRepository.findByInstructorRequestId(instructorRequestId)
                 .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_REQUEST_NOT_FOUND));
 
-        List<InstructorRequest> pendingInstructorRequests = instructorRequestRepository.findAllByStudentStudentIdAndInstructorStatus(instructorRequest.getStudent().getStudentId(), RequestStatus.PENDING);
+        List<InstructorRequest> pendingInstructorRequests = instructorRequestRepository
+                .findAllByStudentStudentIdAndInstructorStatus(instructorRequest.getStudent().getStudentId(), RequestStatus.PENDING);
 
-        instructorRequestRepository.softDeleteRange(pendingInstructorRequests);
+        pendingInstructorRequests = pendingInstructorRequests.stream()
+                .peek(pendingInstructorRequest -> pendingInstructorRequest.setInstructorStatus(RequestStatus.REJECT))
+                .toList();
+
+        instructorRequestRepository.saveAll(pendingInstructorRequests);
 
         result.setResult(Boolean.TRUE);
         result.setCode(200);
