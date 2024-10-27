@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -13,18 +13,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Major extends BaseEntity {
+public class Internship extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String majorId;
+    String internshipId;
 
-    String name;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "major")
-    List<Student> students;
-
+    Date startDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FacultyId")
-    Faculty faculty;
+    @JoinColumn(name = "StudentId", nullable = false)
+    Student student;
 }

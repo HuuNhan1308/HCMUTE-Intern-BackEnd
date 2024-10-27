@@ -8,6 +8,7 @@ import com.intern.app.models.dto.request.StudentCreationRequest;
 import com.intern.app.models.dto.request.StudentUpdateRequest;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
+import com.intern.app.services.implement.ExcelUploadService;
 import com.intern.app.services.implement.StudentService;
 import com.intern.app.services.implement.UploadService;
 
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(path = "/api/student")
 @AllArgsConstructor
 public class StudentController {
+    private final ExcelUploadService excelUploadService;
     IStudentService studentService;
     IUploadService uploadService;
 
@@ -70,10 +72,16 @@ public class StudentController {
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("UploadCV")
+    @PostMapping("/UploadCV")
     public ResponseEntity<ReturnResult<Boolean>> UploadCV(@RequestParam("cv") MultipartFile cv) throws AppException {
-
         ReturnResult<Boolean> result = uploadService.UploadCV(cv);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/ImportStudents")
+    public ResponseEntity<ReturnResult<Boolean>> ImportStudents(@RequestParam("file")MultipartFile file) {
+        ReturnResult<Boolean> result = excelUploadService.ImportStudents(file);
 
         return ResponseEntity.ok().body(result);
     }

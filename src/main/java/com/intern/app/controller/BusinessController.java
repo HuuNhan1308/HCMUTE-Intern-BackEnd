@@ -4,8 +4,7 @@ import com.intern.app.models.dto.request.BusinessCreationRequest;
 import com.intern.app.models.dto.request.BusinessUpdateRequest;
 import com.intern.app.models.dto.response.BusinessResponse;
 import com.intern.app.models.dto.response.ReturnResult;
-import com.intern.app.models.enums.RecruitmentRequestStatus;
-import com.intern.app.services.implement.BusinessService;
+import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.services.interfaces.IBusinessService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -56,8 +55,8 @@ public class BusinessController {
     }
 
     @PostMapping("/SetRecruitmentRequestStatus/{recruitmentRequestId}")
-    public ResponseEntity<ReturnResult<Boolean>> SetRecruitmentRequestStatus(@RequestBody RecruitmentRequestStatus recruitmentRequestStatus, @PathVariable String recruitmentRequestId) {
-        ReturnResult<Boolean> result = businessService.SetRecruitmentRequestStatus(recruitmentRequestStatus, recruitmentRequestId);
+    public ResponseEntity<ReturnResult<Boolean>> SetRecruitmentRequestStatus(@RequestBody RequestStatus requestStatus, @PathVariable String recruitmentRequestId) {
+        ReturnResult<Boolean> result = businessService.SetRecruitmentRequestStatus(requestStatus, recruitmentRequestId);
 
         return ResponseEntity.ok().body(result);
     }

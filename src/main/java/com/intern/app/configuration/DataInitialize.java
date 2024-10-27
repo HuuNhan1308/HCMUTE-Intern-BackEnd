@@ -313,7 +313,8 @@ public class DataInitialize {
     }
 
     private void createPermissions() {
-        List<String> permissions = List.of("PERMISSION_1", "PERMISSION_2", "PERMISSION_3", "PERMISSION_4", "PERMISSION_5");
+        List<String> permissions = List.of("CREATE_ACCOUNT", "CREATE_MAJOR", "CREATE_FACTULTY", "IMPORT_STUDENT",
+                "UPDATE_BUSINESS_PROFILE", "SET_RECRUITMENT_BUSINESS_STATUS", "REQUEST_RECRUITMENT");
 
         permissions.forEach(permission -> {
              if(permissionRepository.findByNameAndDeletedFalse(permission).isEmpty()) {

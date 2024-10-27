@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum RecruitmentRequestStatus {
+public enum RequestStatus {
     PENDING,
     REJECT,
     APPROVED,

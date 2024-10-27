@@ -1,6 +1,5 @@
 package com.intern.app.models.dto.request;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,9 +9,8 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RecruitmentRequestCreationRequest {
-    String messageToBusiness;
+public class InstructorRequestCreationRequest {
+    String messageToInstructor;
 
-    String recruitmentId;
+    String instructorId;
 }
-

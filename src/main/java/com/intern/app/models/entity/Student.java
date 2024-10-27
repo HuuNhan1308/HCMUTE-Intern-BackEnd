@@ -28,10 +28,20 @@ public class Student extends BaseEntity {
     @JoinColumn(name = "MajorId")
     Major major;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FacultyId")
+    Faculty faculty;
+
     @OneToOne()
     @JoinColumn(name = "ProfileId", referencedColumnName = "profileId",nullable = false)
     Profile profile;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "student")
     List<RecruitmentRequest> recruitmentRequests;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "student")
+    List<InstructorRequest> instructorRequest;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "student")
+    List<Internship> internships;
 }

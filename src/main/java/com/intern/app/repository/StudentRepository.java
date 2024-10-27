@@ -15,6 +15,7 @@ import java.util.Optional;
 public interface StudentRepository extends AppRepository<Student, String>, JpaSpecificationExecutor<Student> {
     Optional<Student> findByProfile(Profile profile);
 
+
     @Query(value = "SELECT s.* FROM Student s JOIN Profile p ON s.profile_id = p.profile_id " +
             "JOIN Major m ON s.major_id = m.major_id " +
             "WHERE LOWER(p.fullname) LIKE LOWER(CONCAT('%', :fullname, '%')) " +
