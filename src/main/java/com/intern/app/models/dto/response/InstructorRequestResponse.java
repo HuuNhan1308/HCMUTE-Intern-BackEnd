@@ -10,8 +10,9 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProfileAuthenticationResponse {
-    boolean isAuthenticated;
-    String token;
+public class InstructorRequestResponse {
+    StudentResponse student;
+    InstructorResponse instructor;
+    RequestStatus instructorStatus;
+    String messageToInstructor;
 }
-
