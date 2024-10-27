@@ -76,7 +76,6 @@ public class BusinessService implements IBusinessService {
         return result;
     }
 
-    //Cần phải test các case RecruitmentRequestStatus khác nhau khi gửi từ postman
     @PreAuthorize("hasAuthority('SET_RECRUITMENT_BUSINESS_STATUS')")
     public ReturnResult<Boolean> SetRecruitmentRequestStatus(RequestStatus requestStatus, String recruitmentRequestId) {
         var result = new ReturnResult<Boolean>();
@@ -89,12 +88,10 @@ public class BusinessService implements IBusinessService {
             throw new AppException(ErrorCode.RECRUITMENT_REQUEST_NOT_EXIST);
         }
 
-        Profile profile = profileRepository.findByUsernameAndDeletedFalse(username).orElse(null);
-        if(profile == null) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
+        Business business = profileRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))
+                .getBusiness();
 
-        Business business = profile.getBusiness();
         if(business == null) {
             throw new AppException(ErrorCode.BUSINESS_NOT_FOUND);
         }
