@@ -50,8 +50,9 @@ public class RecruitmentService implements IRecruitmentService {
     RecruitmentRepository recruitmentRepository;
     InstructorRepository instructorRepository;
     RecruitmentRequestRepository recruitmentRequestRepository;
-    private final BusinessMapper businessMapper;
-    private final PagingService pagingService;
+    BusinessMapper businessMapper;
+    StudentRepository studentRepository;
+    PagingService pagingService;
 
     @PreAuthorize("hasRole('BUSINESS')")
     public ReturnResult<Boolean> CreateRecruitment(RecruitmentCreationRequest recruitmentCreationRequest) {
@@ -86,33 +87,34 @@ public class RecruitmentService implements IRecruitmentService {
     public ReturnResult<Boolean> RequestRecruitment(RecruitmentRequestCreationRequest recruitmentRequestCreationRequest) {
         var result = new ReturnResult<Boolean>();
 
-        RecruitmentRequest recruitmentRequest = recruitmentRequestMapper.toRecruitmentRequest(recruitmentRequestCreationRequest);
-
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
+        Student student = studentRepository.findById(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        Profile profile = profileRepository.findByUsernameAndDeletedFalse(username).orElse(null);
-        Recruitment recruitment = recruitmentRepository.findByRecruitmentIdAndDeletedFalse(recruitmentRequestCreationRequest.getRecruitmentId()).orElse(null);
+        if(recruitmentRequestCreationRequest.getRecruitmentRequestId() == null) {
+            //CASE ADD
+            RecruitmentRequest recruitmentRequest = recruitmentRequestMapper.toRecruitmentRequest(recruitmentRequestCreationRequest);
+            Recruitment recruitment = recruitmentRepository.findByRecruitmentId(recruitmentRequestCreationRequest.getRecruitmentId())
+                    .orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_NOT_FOUND));
 
-        if(profile == null) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
-
-        if(profile.getStudent() == null) {
-            throw new AppException(ErrorCode.STUDENT_NOT_FOUND);
-        }
-        recruitmentRequest.setStudent(profile.getStudent());
-
-        if(recruitment == null) {
-            throw new AppException(ErrorCode.RECRUITMENT_NOT_FOUND);
-        } else {
+            recruitmentRequest.setStudent(student);
             recruitmentRequest.setRecruitment(recruitment);
             recruitmentRequest.setBusinessStatus(RequestStatus.PENDING);
+
+            recruitmentRequestRepository.save(recruitmentRequest);
+        } else {
+            // CASE EDIT
+            RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
+                    .findByRecruitmentRequestId(recruitmentRequestCreationRequest.getRecruitmentRequestId())
+                    .orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_REQUEST_NOT_EXIST));
+
+            recruitmentRequestMapper.updateRecruitmentRequest(recruitmentRequest, recruitmentRequestCreationRequest);
+
+            recruitmentRequestRepository.save(recruitmentRequest);
         }
 
-        RecruitmentRequest saved = recruitmentRequestRepository.save(recruitmentRequest);
-
-        result.setResult(saved.getRecruitmentRequestId() != null);
+        result.setResult(Boolean.TRUE);
         result.setCode(200);
 
         return result;
@@ -140,7 +142,7 @@ public class RecruitmentService implements IRecruitmentService {
     public ReturnResult<RecruitmentResponse> GetRecruitmentById(String recruitmentId){
         var result = new ReturnResult<RecruitmentResponse>();
 
-        Recruitment recruitment = recruitmentRepository.findByRecruitmentIdAndDeletedFalse(recruitmentId).orElse(null);
+        Recruitment recruitment = recruitmentRepository.findByRecruitmentId(recruitmentId).orElse(null);
         if(recruitment == null) {
             throw new AppException(ErrorCode.RECRUITMENT_NOT_FOUND);
         }

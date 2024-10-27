@@ -17,6 +17,6 @@ import java.util.Optional;
 public interface RecruitmentRepository extends AppRepository<Recruitment, String>, JpaSpecificationExecutor<Recruitment> {
 
     Optional<Recruitment> findByTitle(String title);
-    Optional<Recruitment> findByRecruitmentIdAndDeletedFalse(String id);
+    Optional<Recruitment> findByRecruitmentId(String id);
     Page<Recruitment> findAllByBusinessBusinessId(Specification<Recruitment> spec, Pageable pageable, String businessId);
 }
