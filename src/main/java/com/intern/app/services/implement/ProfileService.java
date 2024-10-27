@@ -56,7 +56,7 @@ public class ProfileService implements IProfileService {
 
     public ReturnResult<Boolean> ChangePassword(String oldPassword, String newPassword, String username) {
         var result = new ReturnResult<Boolean>();
-        Profile profile = profileRepository.findByUsernameAndDeletedFalse(username).orElse(null);
+        Profile profile = profileRepository.findByUsername(username).orElse(null);
 
         if(profile == null) {
             throw new AppException(ErrorCode.INVALID_TOKEN);

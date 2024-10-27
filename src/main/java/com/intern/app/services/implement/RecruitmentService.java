@@ -6,7 +6,6 @@ import com.intern.app.mapper.BusinessMapper;
 import com.intern.app.mapper.RecruitmentMapper;
 import com.intern.app.mapper.RecruitmentRequestMapper;
 import com.intern.app.models.dto.datamodel.FilterMapping;
-import com.intern.app.models.dto.datamodel.FilterSpecification;
 import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
@@ -24,11 +23,6 @@ import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -50,7 +45,9 @@ public class RecruitmentService implements IRecruitmentService {
     RecruitmentRepository recruitmentRepository;
     InstructorRepository instructorRepository;
     RecruitmentRequestRepository recruitmentRequestRepository;
-    private final BusinessMapper businessMapper;
+    BusinessMapper businessMapper;
+    StudentRepository studentRepository;
+    PagingService pagingService;
 
     @PreAuthorize("hasRole('BUSINESS')")
     public ReturnResult<Boolean> CreateRecruitment(RecruitmentCreationRequest recruitmentCreationRequest) {
@@ -61,7 +58,7 @@ public class RecruitmentService implements IRecruitmentService {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
-        Optional<Profile> profile = profileRepository.findByUsernameAndDeletedFalse(username);
+        Optional<Profile> profile = profileRepository.findByUsername(username);
 
         if(profile.isEmpty()) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
@@ -85,33 +82,37 @@ public class RecruitmentService implements IRecruitmentService {
     public ReturnResult<Boolean> RequestRecruitment(RecruitmentRequestCreationRequest recruitmentRequestCreationRequest) {
         var result = new ReturnResult<Boolean>();
 
-        RecruitmentRequest recruitmentRequest = recruitmentRequestMapper.toRecruitmentRequest(recruitmentRequestCreationRequest);
-
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
+        Student student = studentRepository.findById(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        Profile profile = profileRepository.findByUsernameAndDeletedFalse(username).orElse(null);
-        Recruitment recruitment = recruitmentRepository.findByRecruitmentIdAndDeletedFalse(recruitmentRequestCreationRequest.getRecruitmentId()).orElse(null);
+        if(recruitmentRequestCreationRequest.getRecruitmentRequestId() == null) {
+            //CASE ADD
+            RecruitmentRequest recruitmentRequest = recruitmentRequestMapper.toRecruitmentRequest(recruitmentRequestCreationRequest);
+            Recruitment recruitment = recruitmentRepository.findByRecruitmentId(recruitmentRequestCreationRequest.getRecruitmentId())
+                    .orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_NOT_FOUND));
 
-        if(profile == null) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
-
-        if(profile.getStudent() == null) {
-            throw new AppException(ErrorCode.STUDENT_NOT_FOUND);
-        }
-        recruitmentRequest.setStudent(profile.getStudent());
-
-        if(recruitment == null) {
-            throw new AppException(ErrorCode.RECRUITMENT_NOT_FOUND);
-        } else {
+            recruitmentRequest.setStudent(student);
             recruitmentRequest.setRecruitment(recruitment);
             recruitmentRequest.setBusinessStatus(RequestStatus.PENDING);
+
+            recruitmentRequestRepository.save(recruitmentRequest);
+        } else {
+            // CASE EDIT
+            RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
+                    .findByRecruitmentRequestId(recruitmentRequestCreationRequest.getRecruitmentRequestId())
+                    .orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_REQUEST_NOT_EXIST));
+
+            if(!Objects.equals(recruitmentRequest.getStudent(), student))
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+
+            recruitmentRequestMapper.updateRecruitmentRequest(recruitmentRequest, recruitmentRequestCreationRequest);
+
+            recruitmentRequestRepository.save(recruitmentRequest);
         }
 
-        RecruitmentRequest saved = recruitmentRequestRepository.save(recruitmentRequest);
-
-        result.setResult(saved.getRecruitmentRequestId() != null);
+        result.setResult(Boolean.TRUE);
         result.setCode(200);
 
         return result;
@@ -122,7 +123,11 @@ public class RecruitmentService implements IRecruitmentService {
 
         List<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepository.findByStudentAndStatus(student, RequestStatus.PENDING);
 
-        recruitmentRequestRepository.softDeleteRange(recruitmentRequests);
+        recruitmentRequests = recruitmentRequests.stream()
+                .peek(recruitmentRequest -> recruitmentRequest.setBusinessStatus(RequestStatus.REJECT))
+                .toList();
+
+        recruitmentRequestRepository.saveAll(recruitmentRequests);
 
         result.setCode(200);
         result.setResult(true);
@@ -130,53 +135,12 @@ public class RecruitmentService implements IRecruitmentService {
         return result;
     }
 
-    public ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetRecruitmentPaging(PageConfig pageConfig) {
-        var result = new ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>>();
 
-        FilterSpecification<Recruitment> filter = new FilterSpecification<>();
-        Specification<Recruitment> recruitmentFilter = filter.GetSearchSpecification(pageConfig.getFilters());
-
-        Sort sort = pageConfig.getSortAndNewItem();
-        Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
-
-        Page<Recruitment> recruitmentPage = recruitmentRepository.findAll(recruitmentFilter, pageable);
-
-        //Convert result to response
-        List<RecruitmentResponseShort> recruitmentResponsesShort = recruitmentPage.getContent().stream()
-                .map(recruitment -> {
-                    RecruitmentResponseShort recruitmentResponseShort = recruitmentMapper.toRecruitmentResponseShort(recruitment);
-                    recruitmentResponseShort.setBusinessName(recruitment.getBusiness().getName());
-                    return recruitmentResponseShort;
-                }).toList();
-
-        // Set data for page
-        PageConfig pageConfigResult = PageConfig
-                .builder()
-                .pageSize(recruitmentPage.getSize())
-                .totalRecords((int) recruitmentPage.getTotalElements())
-                .totalPage(recruitmentPage.getTotalPages())
-                .currentPage(recruitmentPage.getNumber())
-                .orders(pageConfig.getOrders())
-                .filters(pageConfig.getFilters())
-                .build();
-
-        // Build the PagedData object
-        result.setResult(
-                PagedData.<RecruitmentResponseShort, PageConfig>builder()
-                        .data(recruitmentResponsesShort)
-                        .pageConfig(pageConfigResult)
-                        .build()
-        );
-
-        result.setCode(200);
-
-        return result;
-    }
 
     public ReturnResult<RecruitmentResponse> GetRecruitmentById(String recruitmentId){
         var result = new ReturnResult<RecruitmentResponse>();
 
-        Recruitment recruitment = recruitmentRepository.findByRecruitmentIdAndDeletedFalse(recruitmentId).orElse(null);
+        Recruitment recruitment = recruitmentRepository.findByRecruitmentId(recruitmentId).orElse(null);
         if(recruitment == null) {
             throw new AppException(ErrorCode.RECRUITMENT_NOT_FOUND);
         }
@@ -223,7 +187,7 @@ public class RecruitmentService implements IRecruitmentService {
 
         customPageConfig.setFilters(filterMappings);
 
-        var data = this.GetRecruitmentPaging(customPageConfig).getResult();
+        var data = pagingService.GetRecruitmentPaging(customPageConfig).getResult();
 
         // Set data for page
         PageConfig pageConfigResult = PageConfig

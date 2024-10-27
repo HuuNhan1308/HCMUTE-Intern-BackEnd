@@ -22,6 +22,7 @@ public class Instructor extends BaseEntity{
     @JoinColumn(name = "FacultyId")
     Faculty faculty;
 
+
     @OneToOne()
     @JoinColumn(name = "ProfileId", referencedColumnName = "profileId",nullable = false)
     Profile profile;

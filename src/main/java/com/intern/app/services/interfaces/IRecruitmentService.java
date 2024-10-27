@@ -16,8 +16,6 @@ public interface IRecruitmentService {
 
     ReturnResult<Boolean> ClearAllStudentAvailableRecruitmentRequests(Student student);
 
-    ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetRecruitmentPaging(PageConfig pageConfig);
-
     ReturnResult<RecruitmentResponse> GetRecruitmentById(String recruitmentId);
 
     ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetAllBusinessRecruitmentPaging(PageConfig pageConfig);

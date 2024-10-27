@@ -7,6 +7,7 @@ import com.intern.app.models.dto.datamodel.StudentPageConfig;
 import com.intern.app.models.dto.request.StudentCreationRequest;
 import com.intern.app.models.dto.request.StudentUpdateRequest;
 import com.intern.app.models.dto.response.InstructorRequestResponse;
+import com.intern.app.models.dto.response.RecruitmentRequestResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.StudentResponse;
 
@@ -18,9 +19,8 @@ public interface IStudentService {
     ReturnResult<StudentResponse> GetStudentByUsername(String username);
     // NOT FINISH
     ReturnResult<Boolean> CreateStudent(StudentCreationRequest studentCreationRequest);
-    ReturnResult<PagedData<StudentResponse, PageConfig>> GetStudentPaging(PageConfig page);
     ReturnResult<Boolean> UpdateStudent(StudentUpdateRequest studentUpdateRequest);
 
-    ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetInstructorsRequestPaging(PageConfig pageConfig);
     ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetAllStudentInstructorsRequestPaging(PageConfig pageConfig);
+    ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllStudentRecruitmentsRequestPaging(PageConfig pageConfig);
 }

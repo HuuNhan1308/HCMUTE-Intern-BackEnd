@@ -10,7 +10,5 @@ import java.util.Optional;
 public interface ProfileRepository extends AppRepository<Profile, String> {
     Optional<Profile> findByUsernameAndPassword(String username, String password);
 
-    Optional<Profile> findByUsernameAndDeletedFalse(String username);
-
     Optional<Profile> findByUsername(String username);
 }
