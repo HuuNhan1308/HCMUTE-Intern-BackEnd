@@ -35,18 +35,11 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StudentService implements IStudentService {
     StudentRepository studentRepository;
-    AuthenticationService authenticationService;
     StudentMapper studentMapper;
-    FacultyMapper facultyMapper;
     ProfileMapper profileMapper;
     MajorMapper majorMapper;
-    UploadContentMapper uploadContentMapper;
     ProfileRepository profileRepository;
-    MajorRepository majorRepository;
-    FacultyRepository facultyRepository;
-    private final InstructorRequestRepository instructorRequestRepository;
-    private final InstructorRequestMapper instructorRequestMapper;
-    private final InstructorMapper instructorMapper;
+    PagingService pagingService;
 
     public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
@@ -104,44 +97,7 @@ public class StudentService implements IStudentService {
         return result;
     }
 
-    public ReturnResult<PagedData<StudentResponse, PageConfig>> GetStudentPaging(PageConfig pageConfig) {
-        var result = new ReturnResult<PagedData<StudentResponse, PageConfig>>();
 
-        FilterSpecification<Student> filter = new FilterSpecification<Student>();
-        Specification<Student> studentFilter = filter.GetSearchSpecification(pageConfig.getFilters());
-
-        Sort sort = pageConfig.getSort();
-        Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
-
-        Page<Student> studentPage = studentRepository.findAll(studentFilter, pageable);
-
-        // Convert Student entities to StudentResponse DTOs
-        List<StudentResponse> studentResponses = studentPage.getContent().stream()
-                .map(student -> {
-                    StudentResponse studentResponse = studentMapper.toStudentResponse(student);
-                    studentResponse.setProfile(profileMapper.toProfileResponse(student.getProfile()));
-                    return studentResponse;
-                })
-                .toList();
-
-        // Set data for page
-        PageConfig newPageConfig = PageConfig.builder()
-                .currentPage(studentPage.getNumber() + 1)
-                .pageSize(studentPage.getSize())
-                .totalRecords((int) studentPage.getTotalElements())
-                .totalPage(studentPage.getTotalPages())
-                .orders(pageConfig.getOrders())
-                .filters(pageConfig.getFilters())
-                .build();
-
-        // Build the PagedData object
-        result.setResult(PagedData.<StudentResponse, PageConfig>builder()
-                .data(studentResponses)
-                .pageConfig(newPageConfig)
-                .build());
-
-        return result;
-    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
     public ReturnResult<Boolean> UpdateStudent(StudentUpdateRequest studentUpdateRequest) {
@@ -166,48 +122,7 @@ public class StudentService implements IStudentService {
         return result;
     }
 
-    public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetInstructorsRequestPaging(PageConfig pageConfig) {
-        var result = new ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>();
 
-        //Get page config filter spec
-        FilterSpecification<InstructorRequest> filter = new FilterSpecification<InstructorRequest>();
-        Specification<InstructorRequest> instructorRequestSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
-
-        // get page config sort
-        Sort sort = pageConfig.getSort();
-        Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
-
-        Page<InstructorRequest> instructorRequests = instructorRequestRepository.findAll(instructorRequestSpecification, pageable);
-
-        List<InstructorRequestResponse> instructorRequestResponses = instructorRequests.stream().map(instructorRequest -> {
-            InstructorRequestResponse instructorRequestResponse = instructorRequestMapper.toInstructorRequestResponse(instructorRequest);
-            instructorRequestResponse.setInstructor(instructorMapper.toInstructorResponse(instructorRequest.getInstructor()));
-
-            return instructorRequestResponse;
-        }).toList();
-
-        // Set data for page
-        PageConfig pageConfigResult = PageConfig
-                .builder()
-                .pageSize(instructorRequests.getSize())
-                .totalRecords((int) instructorRequests.getTotalElements())
-                .totalPage(instructorRequests.getTotalPages())
-                .currentPage(instructorRequests.getNumber())
-                .orders(pageConfig.getOrders())
-                .filters(pageConfig.getFilters())
-                .build();
-
-        // Build the PagedData object
-        result.setResult(
-                PagedData.<InstructorRequestResponse, PageConfig>builder()
-                        .data(instructorRequestResponses)
-                        .pageConfig(pageConfigResult)
-                        .build()
-        );
-
-        result.setCode(HttpStatus.OK.value());
-        return result;
-    }
 
     @PreAuthorize("hasAnyRole('STUDENT')")
     public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetAllStudentInstructorsRequestPaging(PageConfig pageConfig) {
@@ -237,7 +152,7 @@ public class StudentService implements IStudentService {
 
         customPageConfig.setFilters(filterMappings);
 
-        var data = this.GetInstructorsRequestPaging(customPageConfig).getResult();
+        var data = pagingService.GetInstructorsRequestPaging(customPageConfig).getResult();
 
         // Set data for page
         PageConfig pageConfigResult = PageConfig
@@ -258,6 +173,60 @@ public class StudentService implements IStudentService {
                         .build()
         );
 
+        result.setCode(HttpStatus.OK.value());
+
+        return result;
+    }
+
+    @PreAuthorize("hasAnyRole('STUDENT')")
+    public ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllStudentRecruitmentsRequestPaging(PageConfig pageConfig) {
+        var result = new ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>>();
+
+        var context = SecurityContextHolder.getContext();
+        var username = context.getAuthentication().getName();
+        Student student = profileRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))
+                .getStudent();
+
+        // Clone the original PageConfig to keep the original unchanged
+        PageConfig customPageConfig = PageConfig.builder()
+                .pageSize(pageConfig.getPageSize())
+                .currentPage(pageConfig.getCurrentPage())
+                .orders(new ArrayList<>(pageConfig.getOrders()))
+                .filters(new ArrayList<>(pageConfig.getFilters()))
+                .build();
+
+        List<FilterMapping> filterMappings = customPageConfig.getFilters();
+        filterMappings.add(FilterMapping.builder()
+                .prop("student.studentId")
+                .value(student.getStudentId())
+                .type(FilterType.TEXT)
+                .operator(FilterOperator.EQUALS)
+                .build()
+        );
+
+        customPageConfig.setFilters(filterMappings);
+
+        var data = pagingService.GetRecruitmentRequestPaging(customPageConfig).getResult();
+
+        // Set data for page
+        PageConfig pageConfigResult = PageConfig
+                .builder()
+                .pageSize(data.getPageConfig().getPageSize())
+                .totalRecords(data.getPageConfig().getTotalRecords())
+                .totalPage(data.getPageConfig().getTotalPage())
+                .currentPage(data.getPageConfig().getCurrentPage())
+                .orders(pageConfig.getOrders())
+                .filters(pageConfig.getFilters())
+                .build();
+
+        // Build the PagedData object
+        result.setResult(
+                PagedData.<RecruitmentRequestResponse, PageConfig>builder()
+                        .data(data.getData())
+                        .pageConfig(pageConfigResult)
+                        .build()
+        );
         result.setCode(HttpStatus.OK.value());
 
         return result;
