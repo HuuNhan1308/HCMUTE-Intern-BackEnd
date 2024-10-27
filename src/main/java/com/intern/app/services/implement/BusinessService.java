@@ -84,7 +84,7 @@ public class BusinessService implements IBusinessService {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
-        RecruitmentRequest recruitmentRequest = recruitmentRequestRepository.findByRecruitmentRequestIdAndDeletedFalse(recruitmentRequestId).orElse(null);
+        RecruitmentRequest recruitmentRequest = recruitmentRequestRepository.findByRecruitmentRequestId(recruitmentRequestId).orElse(null);
         if(recruitmentRequest == null) {
             throw new AppException(ErrorCode.RECRUITMENT_REQUEST_NOT_EXIST);
         }

@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface RecruitmentRequestRepository extends AppRepository<RecruitmentRequest, String> {
-    Optional<RecruitmentRequest> findByRecruitmentRequestIdAndDeletedFalse(String recruitmentId);
+    Optional<RecruitmentRequest> findByRecruitmentRequestId(String recruitmentId);
 
     @Query("SELECT rr FROM RecruitmentRequest rr WHERE rr.student = :student AND rr.deleted = false AND rr.businessStatus = :status")
     List<RecruitmentRequest> findByStudentAndStatus(Student student, RequestStatus status);
