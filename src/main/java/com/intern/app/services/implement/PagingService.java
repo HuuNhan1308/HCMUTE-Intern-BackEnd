@@ -58,6 +58,7 @@ public class PagingService implements IPagingService {
         List<InstructorRequestResponse> instructorRequestResponses = instructorRequests.stream().map(instructorRequest -> {
             InstructorRequestResponse instructorRequestResponse = instructorRequestMapper.toInstructorRequestResponse(instructorRequest);
             instructorRequestResponse.setInstructor(instructorMapper.toInstructorResponse(instructorRequest.getInstructor()));
+            instructorRequestResponse.setStudent(studentMapper.toStudentResponse(instructorRequest.getStudent()));
 
             return instructorRequestResponse;
         }).toList();

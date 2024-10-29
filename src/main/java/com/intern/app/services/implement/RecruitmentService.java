@@ -155,7 +155,7 @@ public class RecruitmentService implements IRecruitmentService {
         return result;
     }
 
-    @PreAuthorize("hasAnyRole('BUSINESS')")
+    @PreAuthorize("hasAnyRole('BUSINESS', 'ADMIN')")
     public ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetAllBusinessRecruitmentPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>>();
 
