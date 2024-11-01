@@ -5,13 +5,15 @@ import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.FacultyMapper;
 import com.intern.app.mapper.InstructorRequestMapper;
 import com.intern.app.mapper.ProfileMapper;
+import com.intern.app.models.dto.datamodel.FilterMapping;
+import com.intern.app.models.dto.datamodel.PageConfig;
+import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
 import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
-import com.intern.app.models.dto.response.FacultyResponse;
-import com.intern.app.models.dto.response.InstructorResponse;
-import com.intern.app.models.dto.response.ProfileResponse;
-import com.intern.app.models.dto.response.ReturnResult;
+import com.intern.app.models.dto.response.*;
 import com.intern.app.models.entity.*;
+import com.intern.app.models.enums.FilterOperator;
+import com.intern.app.models.enums.FilterType;
 import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IInstructorService;
@@ -25,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,16 +35,16 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class InstructorService implements IInstructorService {
-    private static final Logger log = LoggerFactory.getLogger(InstructorService.class);
     ProfileService profileService;
     RoleRepository roleRepository;
     FacultyRepository facultyRepository;
     InstructorRepository instructorRepository;
-    ProfileMapper profileMapper;
-    FacultyMapper facultyMapper;
-    StudentRepository studentRepository;
     InstructorRequestRepository instructorRequestRepository;
-    private final InstructorRequestMapper instructorRequestMapper;
+    StudentRepository studentRepository;
+
+    InstructorRequestMapper instructorRequestMapper;
+    ProfileRepository profileRepository;
+    private final PagingService pagingService;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateInstructor(InstructorCreationRequest instructorCreationRequest) {
@@ -64,30 +67,6 @@ public class InstructorService implements IInstructorService {
 
         result.setResult(Boolean.TRUE);
         result.setCode(200);
-
-        return result;
-    }
-
-    public ReturnResult<List<InstructorResponse>> GetAllInstrutors() {
-        var result = new ReturnResult<List<InstructorResponse>>();
-
-        try {
-            List<InstructorResponse> instructorResponses = instructorRepository.findAll().stream().map(entity -> {
-                ProfileResponse profileResponse = profileMapper.toProfileResponse(entity.getProfile());
-                FacultyResponse facultyResponse = facultyMapper.toFacultyResponse(entity.getFaculty());
-
-                return InstructorResponse.builder()
-                        .faculty(facultyResponse)
-                        .profile(profileResponse)
-                        .build();
-            }).toList();
-
-            result.setResult(instructorResponses);
-            result.setCode(200);
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
 
         return result;
     }
@@ -194,6 +173,70 @@ public class InstructorService implements IInstructorService {
 
         result.setResult(Boolean.TRUE);
         result.setCode(200);
+
+        return result;
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
+    public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetAllInstructorRequestOfInstructorPaging(PageConfig pageConfig, String ínstructorId) {
+        var result  = new ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>();
+
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Instructor instructor;
+        if(profile.getRole().getRoleName().equals("ADMIN")) {
+            instructor = instructorRepository.findByInstructorId(ínstructorId)
+                    .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_NOT_FOUND));
+        } else {
+            instructor = profile.getInstructor();
+        }
+
+        if(instructor == null) {
+            throw new AppException(ErrorCode.INSTRUCTOR_NOT_FOUND);
+        }
+
+        // Clone the original PageConfig to keep the original unchanged
+        PageConfig customPageConfig = PageConfig.builder()
+                .pageSize(pageConfig.getPageSize())
+                .currentPage(pageConfig.getCurrentPage())
+                .orders(new ArrayList<>(pageConfig.getOrders()))
+                .filters(new ArrayList<>(pageConfig.getFilters()))
+                .build();
+
+        List<FilterMapping> filterMappings = customPageConfig.getFilters();
+        filterMappings.add(FilterMapping.builder()
+                .prop("instructor.instructorId")
+                .value(instructor.getInstructorId())
+                .type(FilterType.TEXT)
+                .operator(FilterOperator.EQUALS)
+                .build()
+        );
+
+        customPageConfig.setFilters(filterMappings);
+
+        var data = pagingService.GetInstructorsRequestPaging(customPageConfig).getResult();
+
+        // Set data for page
+        PageConfig pageConfigResult = PageConfig
+                .builder()
+                .pageSize(data.getPageConfig().getPageSize())
+                .totalRecords(data.getPageConfig().getTotalRecords())
+                .totalPage(data.getPageConfig().getTotalPage())
+                .currentPage(data.getPageConfig().getCurrentPage())
+                .orders(pageConfig.getOrders())
+                .filters(pageConfig.getFilters())
+                .build();
+
+        // Build the PagedData object
+        result.setResult(
+                PagedData.<InstructorRequestResponse, PageConfig>builder()
+                        .data(data.getData())
+                        .pageConfig(pageConfigResult)
+                        .build()
+        );
 
         return result;
     }

@@ -51,12 +51,23 @@ public class PagingService implements IPagingService {
         FilterSpecification<InstructorRequest> filter = new FilterSpecification<InstructorRequest>();
         Specification<InstructorRequest> instructorRequestSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
 
-        // get page config sort
-        Sort sort = pageConfig.getSort();
-        Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+        //Get sort
+        Sort sort = pageConfig.getSortAndNewItem();
 
-        Page<InstructorRequest> instructorRequests = instructorRequestRepository.findAll(instructorRequestSpecification, pageable);
+        List<InstructorRequest> instructorRequests;
+        Page<InstructorRequest> instructorRequestPage = null;
+        if (pageConfig.getPageSize() == -1) {
+            // Fetch all elements when pageSize is -1
+            pageConfig.setCurrentPage(1);
+            instructorRequests = instructorRequestRepository.findAll(instructorRequestSpecification, sort);
+        } else {
+            // Fetch paginated data
+            Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+            instructorRequestPage = instructorRequestRepository.findAll(instructorRequestSpecification, pageable);
+            instructorRequests = instructorRequestPage.getContent();
+        }
 
+        // transform data to response DTO
         List<InstructorRequestResponse> instructorRequestResponses = instructorRequests.stream().map(instructorRequest -> {
             InstructorRequestResponse instructorRequestResponse = instructorRequestMapper.toInstructorRequestResponse(instructorRequest);
             instructorRequestResponse.setInstructor(instructorMapper.toInstructorResponse(instructorRequest.getInstructor()));
@@ -65,16 +76,31 @@ public class PagingService implements IPagingService {
             return instructorRequestResponse;
         }).toList();
 
+
         // Set data for page
-        PageConfig pageConfigResult = PageConfig
-                .builder()
-                .pageSize(instructorRequests.getSize())
-                .totalRecords((int) instructorRequests.getTotalElements())
-                .totalPage(instructorRequests.getTotalPages())
-                .currentPage(instructorRequests.getNumber() + 1)
-                .orders(pageConfig.getOrders())
-                .filters(pageConfig.getFilters())
-                .build();
+        PageConfig pageConfigResult;
+        if(pageConfig.getPageSize() == -1) {
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(instructorRequests.size())
+                    .totalRecords(instructorRequests.size())
+                    .totalPage(1)
+                    .currentPage(1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        } else {
+            if(instructorRequestPage == null) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+            pageConfigResult = PageConfig
+                    .builder()
+                    .pageSize(instructorRequestPage.getSize())
+                    .totalRecords((int) instructorRequestPage.getTotalElements())
+                    .totalPage(instructorRequestPage.getTotalPages())
+                    .currentPage(instructorRequestPage.getNumber() + 1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        }
 
         // Build the PagedData object
         result.setResult(
@@ -91,37 +117,58 @@ public class PagingService implements IPagingService {
     public ReturnResult<PagedData<StudentResponse, PageConfig>> GetStudentPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<StudentResponse, PageConfig>>();
 
+        //Get specification
         FilterSpecification<Student> filter = new FilterSpecification<Student>();
-        Specification<Student> studentFilter = filter.GetSearchSpecification(pageConfig.getFilters());
+        Specification<Student> studentSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
 
-        Sort sort = pageConfig.getSort();
-        Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+        //Get sort
+        Sort sort = pageConfig.getSortAndNewItem();
 
-        Page<Student> studentPage = studentRepository.findAll(studentFilter, pageable);
+        List<Student> students;
+        Page<Student> studentPage = null;
+        if (pageConfig.getPageSize() == -1) {
+            // Fetch all elements when pageSize is -1
+            pageConfig.setCurrentPage(1);
+            students = studentRepository.findAll(studentSpecification, sort);
+        } else {
+            // Fetch paginated data
+            Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+            studentPage = studentRepository.findAll(studentSpecification, pageable);
+            students = studentPage.getContent();
+        }
 
-        // Convert Student entities to StudentResponse DTOs
-        List<StudentResponse> studentResponses = studentPage.getContent().stream()
-                .map(student -> {
-                    StudentResponse studentResponse = studentMapper.toStudentResponse(student);
-                    studentResponse.setProfile(profileMapper.toProfileResponse(student.getProfile()));
-                    return studentResponse;
-                })
-                .toList();
+        // transform data to response DTO
+        List<StudentResponse> studentResponses = students.stream().map(studentMapper::toStudentResponse).toList();
 
         // Set data for page
-        PageConfig newPageConfig = PageConfig.builder()
-                .currentPage(studentPage.getNumber() + 1)
-                .pageSize(studentPage.getSize())
-                .totalRecords((int) studentPage.getTotalElements())
-                .totalPage(studentPage.getTotalPages())
-                .orders(pageConfig.getOrders())
-                .filters(pageConfig.getFilters())
-                .build();
+        PageConfig pageConfigResult;
+        if(pageConfig.getPageSize() == -1) {
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(students.size())
+                    .totalRecords(students.size())
+                    .totalPage(1)
+                    .currentPage(1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        } else {
+            if(studentPage == null) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+            pageConfigResult = PageConfig
+                    .builder()
+                    .pageSize(studentPage.getSize())
+                    .totalRecords((int) studentPage.getTotalElements())
+                    .totalPage(studentPage.getTotalPages())
+                    .currentPage(studentPage.getNumber() + 1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        }
 
         // Build the PagedData object
         result.setResult(PagedData.<StudentResponse, PageConfig>builder()
                 .data(studentResponses)
-                .pageConfig(newPageConfig)
+                .pageConfig(pageConfigResult)
                 .build());
 
         return result;
@@ -131,36 +178,62 @@ public class PagingService implements IPagingService {
         var result = new ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>>();
 
         FilterSpecification<Recruitment> filter = new FilterSpecification<>();
-        Specification<Recruitment> recruitmentFilter = filter.GetSearchSpecification(pageConfig.getFilters());
+        Specification<Recruitment> recruitmentSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
 
+        //Sort
         Sort sort = pageConfig.getSortAndNewItem();
-        Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
 
-        Page<Recruitment> recruitmentPage = recruitmentRepository.findAll(recruitmentFilter, pageable);
+        List<Recruitment> recruitments;
+        Page<Recruitment> recruitmentPage = null;
+        if (pageConfig.getPageSize() == -1) {
+            // Fetch all elements when pageSize is -1
+            pageConfig.setCurrentPage(1);
+            recruitments = recruitmentRepository.findAll(recruitmentSpecification, sort);
+        } else {
+            // Fetch paginated data
+            Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+            recruitmentPage = recruitmentRepository.findAll(recruitmentSpecification, pageable);
+            recruitments = recruitmentPage.getContent();
+        }
 
-        //Convert result to response
-        List<RecruitmentResponseShort> recruitmentResponsesShort = recruitmentPage.getContent().stream()
-                .map(recruitment -> {
-                    RecruitmentResponseShort recruitmentResponseShort = recruitmentMapper.toRecruitmentResponseShort(recruitment);
-                    recruitmentResponseShort.setBusinessName(recruitment.getBusiness().getName());
-                    return recruitmentResponseShort;
-                }).toList();
+        // transform data to response DTO
+        List<RecruitmentResponseShort> recruitmentResponseShorts = recruitments.stream().map(recruitment -> {
+            RecruitmentResponseShort recruitmentResponseShort = recruitmentMapper.toRecruitmentResponseShort(recruitment);
+            recruitmentResponseShort.setBusinessName(recruitment.getBusiness().getName());
+            return recruitmentResponseShort;
+        }).toList();
+
 
         // Set data for page
-        PageConfig pageConfigResult = PageConfig
-                .builder()
-                .pageSize(recruitmentPage.getSize())
-                .totalRecords((int) recruitmentPage.getTotalElements())
-                .totalPage(recruitmentPage.getTotalPages())
-                .currentPage(recruitmentPage.getNumber() + 1)
-                .orders(pageConfig.getOrders())
-                .filters(pageConfig.getFilters())
-                .build();
+        PageConfig pageConfigResult;
+        if(pageConfig.getPageSize() == -1) {
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(recruitments.size())
+                    .totalRecords(recruitments.size())
+                    .totalPage(1)
+                    .currentPage(1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+
+        } else {
+            if(recruitmentPage == null) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+            pageConfigResult = PageConfig
+                    .builder()
+                    .pageSize(recruitmentPage.getSize())
+                    .totalRecords((int) recruitmentPage.getTotalElements())
+                    .totalPage(recruitmentPage.getTotalPages())
+                    .currentPage(recruitmentPage.getNumber() + 1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        }
 
         // Build the PagedData object
         result.setResult(
                 PagedData.<RecruitmentResponseShort, PageConfig>builder()
-                        .data(recruitmentResponsesShort)
+                        .data(recruitmentResponseShorts)
                         .pageConfig(pageConfigResult)
                         .build()
         );
@@ -179,34 +252,57 @@ public class PagingService implements IPagingService {
 
         //Sort
         Sort sort = pageConfig.getSortAndNewItem();
-        Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
 
-        //Get data from spec and sort
-        Page<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepository.findAll(recruitmentRequestSpecification, pageable);
+        List<RecruitmentRequest> recruitmentRequests;
+        Page<RecruitmentRequest> recruitmentRequestPage = null;
+        if (pageConfig.getPageSize() == -1) {
+            // Fetch all elements when pageSize is -1
+            pageConfig.setCurrentPage(1);
+            recruitmentRequests = recruitmentRequestRepository.findAll(recruitmentRequestSpecification, sort);
+        } else {
+            // Fetch paginated data
+            Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+            recruitmentRequestPage = recruitmentRequestRepository.findAll(recruitmentRequestSpecification, pageable);
+            recruitmentRequests = recruitmentRequestPage.getContent();
+        }
 
-        //Convert data to response object
-        List<RecruitmentRequestResponse> recruitmentRequestResponses = recruitmentRequests.getContent().stream()
-                .map(recruitmentRequest -> {
-                    RecruitmentRequestResponse recruitmentRequestResponse = recruitmentRequestMapper.toRecruitmentRequestResponse(recruitmentRequest);
-                    StudentResponse studentResponse = studentMapper.toStudentResponse(recruitmentRequest.getStudent());
-                    RecruitmentResponse recruitmentResponse = recruitmentMapper.toRecruitmentResponse(recruitmentRequest.getRecruitment());
+        // transform data to response DTO
+        List<RecruitmentRequestResponse> recruitmentRequestResponses = recruitmentRequests.stream().map(recruitmentRequest -> {
+            RecruitmentRequestResponse recruitmentRequestResponse = recruitmentRequestMapper.toRecruitmentRequestResponse(recruitmentRequest);
+            StudentResponse studentResponse = studentMapper.toStudentResponse(recruitmentRequest.getStudent());
+            RecruitmentResponse recruitmentResponse = recruitmentMapper.toRecruitmentResponse(recruitmentRequest.getRecruitment());
 
-                    recruitmentRequestResponse.setStudent(studentResponse);
-                    recruitmentRequestResponse.setRecruitment(recruitmentResponse);
+            recruitmentRequestResponse.setStudent(studentResponse);
+            recruitmentRequestResponse.setRecruitment(recruitmentResponse);
 
-                    return recruitmentRequestResponse;
-                }).toList();
+            return recruitmentRequestResponse;
+        }).toList();
 
         // Set data for page
-        PageConfig pageConfigResult = PageConfig
-                .builder()
-                .pageSize(recruitmentRequests.getSize())
-                .totalRecords((int) recruitmentRequests.getTotalElements())
-                .totalPage(recruitmentRequests.getTotalPages())
-                .currentPage(recruitmentRequests.getNumber() + 1)
-                .orders(pageConfig.getOrders())
-                .filters(pageConfig.getFilters())
-                .build();
+        PageConfig pageConfigResult;
+        if(pageConfig.getPageSize() == -1) {
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(recruitmentRequests.size())
+                    .totalRecords(recruitmentRequests.size())
+                    .totalPage(1)
+                    .currentPage(1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+
+        } else {
+            if(recruitmentRequestPage == null) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+            pageConfigResult = PageConfig
+                    .builder()
+                    .pageSize(recruitmentRequestPage.getSize())
+                    .totalRecords((int) recruitmentRequestPage.getTotalElements())
+                    .totalPage(recruitmentRequestPage.getTotalPages())
+                    .currentPage(recruitmentRequestPage.getNumber() + 1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        }
 
         // Build the PagedData object
         result.setResult(
