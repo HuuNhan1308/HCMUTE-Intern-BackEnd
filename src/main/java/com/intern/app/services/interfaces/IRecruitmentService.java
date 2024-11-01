@@ -18,5 +18,5 @@ public interface IRecruitmentService {
 
     ReturnResult<RecruitmentResponse> GetRecruitmentById(String recruitmentId);
 
-    ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetAllBusinessRecruitmentPaging(PageConfig pageConfig);
+    ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetAllBusinessRecruitmentPaging(PageConfig pageConfig, String businessId);
 }

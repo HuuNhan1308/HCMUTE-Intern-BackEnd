@@ -69,7 +69,7 @@ public class PagingService implements IPagingService {
                 .pageSize(instructorRequests.getSize())
                 .totalRecords((int) instructorRequests.getTotalElements())
                 .totalPage(instructorRequests.getTotalPages())
-                .currentPage(instructorRequests.getNumber())
+                .currentPage(instructorRequests.getNumber() + 1)
                 .orders(pageConfig.getOrders())
                 .filters(pageConfig.getFilters())
                 .build();
@@ -150,7 +150,7 @@ public class PagingService implements IPagingService {
                 .pageSize(recruitmentPage.getSize())
                 .totalRecords((int) recruitmentPage.getTotalElements())
                 .totalPage(recruitmentPage.getTotalPages())
-                .currentPage(recruitmentPage.getNumber())
+                .currentPage(recruitmentPage.getNumber() + 1)
                 .orders(pageConfig.getOrders())
                 .filters(pageConfig.getFilters())
                 .build();
@@ -201,7 +201,7 @@ public class PagingService implements IPagingService {
                 .pageSize(recruitmentRequests.getSize())
                 .totalRecords((int) recruitmentRequests.getTotalElements())
                 .totalPage(recruitmentRequests.getTotalPages())
-                .currentPage(recruitmentRequests.getNumber())
+                .currentPage(recruitmentRequests.getNumber() + 1)
                 .orders(pageConfig.getOrders())
                 .filters(pageConfig.getFilters())
                 .build();
@@ -271,7 +271,7 @@ public class PagingService implements IPagingService {
                     .pageSize(instructorPage.getSize())
                     .totalRecords((int) instructorPage.getTotalElements())
                     .totalPage(instructorPage.getTotalPages())
-                    .currentPage(instructorPage.getNumber())
+                    .currentPage(instructorPage.getNumber() + 1)
                     .orders(pageConfig.getOrders())
                     .filters(pageConfig.getFilters())
                     .build();

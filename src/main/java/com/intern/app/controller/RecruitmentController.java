@@ -55,8 +55,8 @@ public class RecruitmentController {
     }
 
     @PostMapping("/GetAllBusinessRecruitmentPaging")
-    public ResponseEntity<ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>>> GetAllBusinessRecruitmentPaging(@RequestBody PageConfig pageConfig) {
-        ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> result = recruitmentService.GetAllBusinessRecruitmentPaging(pageConfig);
+    public ResponseEntity<ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>>> GetAllBusinessRecruitmentPaging(@RequestBody PageConfig pageConfig, @RequestParam String businessId) {
+        ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> result = recruitmentService.GetAllBusinessRecruitmentPaging(pageConfig, businessId);
 
         return ResponseEntity.ok().body(result);
     }

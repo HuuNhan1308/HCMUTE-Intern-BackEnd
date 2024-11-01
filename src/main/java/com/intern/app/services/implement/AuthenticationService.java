@@ -3,10 +3,14 @@ package com.intern.app.services.implement;
 import com.intern.app.models.dto.request.ProfileAuthenticationRequest;
 import com.intern.app.models.dto.response.ProfileAuthenticationResponse;
 import com.intern.app.models.dto.response.ReturnResult;
+import com.intern.app.models.entity.Permission;
 import com.intern.app.models.entity.Profile;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
+import com.intern.app.models.entity.Role;
+import com.intern.app.repository.PermissionRepository;
 import com.intern.app.repository.ProfileRepository;
+import com.intern.app.repository.RoleRepository;
 import com.intern.app.services.interfaces.IAuthenticationService;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -33,6 +37,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthenticationService implements IAuthenticationService {
 
+    RoleRepository roleRepository;
+    PermissionRepository permissionRepository;
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String singerKey;
@@ -132,6 +138,27 @@ public class AuthenticationService implements IAuthenticationService {
                             .isAuthenticated(true)
                             .token(token)
                             .build());
+        }
+
+        return result;
+    }
+
+    @Override
+    public ReturnResult<Boolean> IsContainPermission(Profile profile, String permissionName) {
+        var result = new ReturnResult<Boolean>();
+
+        if(permissionName == null)
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+        boolean isContain = profile.getRole().getRolePermissions().stream()
+                .anyMatch(rolePermission -> rolePermission.getPermission().getName().equals(permissionName));
+
+        if(isContain) {
+            result.setResult(true);
+        }
+        else {
+            result.setResult(false);
+            result.setMessage("Tài khoản không có quyền: " + permissionName);
         }
 
         return result;

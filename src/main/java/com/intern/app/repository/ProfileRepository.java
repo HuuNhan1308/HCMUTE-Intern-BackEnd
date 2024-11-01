@@ -11,4 +11,5 @@ public interface ProfileRepository extends AppRepository<Profile, String> {
     Optional<Profile> findByUsernameAndPassword(String username, String password);
 
     Optional<Profile> findByUsername(String username);
+
 }
