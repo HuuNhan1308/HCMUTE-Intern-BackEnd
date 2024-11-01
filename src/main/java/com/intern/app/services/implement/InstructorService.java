@@ -3,6 +3,7 @@ package com.intern.app.services.implement;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.FacultyMapper;
+import com.intern.app.mapper.InstructorRequestMapper;
 import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
 import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
@@ -40,6 +41,7 @@ public class InstructorService implements IInstructorService {
     FacultyMapper facultyMapper;
     StudentRepository studentRepository;
     InstructorRequestRepository instructorRequestRepository;
+    private final InstructorRequestMapper instructorRequestMapper;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateInstructor(InstructorCreationRequest instructorCreationRequest) {
@@ -100,17 +102,46 @@ public class InstructorService implements IInstructorService {
         Instructor instructor = instructorRepository.findByInstructorId(instructorRequestCreationRequest.getInstructorId())
                 .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_NOT_FOUND));
 
-        InstructorRequest instructorRequest = InstructorRequest.builder()
-                .student(student)
-                .instructor(instructor)
-                .messageToInstructor(instructorRequestCreationRequest.getMessageToInstructor())
-                .instructorStatus(RequestStatus.PENDING)
-                .build();
 
-        instructorRequestRepository.save(instructorRequest);
 
-        result.setResult(Boolean.TRUE);
-        result.setCode(200);
+        if(instructorRequestCreationRequest.getInstructorRequestId() == null) {
+            // CASE ADD
+            InstructorRequest instructorRequest = instructorRequestRepository
+                    .findByStudentStudentIdAndInstructorInstructorIdAndInstructorStatus(
+                            student.getStudentId(),
+                            instructor.getInstructorId(),
+                            RequestStatus.PENDING
+                    )
+                    .orElse(null);
+
+            if(instructorRequest != null && instructorRequest.getInstructorStatus() == RequestStatus.PENDING) {
+                result.setResult(Boolean.FALSE);
+                result.setMessage("Bạn đã gửi yêu cầu cho giảng viên này rồi, vui lòng chờ đợi phản hồi");
+
+            } else {
+                instructorRequest = InstructorRequest.builder()
+                        .student(student)
+                        .instructor(instructor)
+                        .messageToInstructor(instructorRequestCreationRequest.getMessageToInstructor())
+                        .instructorStatus(RequestStatus.PENDING)
+                        .build();
+
+                instructorRequestRepository.save(instructorRequest);
+
+                result.setResult(Boolean.TRUE);
+            }
+        } else {
+            // CASE EDIT
+            InstructorRequest instructorRequest = instructorRequestRepository
+                    .findByInstructorRequestId(instructorRequestCreationRequest.getInstructorRequestId())
+                    .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_REQUEST_NOT_FOUND));
+
+            instructorRequestMapper.updateInstructorRequest(instructorRequest, instructorRequestCreationRequest);
+
+            instructorRequestRepository.save(instructorRequest);
+
+            result.setResult(Boolean.TRUE);
+        }
 
         return result;
     }
