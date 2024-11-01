@@ -1,6 +1,5 @@
 package com.intern.app.mapper;
 
-import com.intern.app.models.dto.request.InstructorUpdateRequest;
 import com.intern.app.models.dto.request.StudentCreationRequest;
 import com.intern.app.models.dto.request.StudentUpdateRequest;
 import com.intern.app.models.dto.response.InstructorResponse;
@@ -19,9 +18,4 @@ public interface InstructorMapper {
             @Mapping(target = "instructorRequests", ignore = true),
     })
     InstructorResponse toInstructorResponse(Instructor instructor);
-
-    @Mappings({
-            @Mapping(target = "profile", ignore = true),
-    })
-    void updateInstructor(@MappingTarget Instructor instructor, InstructorUpdateRequest instructorUpdateRequest);
 }

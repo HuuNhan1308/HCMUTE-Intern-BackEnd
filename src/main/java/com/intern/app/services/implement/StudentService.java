@@ -85,12 +85,24 @@ public class StudentService implements IStudentService {
         return result;
     }
 
-    @Override
+    // NOT FINISH
     public ReturnResult<Boolean> CreateStudent(StudentCreationRequest studentCreationRequest) {
-        return null;
+        ReturnResult<Boolean> result = new ReturnResult<>();
+
+        Boolean isStudentExist = studentRepository.existsById(studentCreationRequest.getStudentId());
+
+        if (isStudentExist) {
+            throw new AppException(ErrorCode.STUDENT_EXISTED_ID);
+        }
+
+        Student student = studentMapper.toStudent(studentCreationRequest);
+
+        return result;
     }
 
-    @PreAuthorize("hasAnyRole('STUDENT')")
+
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
     public ReturnResult<Boolean> UpdateStudent(StudentUpdateRequest studentUpdateRequest) {
         var result = new ReturnResult<Boolean>();
 

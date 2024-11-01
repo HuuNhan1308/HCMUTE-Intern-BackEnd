@@ -12,7 +12,6 @@ import java.util.Date;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentUpdateRequest {
-    String studentId;
     Date dob;
     Boolean isSeekingIntern;
 
