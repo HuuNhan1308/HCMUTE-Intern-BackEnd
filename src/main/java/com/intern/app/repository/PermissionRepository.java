@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface PermissionRepository extends AppRepository<Permission, Integer> {
-    Optional<Permission> findByNameAndDeletedFalse(String name);
+    Optional<Permission> findByName(String name);
     Optional<Permission> findByPermissionIdAndDeletedFalse(Integer id);
 }

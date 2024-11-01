@@ -19,6 +19,7 @@ import com.intern.app.models.enums.FilterOperator;
 import com.intern.app.models.enums.FilterType;
 import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
+import com.intern.app.services.interfaces.IAuthenticationService;
 import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,8 @@ public class RecruitmentService implements IRecruitmentService {
     BusinessMapper businessMapper;
     StudentRepository studentRepository;
     PagingService pagingService;
+    IAuthenticationService authenticationService;
+    private final BusinessRepository businessRepository;
 
     @PreAuthorize("hasRole('BUSINESS')")
     public ReturnResult<Boolean> CreateRecruitment(RecruitmentCreationRequest recruitmentCreationRequest) {
@@ -155,15 +158,24 @@ public class RecruitmentService implements IRecruitmentService {
         return result;
     }
 
-    @PreAuthorize("hasAnyRole('BUSINESS')")
-    public ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetAllBusinessRecruitmentPaging(PageConfig pageConfig) {
+    @PreAuthorize("hasAnyRole('BUSINESS', 'ADMIN')")
+    public ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetAllBusinessRecruitmentPaging(PageConfig pageConfig, String businessId) {
         var result = new ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>>();
 
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
         Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        Business business = profile.getBusiness();
+
+        Business business;
+        if(profile.getRole().getRoleName().equals("ADMIN")) {
+            business = businessRepository.findById(businessId)
+                    .orElseThrow(() -> new AppException(ErrorCode.BUSINESS_NOT_FOUND));
+        }
+        else {
+            business = profile.getBusiness();
+        }
+
         if(business == null) {
             throw new AppException(ErrorCode.BUSINESS_NOT_FOUND);
         }

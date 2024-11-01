@@ -27,6 +27,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.servlet.RequestToViewNameTranslator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,7 @@ public class StudentService implements IStudentService {
     MajorMapper majorMapper;
     ProfileRepository profileRepository;
     IPagingService pagingService;
+    private final RequestToViewNameTranslator viewNameTranslator;
 
     public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
@@ -155,6 +157,8 @@ public class StudentService implements IStudentService {
 
         var data = pagingService.GetInstructorsRequestPaging(customPageConfig).getResult();
 
+        data.setData(data.getData().stream().peek(e -> e.setStudent(null)).toList());
+
         // Set data for page
         PageConfig pageConfigResult = PageConfig
             .builder()
@@ -179,7 +183,7 @@ public class StudentService implements IStudentService {
         return result;
     }
 
-    @PreAuthorize("hasAnyRole('STUDENT')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
     public ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllStudentRecruitmentsRequestPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>>();
 
@@ -209,6 +213,8 @@ public class StudentService implements IStudentService {
         customPageConfig.setFilters(filterMappings);
 
         var data = pagingService.GetRecruitmentRequestPaging(customPageConfig).getResult();
+
+        data.setData(data.getData().stream().peek(e -> e.setStudent(null)).toList());
 
         // Set data for page
         PageConfig pageConfigResult = PageConfig
