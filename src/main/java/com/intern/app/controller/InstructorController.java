@@ -4,6 +4,7 @@ import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
 import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
+import com.intern.app.models.dto.request.InstructorUpdateRequest;
 import com.intern.app.models.dto.response.InstructorRequestResponse;
 import com.intern.app.models.dto.response.InstructorResponse;
 import com.intern.app.models.dto.response.ReturnResult;
@@ -62,4 +63,12 @@ public class InstructorController {
 
         return ResponseEntity.ok().body(result);
     }
+
+    @PostMapping("/UpdateInstructor")
+    ResponseEntity<ReturnResult<Boolean>> UpdateInstructor(@RequestBody InstructorUpdateRequest instructorUpdateRequest) {
+        ReturnResult<Boolean> result = instructorService.UpdateInstructor(instructorUpdateRequest);
+
+        return ResponseEntity.ok().body(result);
+    }
+
 }

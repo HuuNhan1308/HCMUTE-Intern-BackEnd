@@ -5,6 +5,7 @@ import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
 import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
+import com.intern.app.models.dto.request.InstructorUpdateRequest;
 import com.intern.app.models.dto.response.InstructorRequestResponse;
 import com.intern.app.models.dto.response.InstructorResponse;
 import com.intern.app.models.dto.response.ReturnResult;
@@ -22,4 +23,5 @@ public interface IInstructorService {
     ReturnResult<Boolean> ClearAllStudentAvailableInstructorRequests(String instructorRequestId);
 
     ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetAllInstructorRequestOfInstructorPaging(PageConfig pageConfig, String ínstructorId);
+    ReturnResult<Boolean> UpdateInstructor(InstructorUpdateRequest instructorUpdateRequest);
 }
