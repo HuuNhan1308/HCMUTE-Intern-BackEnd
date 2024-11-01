@@ -32,6 +32,7 @@ public class PagingService implements IPagingService {
     StudentRepository studentRepository;
     RecruitmentRepository recruitmentRepository;
     RecruitmentRequestRepository recruitmentRequestRepository;
+    BusinessRepository businessRepository;
 
     InstructorRequestMapper instructorRequestMapper;
     StudentMapper studentMapper;
@@ -41,6 +42,7 @@ public class PagingService implements IPagingService {
     RecruitmentRequestMapper recruitmentRequestMapper;
     InstructorRepository instructorRepository;
     FacultyMapper facultyMapper;
+    BusinessMapper businessMapper;
 
     public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetInstructorsRequestPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>();
@@ -281,6 +283,69 @@ public class PagingService implements IPagingService {
         result.setResult(
                 PagedData.<InstructorResponse, PageConfig>builder()
                         .data(instructorResponses)
+                        .pageConfig(pageConfigResult)
+                        .build()
+        );
+
+        return result;
+    }
+
+    public ReturnResult<PagedData<BusinessResponse, PageConfig>> GetBusinessPaging(PageConfig pageConfig) {
+        var result = new ReturnResult<PagedData<BusinessResponse, PageConfig>>();
+
+        //Specification
+        FilterSpecification<Business> filter = new FilterSpecification<>();
+        Specification<Business> businessSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
+
+        //Sort
+        Sort sort = pageConfig.getSortAndNewItem();
+
+        List<Business> businesses;
+        Page<Business> businessPage = null;
+        if (pageConfig.getPageSize() == -1) {
+            // Fetch all elements when pageSize is -1
+            pageConfig.setCurrentPage(1);
+            businesses = businessRepository.findAll(businessSpecification, sort);
+        } else {
+            // Fetch paginated data
+            Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+            businessPage = businessRepository.findAll(businessSpecification, pageable);
+            businesses = businessPage.getContent();
+        }
+
+        // transform data to response DTO
+        List<BusinessResponse> businessResponses = businesses.stream().map(businessMapper::toBusinessResponse).toList();
+
+        // Set data for page
+        PageConfig pageConfigResult;
+        if(pageConfig.getPageSize() == -1) {
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(businesses.size())
+                    .totalRecords(businesses.size())
+                    .totalPage(1)
+                    .currentPage(1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+
+        } else {
+            if(businessPage == null) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+            pageConfigResult = PageConfig
+                    .builder()
+                    .pageSize(businessPage.getSize())
+                    .totalRecords((int) businessPage.getTotalElements())
+                    .totalPage(businessPage.getTotalPages())
+                    .currentPage(businessPage.getNumber() + 1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        }
+
+        // Build the PagedData object
+        result.setResult(
+                PagedData.<BusinessResponse, PageConfig>builder()
+                        .data(businessResponses)
                         .pageConfig(pageConfigResult)
                         .build()
         );
