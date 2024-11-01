@@ -4,6 +4,7 @@ import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
 import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
+import com.intern.app.models.dto.response.InstructorRequestResponse;
 import com.intern.app.models.dto.response.InstructorResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.entity.InstructorRequest;
@@ -55,4 +56,10 @@ public class InstructorController {
         return ResponseEntity.ok().body(result);
     }
 
+    @PostMapping("/GetAllInstructorRequestOfInstructorPaging")
+    ResponseEntity<ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>> GetAllInstructorRequestOfInstructorPaging(@RequestBody PageConfig pageConfig, @RequestParam String instructorId) {
+        ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> result = instructorService.GetAllInstructorRequestOfInstructorPaging(pageConfig, instructorId);
+
+        return ResponseEntity.ok().body(result);
+    }
 }
