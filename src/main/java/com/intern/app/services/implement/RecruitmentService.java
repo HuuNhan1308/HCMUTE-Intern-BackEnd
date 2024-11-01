@@ -24,6 +24,7 @@ import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.coyote.Request;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -89,18 +90,35 @@ public class RecruitmentService implements IRecruitmentService {
         String username = context.getAuthentication().getName();
         Student student = studentRepository.findById(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Recruitment recruitment = recruitmentRepository.findByRecruitmentId(recruitmentRequestCreationRequest.getRecruitmentId())
+                .orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_NOT_FOUND));
 
         if(recruitmentRequestCreationRequest.getRecruitmentRequestId() == null) {
             //CASE ADD
-            RecruitmentRequest recruitmentRequest = recruitmentRequestMapper.toRecruitmentRequest(recruitmentRequestCreationRequest);
-            Recruitment recruitment = recruitmentRepository.findByRecruitmentId(recruitmentRequestCreationRequest.getRecruitmentId())
-                    .orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_NOT_FOUND));
+            RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
+                    .findByStudentStudentIdAndRecruitmentRecruitmentIdAndBusinessStatus(
+                            student.getStudentId(),
+                            recruitment.getRecruitmentId(),
+                            RequestStatus.PENDING
+                    ).orElse(null);
 
-            recruitmentRequest.setStudent(student);
-            recruitmentRequest.setRecruitment(recruitment);
-            recruitmentRequest.setBusinessStatus(RequestStatus.PENDING);
 
-            recruitmentRequestRepository.save(recruitmentRequest);
+            if(recruitmentRequest == null) {
+                recruitmentRequest = RecruitmentRequest.builder()
+                        .student(student)
+                        .recruitment(recruitment)
+                        .businessStatus(RequestStatus.PENDING)
+                        .messageToBusiness(recruitmentRequestCreationRequest.getMessageToBusiness())
+                        .build();
+
+                recruitmentRequestRepository.save(recruitmentRequest);
+                result.setResult(Boolean.TRUE);
+            }
+            else {
+                result.setResult(Boolean.FALSE);
+                result.setMessage("Bạn đã gửi yêu cầu cho doanh nghiệp này rồi, vui lòng chờ đợi phản hồi");
+            }
+
         } else {
             // CASE EDIT
             RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
@@ -113,9 +131,9 @@ public class RecruitmentService implements IRecruitmentService {
             recruitmentRequestMapper.updateRecruitmentRequest(recruitmentRequest, recruitmentRequestCreationRequest);
 
             recruitmentRequestRepository.save(recruitmentRequest);
+            result.setResult(Boolean.TRUE);
         }
 
-        result.setResult(Boolean.TRUE);
         result.setCode(200);
 
         return result;

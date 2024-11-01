@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstructorRequestCreationRequest {
+    String instructorRequestId;
     String messageToInstructor;
 
     String instructorId;
