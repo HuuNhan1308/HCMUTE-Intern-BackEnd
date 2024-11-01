@@ -316,7 +316,7 @@ public class DataInitialize {
                 "UPDATE_BUSINESS_PROFILE", "SET_RECRUITMENT_BUSINESS_STATUS", "REQUEST_RECRUITMENT");
 
         permissions.forEach(permission -> {
-             if(permissionRepository.findByNameAndDeletedFalse(permission).isEmpty()) {
+             if(permissionRepository.findByName(permission).isEmpty()) {
                  permissionRepository.save(Permission.builder().name(permission).build());
              }
         });

@@ -36,7 +36,7 @@ public class RolePermissionService implements IRolePermissionService {
 
         Permission permission = permissionMapper.toPermission(permissionCreationRequest);
 
-        if(permissionRepository.findByNameAndDeletedFalse(permission.getName()).isPresent()) {
+        if(permissionRepository.findByName(permission.getName()).isPresent()) {
             throw new AppException(ErrorCode.PERMISSION_EXISTED);
         }
         Permission savedPermission = permissionRepository.save(permission);
