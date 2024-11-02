@@ -14,4 +14,5 @@ public interface RecruitmentRepository extends AppRepository<Recruitment, String
 
     Optional<Recruitment> findByTitle(String title);
     Optional<Recruitment> findByRecruitmentId(String id);
+
 }

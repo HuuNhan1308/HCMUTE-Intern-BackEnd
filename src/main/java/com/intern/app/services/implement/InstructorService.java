@@ -46,6 +46,7 @@ public class InstructorService implements IInstructorService {
     InstructorRequestMapper instructorRequestMapper;
     ProfileRepository profileRepository;
     IPagingService pagingService;
+    RecruitmentRequestRepository recruitmentRequestRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateInstructor(InstructorCreationRequest instructorCreationRequest) {
@@ -234,6 +235,20 @@ public class InstructorService implements IInstructorService {
         customPageConfig.setFilters(filterMappings);
 
         var data = pagingService.GetInstructorsRequestPaging(customPageConfig).getResult();
+
+        // Additional data
+        data.setData(data.getData().stream().peek(instructorRequestResponse -> {
+            RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
+                    .findByStudentStudentIdAndBusinessStatus(instructorRequestResponse.getStudent().getStudentId(), RequestStatus.APPROVED)
+                    .orElse(null);
+
+            if(recruitmentRequest != null) {
+                instructorRequestResponse.setRecruitmentId(recruitmentRequest.getRecruitment().getRecruitmentId());
+                instructorRequestResponse.setRecruitmentTitle(recruitmentRequest.getRecruitment().getTitle());
+            }
+
+            instructorRequestResponse.setInstructor(null);
+        }).toList());
 
         // Set data for page
         PageConfig pageConfigResult = PageConfig
