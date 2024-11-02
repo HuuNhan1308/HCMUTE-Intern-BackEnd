@@ -4,6 +4,8 @@ import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
+import com.intern.app.models.dto.request.RecruitmentUpdateRequest;
+import com.intern.app.models.dto.response.RecruitmentRequestResponse;
 import com.intern.app.models.dto.response.RecruitmentResponse;
 import com.intern.app.models.dto.response.RecruitmentResponseShort;
 import com.intern.app.models.dto.response.ReturnResult;
@@ -19,4 +21,9 @@ public interface IRecruitmentService {
     ReturnResult<RecruitmentResponse> GetRecruitmentById(String recruitmentId);
 
     ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetAllBusinessRecruitmentPaging(PageConfig pageConfig, String businessId);
+
+    ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetOpenRecruitmentPaging(PageConfig pageConfig);
+    ReturnResult<Boolean> UpdateRecruitment(RecruitmentUpdateRequest recruitmentUpdateRequest, String businessId);
+    ReturnResult<Boolean> RejectAllRecruitmentRequest(Recruitment recruitment);
+    ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllRecruitmentRequestOfRecruitmentPaging(PageConfig pageConfig, String businessId, String recruitmentId);
 }

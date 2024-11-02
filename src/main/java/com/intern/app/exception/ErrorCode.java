@@ -35,6 +35,8 @@ public enum ErrorCode {
     INSTRUCTOR_REQUEST_NOT_FOUND(1021, "Yêu cầu không tồn tại", HttpStatus.BAD_REQUEST),
     ROLE_NOT_EXIST(1022, "Role không tồn tại", HttpStatus.BAD_REQUEST),
     PERMISSION_NOT_EXIST(1022, "Permission không tồn tại", HttpStatus.BAD_REQUEST),
+    INVALID_NUMERIC_VALUE(1023, "Định dạng không phải numeric, vui lòng thử lại", HttpStatus.BAD_REQUEST),
+    UNSUPPORTED_FILTER_OPERATOR(1024, "Kiểu filter không được hỗ trợ", HttpStatus.BAD_REQUEST),
     ;
 
     int code;
