@@ -83,11 +83,6 @@ public class InstructorService implements IInstructorService {
         Instructor instructor = instructorRepository.findByInstructorId(instructorRequestCreationRequest.getInstructorId())
                 .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_NOT_FOUND));
 
-
-
-
-
-
         if(instructorRequestCreationRequest.getInstructorRequestId() == null) {
             // CASE ADD
             InstructorRequest instructorRequest = instructorRequestRepository
@@ -112,7 +107,7 @@ public class InstructorService implements IInstructorService {
                 result.setMessage("Bạn đã có cho mình giảng viên hướng dẫn, không thể yêu thêm được nữa");
             }
 
-            if(result.getMessage().isEmpty()) {
+            if(result.getMessage() == null) {
                 instructorRequest = InstructorRequest.builder()
                         .student(student)
                         .instructor(instructor)
