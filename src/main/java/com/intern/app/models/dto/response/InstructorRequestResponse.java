@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstructorRequestResponse {
+    String instructorRequestId;
     StudentResponse student;
     InstructorResponse instructor;
     RequestStatus instructorStatus;
