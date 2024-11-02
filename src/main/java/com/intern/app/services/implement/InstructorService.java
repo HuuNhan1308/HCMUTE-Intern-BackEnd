@@ -17,6 +17,7 @@ import com.intern.app.models.enums.FilterType;
 import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IInstructorService;
+import com.intern.app.services.interfaces.IPagingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -44,7 +45,7 @@ public class InstructorService implements IInstructorService {
 
     InstructorRequestMapper instructorRequestMapper;
     ProfileRepository profileRepository;
-    private final PagingService pagingService;
+    IPagingService pagingService;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateInstructor(InstructorCreationRequest instructorCreationRequest) {
@@ -83,6 +84,9 @@ public class InstructorService implements IInstructorService {
 
 
 
+
+
+
         if(instructorRequestCreationRequest.getInstructorRequestId() == null) {
             // CASE ADD
             InstructorRequest instructorRequest = instructorRequestRepository
@@ -97,7 +101,17 @@ public class InstructorService implements IInstructorService {
                 result.setResult(Boolean.FALSE);
                 result.setMessage("Bạn đã gửi yêu cầu cho giảng viên này rồi, vui lòng chờ đợi phản hồi");
 
-            } else {
+            }
+
+            List<InstructorRequest> instructorRequests = instructorRequestRepository
+                    .findAllByStudentStudentIdAndInstructorStatus(student.getStudentId(), RequestStatus.APPROVED);
+
+            if(!instructorRequests.isEmpty()) {
+                result.setResult(Boolean.FALSE);
+                result.setMessage("Bạn đã có cho mình giảng viên hướng dẫn, không thể yêu thêm được nữa");
+            }
+
+            if(result.getMessage().isEmpty()) {
                 instructorRequest = InstructorRequest.builder()
                         .student(student)
                         .instructor(instructor)
@@ -109,6 +123,8 @@ public class InstructorService implements IInstructorService {
 
                 result.setResult(Boolean.TRUE);
             }
+
+
         } else {
             // CASE EDIT
             InstructorRequest instructorRequest = instructorRequestRepository
