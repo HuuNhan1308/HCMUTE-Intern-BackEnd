@@ -1,5 +1,6 @@
 package com.intern.app.models.entity;
 
+import com.intern.app.models.enums.RecruitmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -28,8 +29,11 @@ public class Recruitment extends BaseEntity {
     String keySkills;
     String position;
 
+    @Builder.Default
+    RecruitmentStatus status = RecruitmentStatus.OPEN;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BusinessId")
+    @JoinColumn(name = "businessId", nullable = false)
     Business business;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "recruitment")
