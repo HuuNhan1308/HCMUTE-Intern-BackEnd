@@ -20,6 +20,8 @@ public interface RecruitmentRequestRepository extends AppRepository<RecruitmentR
     @Query("SELECT rr FROM RecruitmentRequest rr WHERE rr.student = :student AND rr.deleted = false AND rr.businessStatus = :status")
     List<RecruitmentRequest> findByStudentAndStatus(Student student, RequestStatus status);
 
+    Optional<RecruitmentRequest> findByStudentStudentIdAndBusinessStatus(String studentId, RequestStatus status);
+
     List<RecruitmentRequest> findByRecruitmentAndBusinessStatus(Recruitment recruitment, RequestStatus status);
 
     Optional<RecruitmentRequest> findByStudentStudentIdAndRecruitmentRecruitmentIdAndBusinessStatus(String studentId, String recruitmentId, RequestStatus status);

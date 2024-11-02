@@ -16,4 +16,6 @@ public class InstructorRequestResponse {
     InstructorResponse instructor;
     RequestStatus instructorStatus;
     String messageToInstructor;
+    String recruitmentId;
+    String recruitmentTitle;
 }
