@@ -1,11 +1,6 @@
-package com.intern.app.models.dto.response;
+package com.intern.app.models.dto.request;
 
-import com.intern.app.models.entity.Business;
-import com.intern.app.models.entity.Recruitment;
-import com.intern.app.models.entity.Student;
 import com.intern.app.models.enums.RecruitmentStatus;
-import com.intern.app.models.enums.RequestStatus;
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,8 +10,9 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RecruitmentResponse {
+public class RecruitmentUpdateRequest {
     String recruitmentId;
+
     String title;
     String description;
     String location;
@@ -26,6 +22,4 @@ public class RecruitmentResponse {
     String keySkills;
     String position;
     RecruitmentStatus status;
-
-    BusinessResponse business;
 }

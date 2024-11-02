@@ -1,5 +1,6 @@
 package com.intern.app.models.dto.request;
 
+import com.intern.app.models.enums.RecruitmentStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,3 +20,4 @@ public class RecruitmentCreationRequest {
     String keySkills;
     String position;
 }
+

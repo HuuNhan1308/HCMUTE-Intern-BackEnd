@@ -49,8 +49,8 @@ public class InstructorController {
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("/SetRequestStatus/{instructorRequestId}")
-    ResponseEntity<ReturnResult<Boolean>> SetRequestStatus(@PathVariable String instructorRequestId, @RequestBody RequestStatus requestStatus) {
+    @PostMapping("/SetRequestStatus")
+    ResponseEntity<ReturnResult<Boolean>> SetRequestStatus(@RequestParam String instructorRequestId, @RequestBody RequestStatus requestStatus) {
         ReturnResult<Boolean> result = instructorService.SetRequestStatus(requestStatus, instructorRequestId);
 
         return ResponseEntity.ok().body(result);
