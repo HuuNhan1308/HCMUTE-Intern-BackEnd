@@ -1,6 +1,5 @@
 package com.intern.app.models.dto.datamodel;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.models.entity.BaseEntity;
