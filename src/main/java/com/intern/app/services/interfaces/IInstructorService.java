@@ -23,4 +23,5 @@ public interface IInstructorService {
     ReturnResult<Boolean> ClearAllStudentAvailableInstructorRequests(String instructorRequestId);
     ReturnResult<PagedData<InstructorRequestResponse, ExtendPageConfig>> GetAllInstructorRequestOfInstructorPaging(ExtendPageConfig pageConfig, String ínstructorId);
     ReturnResult<InstructorResponse> GetInstructorData(String instructorId);
+    ReturnResult<InstructorResponse> GetMyInstructorData();
 }
