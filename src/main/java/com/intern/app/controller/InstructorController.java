@@ -70,4 +70,11 @@ public class InstructorController {
 
         return ResponseEntity.ok().body(result);
     }
+
+    @GetMapping("/GetMyInstructorData")
+    ResponseEntity<ReturnResult<InstructorResponse>> GetMyInstructorData() {
+        ReturnResult<InstructorResponse> result = instructorService.GetMyInstructorData();
+
+        return ResponseEntity.ok().body(result);
+    }
 }

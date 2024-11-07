@@ -278,16 +278,23 @@ public class InstructorService implements IInstructorService {
     public ReturnResult<InstructorResponse> GetInstructorData(String instructorId) {
         var result = new ReturnResult<InstructorResponse>();
 
+        Instructor instructor = instructorRepository.findByInstructorId(instructorId).orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_NOT_FOUND));
+        InstructorResponse instructorResponse = instructorMapper.toInstructorResponse(instructor);
+
+        result.setResult(instructorResponse);
+        result.setCode(200);
+
+        return result;
+    }
+
+    public ReturnResult<InstructorResponse> GetMyInstructorData() {
+        var result = new ReturnResult<InstructorResponse>();
+
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
         Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        Instructor instructor;
-        if(profile.getRole().getRoleName().equals("INSTRUCTOR")) {
-            instructor = profile.getInstructor();
-        } else {
-            instructor = instructorRepository.findByInstructorId(instructorId).orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_NOT_FOUND));
-        }
+        Instructor instructor = profile.getInstructor();
 
         InstructorResponse instructorResponse = instructorMapper.toInstructorResponse(instructor);
 
