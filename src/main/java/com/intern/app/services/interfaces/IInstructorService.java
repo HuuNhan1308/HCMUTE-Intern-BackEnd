@@ -1,6 +1,7 @@
 package com.intern.app.services.interfaces;
 
 import com.github.javafaker.Bool;
+import com.intern.app.models.dto.datamodel.ExtendPageConfig;
 import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
@@ -20,6 +21,6 @@ public interface IInstructorService {
 
     ReturnResult<Boolean> SetRequestStatus(RequestStatus requestStatus, String instructorRequestId);
     ReturnResult<Boolean> ClearAllStudentAvailableInstructorRequests(String instructorRequestId);
-
-    ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetAllInstructorRequestOfInstructorPaging(PageConfig pageConfig, String ínstructorId);
+    ReturnResult<PagedData<InstructorRequestResponse, ExtendPageConfig>> GetAllInstructorRequestOfInstructorPaging(ExtendPageConfig pageConfig, String ínstructorId);
+    ReturnResult<InstructorResponse> GetInstructorData(String instructorId);
 }

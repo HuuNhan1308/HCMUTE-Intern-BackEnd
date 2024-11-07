@@ -1,5 +1,6 @@
 package com.intern.app.controller;
 
+import com.intern.app.models.dto.datamodel.ExtendPageConfig;
 import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
@@ -57,8 +58,15 @@ public class InstructorController {
     }
 
     @PostMapping("/GetAllInstructorRequestOfInstructorPaging")
-    ResponseEntity<ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>> GetAllInstructorRequestOfInstructorPaging(@RequestBody PageConfig pageConfig, @RequestParam String instructorId) {
-        ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> result = instructorService.GetAllInstructorRequestOfInstructorPaging(pageConfig, instructorId);
+    ResponseEntity<ReturnResult<PagedData<InstructorRequestResponse, ExtendPageConfig>>> GetAllInstructorRequestOfInstructorPaging(@RequestBody ExtendPageConfig extendPageConfig, @RequestParam String instructorId) {
+        ReturnResult<PagedData<InstructorRequestResponse, ExtendPageConfig>> result = instructorService.GetAllInstructorRequestOfInstructorPaging(extendPageConfig, instructorId);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/GetInstructorData")
+    ResponseEntity<ReturnResult<InstructorResponse>> GetAllInstructorRequestOfInstructorPaging(@RequestParam String instructorId) {
+        ReturnResult<InstructorResponse> result = instructorService.GetInstructorData(instructorId);
 
         return ResponseEntity.ok().body(result);
     }

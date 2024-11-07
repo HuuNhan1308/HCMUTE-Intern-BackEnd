@@ -22,4 +22,5 @@ public interface InstructorRequestRepository extends AppRepository<InstructorReq
     List<InstructorRequest> findAllByStudentStudentId(String studentId);
 
     List<InstructorRequest> findAllByStudentStudentIdAndInstructorStatus(String studentId, RequestStatus status);
+    List<InstructorRequest> findAllByInstructorInstructorIdAndInstructorStatus(String instructorId, RequestStatus status);
 }

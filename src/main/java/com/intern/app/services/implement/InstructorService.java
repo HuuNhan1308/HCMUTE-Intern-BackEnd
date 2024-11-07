@@ -3,8 +3,10 @@ package com.intern.app.services.implement;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.FacultyMapper;
+import com.intern.app.mapper.InstructorMapper;
 import com.intern.app.mapper.InstructorRequestMapper;
 import com.intern.app.mapper.ProfileMapper;
+import com.intern.app.models.dto.datamodel.ExtendPageConfig;
 import com.intern.app.models.dto.datamodel.FilterMapping;
 import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +50,7 @@ public class InstructorService implements IInstructorService {
     ProfileRepository profileRepository;
     IPagingService pagingService;
     RecruitmentRequestRepository recruitmentRequestRepository;
+    private final InstructorMapper instructorMapper;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateInstructor(InstructorCreationRequest instructorCreationRequest) {
@@ -190,8 +194,8 @@ public class InstructorService implements IInstructorService {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
-    public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetAllInstructorRequestOfInstructorPaging(PageConfig pageConfig, String ínstructorId) {
-        var result  = new ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>();
+    public ReturnResult<PagedData<InstructorRequestResponse, ExtendPageConfig>> GetAllInstructorRequestOfInstructorPaging(ExtendPageConfig pageConfig, String ínstructorId) {
+        var result  = new ReturnResult<PagedData<InstructorRequestResponse, ExtendPageConfig>>();
 
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
@@ -246,7 +250,7 @@ public class InstructorService implements IInstructorService {
         }).toList());
 
         // Set data for page
-        PageConfig pageConfigResult = PageConfig
+        ExtendPageConfig pageConfigResult = ExtendPageConfig
                 .builder()
                 .pageSize(data.getPageConfig().getPageSize())
                 .totalRecords(data.getPageConfig().getTotalRecords())
@@ -256,13 +260,39 @@ public class InstructorService implements IInstructorService {
                 .filters(pageConfig.getFilters())
                 .build();
 
+        // Set Additional Data for page
+        var numberOfApprovedStudent = instructorRequestRepository.findAllByInstructorInstructorIdAndInstructorStatus(instructor.getInstructorId(), RequestStatus.APPROVED).size();
+        pageConfigResult.setAdditionalData(Map.of("numberOfApprovedStudent", numberOfApprovedStudent));
+
         // Build the PagedData object
         result.setResult(
-                PagedData.<InstructorRequestResponse, PageConfig>builder()
+                PagedData.<InstructorRequestResponse, ExtendPageConfig>builder()
                         .data(data.getData())
                         .pageConfig(pageConfigResult)
                         .build()
         );
+
+        return result;
+    }
+
+    public ReturnResult<InstructorResponse> GetInstructorData(String instructorId) {
+        var result = new ReturnResult<InstructorResponse>();
+
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Instructor instructor;
+        if(profile.getRole().getRoleName().equals("INSTRUCTOR")) {
+            instructor = profile.getInstructor();
+        } else {
+            instructor = instructorRepository.findByInstructorId(instructorId).orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_NOT_FOUND));
+        }
+
+        InstructorResponse instructorResponse = instructorMapper.toInstructorResponse(instructor);
+
+        result.setResult(instructorResponse);
+        result.setCode(200);
 
         return result;
     }
