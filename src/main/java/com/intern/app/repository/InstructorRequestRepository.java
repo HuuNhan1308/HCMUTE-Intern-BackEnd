@@ -16,10 +16,11 @@ import java.util.Optional;
 
 @Repository
 public interface InstructorRequestRepository extends AppRepository<InstructorRequest, String>, JpaSpecificationExecutor<InstructorRequest> {
-    Optional<InstructorRequest> findByStudentStudentIdAndInstructorInstructorId(String studentId, Instructor instructor);
+    Optional<InstructorRequest> findByStudentStudentIdAndInstructorInstructorIdAndInstructorStatus(String studentId, String instructorId, RequestStatus instructorStatus);
     Optional<InstructorRequest> findByInstructorRequestId(String instructorRequestId);
 
     List<InstructorRequest> findAllByStudentStudentId(String studentId);
 
     List<InstructorRequest> findAllByStudentStudentIdAndInstructorStatus(String studentId, RequestStatus status);
+    List<InstructorRequest> findAllByInstructorInstructorIdAndInstructorStatus(String instructorId, RequestStatus status);
 }

@@ -1,11 +1,8 @@
 package com.intern.app.models.dto.request;
 
-import com.intern.app.models.entity.Instructor;
-import com.intern.app.models.entity.Profile;
-import jakarta.persistence.*;
+import com.intern.app.models.enums.RecruitmentStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 
 @Builder
 @NoArgsConstructor
@@ -13,17 +10,16 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BusinessCreationRequest {
-    String name;
-    String overview;
+public class RecruitmentUpdateRequest {
+    String recruitmentId;
+
+    String title;
+    String description;
     String location;
     String type;
-    String industry;
     String workingDay;
     String workingHour;
-
-    ProfileCreationRequest managedBy;
-
-    String instructorId;
+    String keySkills;
+    String position;
+    RecruitmentStatus status;
 }
-

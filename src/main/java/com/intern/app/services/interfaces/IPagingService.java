@@ -10,4 +10,7 @@ public interface IPagingService {
     ReturnResult<PagedData<StudentResponse, PageConfig>> GetStudentPaging(PageConfig page);
     ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetRecruitmentPaging(PageConfig pageConfig);
     ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetRecruitmentRequestPaging(PageConfig pageConfig);
+    ReturnResult<PagedData<InstructorResponse, PageConfig>> GetInstructorsPaging(PageConfig pageConfig);
+    ReturnResult<PagedData<BusinessResponse, PageConfig>> GetBusinessPaging(PageConfig pageConfig);
+    ReturnResult<PagedData<FacultyResponse, PageConfig>> GetFacultyPaging(PageConfig pageConfig);
 }

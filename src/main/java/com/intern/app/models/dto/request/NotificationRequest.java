@@ -9,9 +9,14 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InstructorRequestCreationRequest {
-    String instructorRequestId;
-    String messageToInstructor;
+public class NotificationRequest {
+    String notificationId;
 
-    String instructorId;
+    String title;
+    String content;
+    Boolean read;
+
+    String ownerId;
+    String profileId;
 }
+

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -11,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Business extends BaseEntity{
+public class Business extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String businessId;
@@ -25,11 +27,15 @@ public class Business extends BaseEntity{
     String workingHour;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ManagedBy", referencedColumnName = "profileId")
+    @JoinColumn(name = "managed_by", referencedColumnName = "profileId")
     Profile managedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RefInstructorId")
     Instructor refInstructor;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "business")
+    List<Recruitment> recruitments;
+
 }
+

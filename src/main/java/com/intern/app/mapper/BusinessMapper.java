@@ -15,6 +15,7 @@ import org.mapstruct.Mappings;
 public interface BusinessMapper {
 
     Business toBusiness(BusinessCreationRequest businessCreationRequest);
+
     BusinessResponse toBusinessResponse(Business business);
 
     @Mappings({

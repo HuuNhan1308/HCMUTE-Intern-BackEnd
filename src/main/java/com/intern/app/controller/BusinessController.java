@@ -1,11 +1,14 @@
 package com.intern.app.controller;
 
+import com.intern.app.models.dto.datamodel.PageConfig;
+import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.BusinessCreationRequest;
 import com.intern.app.models.dto.request.BusinessUpdateRequest;
 import com.intern.app.models.dto.response.BusinessResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.services.interfaces.IBusinessService;
+import com.intern.app.services.interfaces.IPagingService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE,  makeFinal = true)
 public class BusinessController {
     IBusinessService businessService;
+    IPagingService pagingService;
 
     @PostMapping("/CreateBusiness")
     public ResponseEntity<ReturnResult<Boolean>> CreateBusiness(@RequestBody BusinessCreationRequest businessCreationRequest) {
@@ -57,6 +61,13 @@ public class BusinessController {
     @PostMapping("/SetRecruitmentRequestStatus/{recruitmentRequestId}")
     public ResponseEntity<ReturnResult<Boolean>> SetRecruitmentRequestStatus(@RequestBody RequestStatus requestStatus, @PathVariable String recruitmentRequestId) {
         ReturnResult<Boolean> result = businessService.SetRecruitmentRequestStatus(requestStatus, recruitmentRequestId);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/GetBusinessPaging")
+    public ResponseEntity<ReturnResult<PagedData<BusinessResponse, PageConfig>>> GetBusinessPaging(@RequestBody PageConfig pageConfig) {
+        ReturnResult<PagedData<BusinessResponse, PageConfig>> result = pagingService.GetBusinessPaging(pageConfig);
 
         return ResponseEntity.ok().body(result);
     }

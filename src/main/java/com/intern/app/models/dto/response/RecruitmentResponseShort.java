@@ -1,5 +1,6 @@
 package com.intern.app.models.dto.response;
 
+import com.intern.app.models.enums.RecruitmentStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,4 +18,5 @@ public class RecruitmentResponseShort {
     String workingHour;
     String location;
     String businessName;
+    RecruitmentStatus status;
 }
