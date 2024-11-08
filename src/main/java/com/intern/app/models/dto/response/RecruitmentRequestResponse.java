@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RecruitmentRequestResponse {
+    String recruitmentRequestId;
     RequestStatus businessStatus;
     String messageToBusiness;
 
