@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 public interface IProfileService {
     public ReturnResult<Profile> CreateUser(ProfileCreationRequest request, Role role);
 
-    public ReturnResult<ProfileResponse> FindProfileById(String profileId);
 
     public ReturnResult<Boolean> ChangePassword(String oldPassword, String newPassword, String username);
 }

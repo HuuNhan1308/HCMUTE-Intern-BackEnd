@@ -20,13 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class ProfileController {
     IProfileService profileService;
 
-    @GetMapping("/{profileId}")
-    public ResponseEntity<ReturnResult<ProfileResponse>> GetProfileById(@PathVariable String profileId) {
-        ReturnResult<ProfileResponse> result = profileService.FindProfileById(profileId);
-
-        return ResponseEntity.ok().body(result);
-    }
-
     @PostMapping("/ChangePassword")
     public ResponseEntity<ReturnResult<Boolean>> ChangePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         var context = SecurityContextHolder.getContext();
