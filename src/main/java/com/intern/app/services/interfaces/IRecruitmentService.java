@@ -25,5 +25,5 @@ public interface IRecruitmentService {
     ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetOpenRecruitmentPaging(PageConfig pageConfig);
     ReturnResult<Boolean> UpdateRecruitment(RecruitmentUpdateRequest recruitmentUpdateRequest, String businessId);
     ReturnResult<Boolean> RejectAllRecruitmentRequest(Recruitment recruitment);
-    ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllRecruitmentRequestOfRecruitmentPaging(PageConfig pageConfig, String businessId, String recruitmentId);
+    ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllRecruitmentRequestOfRecruitmentPaging(PageConfig pageConfig, String recruitmentId);
 }
