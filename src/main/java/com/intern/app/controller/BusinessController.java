@@ -58,8 +58,8 @@ public class BusinessController {
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("/SetRecruitmentRequestStatus/{recruitmentRequestId}")
-    public ResponseEntity<ReturnResult<Boolean>> SetRecruitmentRequestStatus(@RequestBody RequestStatus requestStatus, @PathVariable String recruitmentRequestId) {
+    @PostMapping("/SetRecruitmentRequestStatus")
+    public ResponseEntity<ReturnResult<Boolean>> SetRecruitmentRequestStatus(@RequestBody RequestStatus requestStatus, @RequestParam String recruitmentRequestId) {
         ReturnResult<Boolean> result = businessService.SetRecruitmentRequestStatus(requestStatus, recruitmentRequestId);
 
         return ResponseEntity.ok().body(result);

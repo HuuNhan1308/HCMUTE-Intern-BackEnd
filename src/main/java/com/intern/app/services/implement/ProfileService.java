@@ -48,12 +48,6 @@ public class ProfileService implements IProfileService {
         return result;
     }
 
-    public ReturnResult<ProfileResponse> FindProfileById(String profileId) {
-        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
-        return ReturnResult.<ProfileResponse>builder().result(profileMapper.toProfileResponse(profile)).build();
-    }
-
     public ReturnResult<Boolean> ChangePassword(String oldPassword, String newPassword, String username) {
         var result = new ReturnResult<Boolean>();
         Profile profile = profileRepository.findByUsername(username).orElse(null);
