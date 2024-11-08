@@ -2,6 +2,8 @@ package com.intern.app.services.implement;
 
 import java.util.Optional;
 
+import com.intern.app.models.entity.Notification;
+import com.intern.app.services.interfaces.INotificationService;
 import com.intern.app.services.interfaces.IUploadService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -75,3 +77,4 @@ public class UploadService implements IUploadService {
         return upload.getFileData();
     }
 }
+

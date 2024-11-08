@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Business extends BaseEntity{
+public class Business extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String businessId;
@@ -38,3 +38,4 @@ public class Business extends BaseEntity{
     List<Recruitment> recruitments;
 
 }
+
