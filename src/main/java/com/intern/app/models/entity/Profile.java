@@ -47,4 +47,10 @@ public class Profile extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roleId")
     Role role;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
+    List<Notification> ownedNotifications;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile")
+    List<Notification> receivedNotifications;
 }

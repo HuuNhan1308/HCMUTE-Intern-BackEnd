@@ -8,6 +8,7 @@ import com.intern.app.mapper.RecruitmentRequestMapper;
 import com.intern.app.models.dto.datamodel.FilterMapping;
 import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
+import com.intern.app.models.dto.request.NotificationRequest;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentUpdateRequest;
@@ -19,6 +20,7 @@ import com.intern.app.models.enums.RecruitmentStatus;
 import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IAuthenticationService;
+import com.intern.app.services.interfaces.INotificationService;
 import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -51,8 +53,9 @@ public class RecruitmentService implements IRecruitmentService {
     StudentRepository studentRepository;
     PagingService pagingService;
     IAuthenticationService authenticationService;
-    private final BusinessRepository businessRepository;
-    private final RestClientAutoConfiguration restClientAutoConfiguration;
+    BusinessRepository businessRepository;
+    RestClientAutoConfiguration restClientAutoConfiguration;
+    INotificationService notificationService;
 
     @PreAuthorize("hasRole('BUSINESS')")
     public ReturnResult<Boolean> CreateRecruitment(RecruitmentCreationRequest recruitmentCreationRequest) {
@@ -167,6 +170,17 @@ public class RecruitmentService implements IRecruitmentService {
                         .build();
 
                 recruitmentRequestRepository.save(recruitmentRequest);
+
+                // SEND NOTIFICATION
+                NotificationRequest notificationRequest = NotificationRequest.builder()
+                        .read(false)
+                        .title("Bạn vừa nhận được một yêu cầu thực tập mới")
+                        .content("Yêu cầu thực tập đến từ bài tuyển dụng: " + recruitment.getTitle())
+                        .ownerId(student.getProfile().getProfileId())
+                        .profileId(recruitment.getBusiness().getManagedBy().getProfileId())
+                        .build();
+                notificationService.SaveNotification(notificationRequest);
+
                 result.setResult(Boolean.TRUE);
             }
             else {
@@ -349,7 +363,7 @@ public class RecruitmentService implements IRecruitmentService {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'BUSINESS')")
-    public ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllRecruitmentRequestOfRecruitmentPaging(PageConfig pageConfig, String businessId, String recruitmentId) {
+    public ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllRecruitmentRequestOfRecruitmentPaging(PageConfig pageConfig, String recruitmentId) {
         var result = new ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>>();
 
         var context = SecurityContextHolder.getContext();
@@ -358,19 +372,7 @@ public class RecruitmentService implements IRecruitmentService {
         Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_NOT_FOUND));
 
-        Business business;
-        if(profile.getRole().getRoleName().equals("ADMIN")) {
-            business = businessRepository.findById(businessId)
-                    .orElseThrow(() -> new AppException(ErrorCode.BUSINESS_NOT_FOUND));
-        }
-        else {
-            business = profile.getBusiness();
-        }
-
-        if(business == null) {
-            throw new AppException(ErrorCode.BUSINESS_NOT_FOUND);
-        }
-        if(recruitment.getBusiness() != business) {
+        if(profile.getRole().getRoleName().equals("BUSINESS") && recruitment.getBusiness() != profile.getBusiness()) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
