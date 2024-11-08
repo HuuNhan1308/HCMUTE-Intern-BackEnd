@@ -12,6 +12,7 @@ import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
 import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
+import com.intern.app.models.dto.request.NotificationRequest;
 import com.intern.app.models.dto.response.*;
 import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.FilterOperator;
@@ -19,6 +20,7 @@ import com.intern.app.models.enums.FilterType;
 import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IInstructorService;
+import com.intern.app.services.interfaces.INotificationService;
 import com.intern.app.services.interfaces.IPagingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -46,11 +48,12 @@ public class InstructorService implements IInstructorService {
     InstructorRequestRepository instructorRequestRepository;
     StudentRepository studentRepository;
 
+    INotificationService notificationService;
     InstructorRequestMapper instructorRequestMapper;
     ProfileRepository profileRepository;
     IPagingService pagingService;
     RecruitmentRequestRepository recruitmentRequestRepository;
-    private final InstructorMapper instructorMapper;
+    InstructorMapper instructorMapper;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateInstructor(InstructorCreationRequest instructorCreationRequest) {
@@ -121,6 +124,17 @@ public class InstructorService implements IInstructorService {
 
                 instructorRequestRepository.save(instructorRequest);
 
+
+                // SEND NOTIFICATION
+                NotificationRequest notificationRequest = NotificationRequest.builder()
+                        .read(false)
+                        .title("Bạn có một yêu cầu đến từ sinh viên")
+                        .content("Yêu cầu trở thành giảng viên hướng dẫn đến từ sinh viên " + student.getProfile().getFullname())
+                        .ownerId(student.getProfile().getProfileId())
+                        .profileId(instructor.getProfile().getProfileId())
+                        .build();
+                notificationService.SaveNotification(notificationRequest);
+
                 result.setResult(Boolean.TRUE);
             }
 
@@ -163,6 +177,16 @@ public class InstructorService implements IInstructorService {
             instructorRequestRepository.save(instructorRequest);
 
             this.ClearAllStudentAvailableInstructorRequests(instructorRequestId);
+
+            // SEND NOTIFICATION
+            NotificationRequest notificationRequest = NotificationRequest.builder()
+                    .read(false)
+                    .title("Yêu cầu giảng viên hướng dẫn đã có kết quả")
+                    .content("Đã có kết quả cho yêu cầu giảng viên hướng dẫn " + instructorRequest.getInstructor().getProfile().getFullname())
+                    .ownerId(instructorRequest.getInstructor().getProfile().getProfileId())
+                    .profileId(instructorRequest.getStudent().getProfile().getProfileId())
+                    .build();
+            notificationService.SaveNotification(notificationRequest);
 
             result.setResult(Boolean.TRUE);
             result.setCode(200);

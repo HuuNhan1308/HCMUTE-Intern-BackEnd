@@ -6,6 +6,7 @@ import com.intern.app.mapper.BusinessMapper;
 import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.models.dto.request.BusinessCreationRequest;
 import com.intern.app.models.dto.request.BusinessUpdateRequest;
+import com.intern.app.models.dto.request.NotificationRequest;
 import com.intern.app.models.dto.response.BusinessResponse;
 import com.intern.app.models.dto.response.ProfileResponse;
 import com.intern.app.models.dto.response.ReturnResult;
@@ -14,6 +15,7 @@ import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
 
 import com.intern.app.services.interfaces.IBusinessService;
+import com.intern.app.services.interfaces.INotificationService;
 import com.intern.app.services.interfaces.IRecruitmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,7 @@ public class BusinessService implements IBusinessService {
     RecruitmentRequestRepository recruitmentRequestRepository;
     StudentRepository studentRepository;
     IRecruitmentService recruitmentService;
+    INotificationService notificationService;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateBusiness(BusinessCreationRequest businessCreationRequest) {
@@ -103,12 +106,23 @@ public class BusinessService implements IBusinessService {
         recruitmentRequest.setBusinessStatus(requestStatus);
         recruitmentRequestRepository.save(recruitmentRequest);
 
+        // SEND NOTIFICATION
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .read(false)
+                .title("Yêu cầu thực tập của bạn đã có kết quả")
+                .content("Đã có kết quả cho yêu cầu đến bài tuyển dụng " + recruitmentRequest.getRecruitment().getTitle())
+                .ownerId(recruitmentRequest.getRecruitment().getBusiness().getManagedBy().getProfileId())
+                .profileId(recruitmentRequest.getStudent().getProfile().getProfileId())
+                .build();
+        notificationService.SaveNotification(notificationRequest);
+
+
         // switch student IsSeekingIntern to false if approve
         if(requestStatus == RequestStatus.APPROVED) {
             Student student = recruitmentRequest.getStudent();
             recruitmentService.ClearAllStudentAvailableRecruitmentRequests(student);
             student.setIsSeekingIntern(false);
-        studentRepository.save(student);
+            studentRepository.save(student);
         }
 
         result.setResult(Boolean.TRUE);
