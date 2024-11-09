@@ -49,10 +49,8 @@ public class StudentController {
         return ResponseEntity.ok().body(result);
     }
 
-    // NOT FINISH
     @PostMapping("/CreateStudent")
-    public ResponseEntity<ReturnResult<Boolean>> CreateStudent(
-            @RequestBody StudentCreationRequest studentCreationRequest) {
+    public ResponseEntity<ReturnResult<Boolean>> CreateStudent(@RequestBody StudentCreationRequest studentCreationRequest) {
         ReturnResult<Boolean> result = studentService.CreateStudent(studentCreationRequest);
 
         return ResponseEntity.ok().body(result);
