@@ -153,6 +153,16 @@ public class RecruitmentService implements IRecruitmentService {
 
         if(recruitmentRequestCreationRequest.getRecruitmentRequestId() == null) {
             //CASE ADD
+            //CHECK IF STUDENT ALREADY HAVE APPROVED BY ANY RECRUITMENT?
+            RecruitmentRequest approvedRecruitmentRequest = recruitmentRequestRepository
+                    .findByStudentStudentIdAndBusinessStatus(student.getStudentId(), RequestStatus.APPROVED)
+                    .orElse(null);
+
+            if(approvedRecruitmentRequest != null) {
+                result.setMessage("Bạn đã được chọn bởi một doanh nghiệp khác, không thể gửi thêm yêu cầu thực tập được nữa...");
+                result.setResult(Boolean.FALSE);
+            }
+
             RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
                     .findByStudentStudentIdAndRecruitmentRecruitmentIdAndBusinessStatus(
                             student.getStudentId(),
@@ -160,8 +170,12 @@ public class RecruitmentService implements IRecruitmentService {
                             RequestStatus.PENDING
                     ).orElse(null);
 
+            if(recruitmentRequest != null) {
+                result.setResult(Boolean.FALSE);
+                result.setMessage("Bạn đã gửi yêu cầu cho doanh nghiệp này rồi, vui lòng chờ đợi phản hồi");
+            }
 
-            if(recruitmentRequest == null) {
+            if(result.getMessage() == null) {
                 recruitmentRequest = RecruitmentRequest.builder()
                         .student(student)
                         .recruitment(recruitment)
@@ -182,10 +196,6 @@ public class RecruitmentService implements IRecruitmentService {
                 notificationService.SaveNotification(notificationRequest);
 
                 result.setResult(Boolean.TRUE);
-            }
-            else {
-                result.setResult(Boolean.FALSE);
-                result.setMessage("Bạn đã gửi yêu cầu cho doanh nghiệp này rồi, vui lòng chờ đợi phản hồi");
             }
 
         } else {
