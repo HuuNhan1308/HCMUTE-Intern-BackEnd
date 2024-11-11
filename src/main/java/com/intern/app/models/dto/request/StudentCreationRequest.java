@@ -1,9 +1,6 @@
 package com.intern.app.models.dto.request;
 
-import com.intern.app.models.entity.Business;
-import com.intern.app.models.entity.Faculty;
-import com.intern.app.models.entity.Profile;
-import com.intern.app.models.entity.RecruitmentRequest;
+import com.intern.app.models.entity.*;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +18,7 @@ public class StudentCreationRequest {
     String studentId;
     Integer year;
     @Builder.Default
-    Boolean isSeekingIntern = false;
+    Boolean isSeekingIntern = true;
     Date dob;
     ProfileCreationRequest profile;
 }

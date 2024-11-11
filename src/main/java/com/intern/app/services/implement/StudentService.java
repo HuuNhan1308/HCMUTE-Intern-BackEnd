@@ -25,6 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.RequestToViewNameTranslator;
@@ -43,6 +44,8 @@ public class StudentService implements IStudentService {
     ProfileRepository profileRepository;
     IPagingService pagingService;
     private final RequestToViewNameTranslator viewNameTranslator;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
@@ -86,16 +89,29 @@ public class StudentService implements IStudentService {
     }
 
     // NOT FINISH
+    @PreAuthorize("hasAuthority('CREATE_STUDENT')")
     public ReturnResult<Boolean> CreateStudent(StudentCreationRequest studentCreationRequest) {
         ReturnResult<Boolean> result = new ReturnResult<>();
 
-        Boolean isStudentExist = studentRepository.existsById(studentCreationRequest.getStudentId());
+        boolean isStudentExist = studentRepository.existsById(studentCreationRequest.getStudentId());
+        Role studentRole = roleRepository.findByRoleName("STUDENT").orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXIST));
 
         if (isStudentExist) {
             throw new AppException(ErrorCode.STUDENT_EXISTED_ID);
         }
 
         Student student = studentMapper.toStudent(studentCreationRequest);
+
+        Profile profile = profileMapper.toProfile(studentCreationRequest.getProfile());
+        profile.setRole(studentRole);
+        profile.setPassword(passwordEncoder.encode(profile.getPassword()));
+        profile = profileRepository.save(profile);
+
+        student.setProfile(profile);
+        studentRepository.save(student);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(HttpStatus.OK.value());
 
         return result;
     }
