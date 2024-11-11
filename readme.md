@@ -26,7 +26,7 @@ This document provides instructions for setting up and running the Spring Boot a
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/LongVu0912/internship-management-fe.git
+   git clone https://github.com/HuuNhan1308/HCMUTE-Intern-BackEnd.git
    cd [project-directory]
    ```
 
