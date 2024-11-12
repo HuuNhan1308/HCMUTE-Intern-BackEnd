@@ -18,10 +18,10 @@ public class ProfilePermission extends BaseEntity {
     String Id;
 
     @ManyToOne()
-    @JoinColumn(name = "profileId")
+    @JoinColumn(name = "profile_id")
     Profile profile;
 
     @ManyToOne()
-    @JoinColumn(name = "permissionId")
+    @JoinColumn(name = "permission_id")
     Permission permission;
 }

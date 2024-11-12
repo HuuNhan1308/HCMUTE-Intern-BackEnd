@@ -21,10 +21,10 @@ public class InstructorRequest extends BaseEntity {
     String messageToInstructor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "StudentId", nullable = false)
+    @JoinColumn(name = "student_id", nullable = false)
     Student student;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "InstructorId")
+    @JoinColumn(name = "instructor_id")
     Instructor instructor;
 }

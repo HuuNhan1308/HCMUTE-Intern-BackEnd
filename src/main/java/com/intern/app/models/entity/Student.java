@@ -25,15 +25,15 @@ public class Student extends BaseEntity {
     Date dob;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MajorId")
+    @JoinColumn(name = "major_id")
     Major major;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FacultyId")
+    @JoinColumn(name = "faculty_id")
     Faculty faculty;
 
     @OneToOne()
-    @JoinColumn(name = "ProfileId", referencedColumnName = "profileId",nullable = false)
+    @JoinColumn(name = "profile_id",nullable = false)
     Profile profile;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "student")

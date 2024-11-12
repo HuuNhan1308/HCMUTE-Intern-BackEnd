@@ -21,17 +21,17 @@ public class Business extends BaseEntity {
     String name;
     String overview;
     String location;
-    String type;
     String industry;
     String workingDay;
     String workingHour;
+    String businessWebsite;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "managed_by", referencedColumnName = "profileId")
+    @JoinColumn(name = "managed_by", nullable = false)
     Profile managedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RefInstructorId")
+    @JoinColumn(name = "ref_instructor_id")
     Instructor refInstructor;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "business")

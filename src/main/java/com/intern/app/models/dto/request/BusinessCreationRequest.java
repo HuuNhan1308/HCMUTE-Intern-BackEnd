@@ -17,10 +17,10 @@ public class BusinessCreationRequest {
     String name;
     String overview;
     String location;
-    String type;
     String industry;
     String workingDay;
     String workingHour;
+    String businessWebsite;
 
     ProfileCreationRequest managedBy;
 

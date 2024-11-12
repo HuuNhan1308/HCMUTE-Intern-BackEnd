@@ -23,6 +23,6 @@ public class UploadContent extends BaseEntity {
     private byte[] fileData;
 
     @OneToOne
-    @JoinColumn(name = "ProfileId", nullable = false)
+    @JoinColumn(name = "profile_id", nullable = false)
     Profile profile;
 }

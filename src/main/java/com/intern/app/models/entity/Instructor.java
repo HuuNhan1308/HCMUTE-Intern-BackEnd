@@ -19,12 +19,12 @@ public class Instructor extends BaseEntity{
     String instructorId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FacultyId")
+    @JoinColumn(name = "faculty_id")
     Faculty faculty;
 
 
     @OneToOne()
-    @JoinColumn(name = "ProfileId", referencedColumnName = "profileId",nullable = false)
+    @JoinColumn(name = "profile_id",nullable = false)
     Profile profile;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "refInstructor")
