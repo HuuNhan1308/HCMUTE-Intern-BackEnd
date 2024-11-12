@@ -15,10 +15,10 @@ public class BusinessResponse {
     String name;
     String overview;
     String location;
-    String type;
     String industry;
     String workingDay;
     String workingHour;
+    String businessWebsite;
 
     ProfileResponse managedBy;
 }

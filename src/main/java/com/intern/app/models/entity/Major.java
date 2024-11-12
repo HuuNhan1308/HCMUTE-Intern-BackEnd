@@ -25,6 +25,6 @@ public class Major extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FacultyId")
+    @JoinColumn(name = "faculty_id")
     Faculty faculty;
 }

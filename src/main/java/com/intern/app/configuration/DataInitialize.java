@@ -147,7 +147,6 @@ public class DataInitialize {
 
                 Business businessCreation = Business.builder()
                         .name(businessNames.get(i))
-                        .type("Business")
                         .overview(faker.lorem().paragraph(2))
                         .workingDay("8")
                         .workingHour("9:00 - 18:30")

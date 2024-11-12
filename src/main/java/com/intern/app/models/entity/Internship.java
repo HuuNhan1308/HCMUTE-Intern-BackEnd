@@ -21,6 +21,6 @@ public class Internship extends BaseEntity {
     Date startDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "StudentId", nullable = false)
+    @JoinColumn(name = "student_id", nullable = false)
     Student student;
 }

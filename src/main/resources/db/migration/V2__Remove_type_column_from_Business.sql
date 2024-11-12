@@ -1,0 +1,1 @@
+ALTER TABLE Business DROP COLUMN type;

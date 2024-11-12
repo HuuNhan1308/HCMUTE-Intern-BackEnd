@@ -33,7 +33,7 @@ public class Recruitment extends BaseEntity {
     RecruitmentStatus status = RecruitmentStatus.OPEN;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "businessId", nullable = false)
+    @JoinColumn(name = "business_id", nullable = false)
     Business business;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "recruitment")

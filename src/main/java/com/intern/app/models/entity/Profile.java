@@ -45,7 +45,7 @@ public class Profile extends BaseEntity {
     Business business;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "roleId")
+    @JoinColumn(name = "role_id")
     Role role;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")

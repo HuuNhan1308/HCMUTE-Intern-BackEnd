@@ -21,11 +21,11 @@ public class RecruitmentRequest extends BaseEntity {
     String messageToBusiness;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "StudentId", nullable = false)
+    @JoinColumn(name = "student_id", nullable = false)
     Student student;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RecruitmentId", nullable = false)
+    @JoinColumn(name = "recruitment_id", nullable = false)
     Recruitment recruitment;
 }
 

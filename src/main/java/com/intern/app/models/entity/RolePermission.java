@@ -18,10 +18,10 @@ public class RolePermission extends BaseEntity {
     String id;
 
     @ManyToOne
-    @JoinColumn(name="RoleId", nullable=false)
+    @JoinColumn(name="role_id", nullable=false)
     Role role;
 
     @ManyToOne
-    @JoinColumn(name="PermissionId", nullable = false)
+    @JoinColumn(name="permission_id", nullable = false)
     Permission permission;
 }
