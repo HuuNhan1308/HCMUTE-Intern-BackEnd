@@ -62,11 +62,11 @@ public class InstructorService implements IInstructorService {
         Role instructorRole = roleRepository.findByRoleName("INSTRUCTOR")
                 .orElseThrow(() -> new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION));
 
-        Profile createdProfile = profileService.CreateUser(instructorCreationRequest.getProfile(), instructorRole).getResult();
-
         Faculty faculty = facultyRepository.findByFacultyId(instructorCreationRequest.getFacultyId())
                 .orElseThrow(() -> new AppException(ErrorCode.FACULTY_NOT_EXISTED));
 
+
+        Profile createdProfile = profileService.CreateUser(instructorCreationRequest.getProfile(), instructorRole).getResult();
         Instructor instructor = Instructor.builder()
                 .faculty(faculty)
                 .profile(createdProfile)
