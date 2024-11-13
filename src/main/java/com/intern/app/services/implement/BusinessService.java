@@ -50,7 +50,6 @@ public class BusinessService implements IBusinessService {
     public ReturnResult<Boolean> CreateBusiness(BusinessCreationRequest businessCreationRequest) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        log.info("Username: {}", authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
         var result = new ReturnResult<Boolean>();

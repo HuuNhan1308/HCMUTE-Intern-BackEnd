@@ -1,5 +1,7 @@
 package com.intern.app.controller;
 
+import com.intern.app.models.dto.datamodel.PageConfig;
+import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.response.NotificationResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.services.interfaces.INotificationService;
@@ -32,4 +34,18 @@ public class NotificationController {
         return ResponseEntity.ok().body(result);
     }
 
+    @PostMapping("/GetUserNotificationPaging")
+    public ResponseEntity<ReturnResult<PagedData<NotificationResponse, PageConfig>>> GetUserNotifications(@RequestBody PageConfig pageConfig) {
+        ReturnResult<PagedData<NotificationResponse, PageConfig>> result = this.notificationService.GetUserNotificationPaging(pageConfig);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+
+    @GetMapping("/GetQuantityOfNotification")
+    public ResponseEntity<ReturnResult<Integer>> GetQuantityOfNotification() {
+        ReturnResult<Integer> result = this.notificationService.GetQuantityOfNotification();
+
+        return ResponseEntity.ok().body(result);
+    }
 }
