@@ -323,7 +323,6 @@ public class RecruitmentService implements IRecruitmentService {
 
     }
 
-    @PreAuthorize("hasAnyRole('BUSINESS', 'ADMIN')")
     public ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>> GetOpenRecruitmentPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<RecruitmentResponseShort, PageConfig>>();
 
