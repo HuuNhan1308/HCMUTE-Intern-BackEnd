@@ -9,4 +9,5 @@ import java.util.List;
 public interface NotificationRepository extends AppRepository<Notification, String>, JpaSpecificationExecutor<Notification> {
     List<Notification> findByProfileProfileIdAndReadFalse(String profileId);
     Notification findByNotificationId(String notificationId);
+    Integer countByProfileProfileIdAndReadFalse(String profileId);
 }

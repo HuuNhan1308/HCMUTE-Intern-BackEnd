@@ -1,7 +1,11 @@
 package com.intern.app.models.dto.response;
 
+import com.intern.app.models.entity.BaseEntity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
 
 @Builder
 @NoArgsConstructor
@@ -15,4 +19,6 @@ public class NotificationResponse {
     String title;
     String content;
     Boolean read;
+
+    LocalDateTime dateCreated;
 }

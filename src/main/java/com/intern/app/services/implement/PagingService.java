@@ -49,6 +49,8 @@ public class PagingService implements IPagingService {
     FacultyMapper facultyMapper;
     BusinessMapper businessMapper;
     private final FacultyRepository facultyRepository;
+    private final NotificationRepository notificationRepository;
+    private final NotificationMapper notificationMapper;
 
     public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetInstructorsRequestPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>();
@@ -511,6 +513,71 @@ public class PagingService implements IPagingService {
         result.setResult(
                 PagedData.<FacultyResponse, PageConfig>builder()
                         .data(facultyResponses)
+                        .pageConfig(pageConfigResult)
+                        .build()
+        );
+
+        return result;
+    }
+
+    @Override
+    public ReturnResult<PagedData<NotificationResponse, PageConfig>> GetNotificationPaging(PageConfig pageConfig) {
+        var result = new ReturnResult<PagedData<NotificationResponse, PageConfig>>();
+
+        // Specification
+        FilterSpecification<Notification> filter = new FilterSpecification<>();
+        Specification<Notification> notificationSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
+
+        // Sort
+        Sort sort = pageConfig.getSortAndNewItem();
+
+        List<Notification> notifications;
+        Page<Notification> notificationPage = null;
+        if (pageConfig.getPageSize() == -1) {
+            // Fetch all elements when pageSize is -1
+            pageConfig.setCurrentPage(1);
+            notifications = notificationRepository.findAll(notificationSpecification, sort);
+        } else {
+            // Fetch paginated data
+            Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+            notificationPage = notificationRepository.findAll(notificationSpecification, pageable);
+            notifications = notificationPage.getContent();
+        }
+
+        // Transform data to response DTO
+        List<NotificationResponse> notificationResponses = notifications.stream()
+                .map(notificationMapper::toNotificationResponse)
+                .toList();
+
+        // Set data for page
+        PageConfig pageConfigResult;
+        if (pageConfig.getPageSize() == -1) {
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(notifications.size())
+                    .totalRecords(notifications.size())
+                    .totalPage(1)
+                    .currentPage(1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+
+        } else {
+            if (notificationPage == null) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(notificationPage.getSize())
+                    .totalRecords((int) notificationPage.getTotalElements())
+                    .totalPage(notificationPage.getTotalPages())
+                    .currentPage(notificationPage.getNumber() + 1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        }
+
+        // Build the PagedData object
+        result.setResult(
+                PagedData.<NotificationResponse, PageConfig>builder()
+                        .data(notificationResponses)
                         .pageConfig(pageConfigResult)
                         .build()
         );
