@@ -28,3 +28,4 @@ public class Major extends BaseEntity {
     @JoinColumn(name = "faculty_id")
     Faculty faculty;
 }
+
