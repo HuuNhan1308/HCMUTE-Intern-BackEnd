@@ -3,8 +3,6 @@ package com.intern.app.services.interfaces;
 import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.response.*;
-import com.intern.app.models.entity.RecruitmentRequest;
-import org.hibernate.query.Page;
 
 public interface IPagingService {
     ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetInstructorsRequestPaging(PageConfig pageConfig);
@@ -15,4 +13,5 @@ public interface IPagingService {
     ReturnResult<PagedData<BusinessResponse, PageConfig>> GetBusinessPaging(PageConfig pageConfig);
     ReturnResult<PagedData<FacultyResponse, PageConfig>> GetFacultyPaging(PageConfig pageConfig);
     ReturnResult<PagedData<NotificationResponse, PageConfig>> GetNotificationPaging(PageConfig pageConfig);
+    ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>> GetBusinessWithRecruitmentsPaging(PageConfig pageConfig);
 }
