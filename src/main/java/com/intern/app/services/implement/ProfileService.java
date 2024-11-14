@@ -1,5 +1,6 @@
 package com.intern.app.services.implement;
 
+import com.intern.app.models.dto.request.ChangePasswordRequest;
 import com.intern.app.models.dto.request.ProfileCreationRequest;
 import com.intern.app.models.dto.response.ProfileResponse;
 import com.intern.app.models.dto.response.ReturnResult;
@@ -14,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,20 +51,40 @@ public class ProfileService implements IProfileService {
         return result;
     }
 
-    public ReturnResult<Boolean> ChangePassword(String oldPassword, String newPassword, String username) {
+    public ReturnResult<Boolean> ChangePassword(ChangePasswordRequest changePasswordRequest) {
         var result = new ReturnResult<Boolean>();
-        Profile profile = profileRepository.findByUsername(username).orElse(null);
 
-        if(profile == null) {
-            throw new AppException(ErrorCode.INVALID_TOKEN);
-        }
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
 
-        if (!passwordEncoder.matches(oldPassword, profile.getPassword())) {
+        Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), profile.getPassword())) {
             result.setResult(false);
             result.setMessage("Wrong old password...");
             result.setCode(HttpStatus.BAD_REQUEST.value());
         } else {
-            profile.setPassword(passwordEncoder.encode(newPassword));
+            profile.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+            profileRepository.save(profile);
+            result.setResult(true);
+            result.setCode(HttpStatus.OK.value());
+        }
+
+        return result;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReturnResult<Boolean> ChangePassword(ChangePasswordRequest changePasswordRequest, String profileId) {
+        var result = new ReturnResult<Boolean>();
+
+        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), profile.getPassword())) {
+            result.setResult(false);
+            result.setMessage("Wrong old password...");
+            result.setCode(HttpStatus.BAD_REQUEST.value());
+        } else {
+            profile.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
             profileRepository.save(profile);
             result.setResult(true);
             result.setCode(HttpStatus.OK.value());

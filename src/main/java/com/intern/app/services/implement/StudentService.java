@@ -88,7 +88,6 @@ public class StudentService implements IStudentService {
         return result;
     }
 
-    // NOT FINISH
     @PreAuthorize("hasAuthority('CREATE_STUDENT')")
     public ReturnResult<Boolean> CreateStudent(StudentCreationRequest studentCreationRequest) {
         ReturnResult<Boolean> result = new ReturnResult<>();
