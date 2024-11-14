@@ -99,7 +99,9 @@ public class NotificationService implements INotificationService {
 
         if(notification.getRead()) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
 
+        notification.setRead(Boolean.TRUE);
         notificationRepository.save(notification);
+
         result.setResult(Boolean.TRUE);
         result.setCode(200);
 
