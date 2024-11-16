@@ -19,7 +19,9 @@ public class Notification extends BaseEntity {
     String title;
     String content;
     String path;
-    Boolean read;
+
+    @Builder.Default
+    Boolean read = false;
 
     @ManyToOne
     @JoinColumn(name = "owner_id")

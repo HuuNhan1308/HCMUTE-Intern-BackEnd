@@ -82,5 +82,10 @@ public class RecruitmentController {
         return ResponseEntity.ok().body(result);
     }
     
+    @PostMapping("InviteStudent")
+    public ResponseEntity<ReturnResult<Boolean>> InviteStudent(@RequestParam String recruitmentId, @RequestParam String studentId) {
+        ReturnResult<Boolean> result = recruitmentService.InviteStudent(recruitmentId, studentId);
 
+        return ResponseEntity.ok().body(result);
+    }
 }
