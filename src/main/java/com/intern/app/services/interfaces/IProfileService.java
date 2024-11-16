@@ -14,5 +14,5 @@ public interface IProfileService {
     ReturnResult<Profile> CreateUser(ProfileCreationRequest request, Role role);
 
     ReturnResult<Boolean> ChangePassword(ChangePasswordRequest changePasswordRequest);
-    ReturnResult<Boolean> ChangePassword(ChangePasswordRequest changePasswordRequest, String profileId);
+    ReturnResult<Boolean> ChangePassword(String newPassword, String profileId);
 }
