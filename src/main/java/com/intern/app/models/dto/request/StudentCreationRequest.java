@@ -21,5 +21,7 @@ public class StudentCreationRequest {
     Boolean isSeekingIntern = true;
     Date dob;
     ProfileCreationRequest profile;
+
+    String majorId;
 }
 

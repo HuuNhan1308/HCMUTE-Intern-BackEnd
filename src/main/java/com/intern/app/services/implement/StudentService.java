@@ -46,6 +46,8 @@ public class StudentService implements IStudentService {
     private final RequestToViewNameTranslator viewNameTranslator;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FacultyRepository facultyRepository;
+    private final MajorRepository majorRepository;
 
     public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
@@ -99,7 +101,11 @@ public class StudentService implements IStudentService {
             throw new AppException(ErrorCode.STUDENT_EXISTED_ID);
         }
 
+        Major major = majorRepository.findByMajorId(studentCreationRequest.getMajorId())
+                .orElseThrow(() -> new AppException(ErrorCode.MAJOR_NOT_EXISTED));
+
         Student student = studentMapper.toStudent(studentCreationRequest);
+        student.setMajor(major);
 
         Profile profile = profileMapper.toProfile(studentCreationRequest.getProfile());
         profile.setRole(studentRole);
