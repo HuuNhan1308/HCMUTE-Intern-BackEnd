@@ -12,8 +12,9 @@ import java.util.List;
 public interface MajorRepository extends AppRepository<Major, String> {
 
     Optional<Major> findByName(String name);
-
     Optional<Major> findByNameAndFaculty(String name, Faculty faculty);
+
+    Optional<Major> findByNameAndFacultyName(String name, String facultyName);
 
     List<Major> findByFaculty(Faculty faculty);
 }

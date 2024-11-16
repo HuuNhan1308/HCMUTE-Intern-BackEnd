@@ -66,6 +66,7 @@ public class ExcelUploadService implements IExcelUploadService {
                 int cellIndex = 0;
                 Profile profile = new Profile();
                 Student student = new Student();
+                Faculty faculty = new Faculty();
 
                 while (cellIterator.hasNext()) {
                     Cell cell = cellIterator.next();
@@ -100,13 +101,12 @@ public class ExcelUploadService implements IExcelUploadService {
                         }
                         case 5 -> {
                             // Khoa
-                            Faculty faculty = facultyRepository.findByName(cell.getStringCellValue())
+                            faculty = facultyRepository.findByName(cell.getStringCellValue())
                                     .orElseThrow(() -> new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION));
-                            student.setFaculty(faculty);
                         }
                         case 6 -> {
                             // Ngành
-                            Major major = majorRepository.findByName(cell.getStringCellValue())
+                            Major major = majorRepository.findByNameAndFacultyName(cell.getStringCellValue(), faculty.getName())
                                     .orElseThrow(() -> new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION));
                             student.setMajor(major);
                         }
