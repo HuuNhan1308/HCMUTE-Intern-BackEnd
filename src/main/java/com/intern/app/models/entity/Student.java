@@ -28,10 +28,6 @@ public class Student extends BaseEntity {
     @JoinColumn(name = "major_id")
     Major major;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "faculty_id")
-    Faculty faculty;
-
     @OneToOne()
     @JoinColumn(name = "profile_id",nullable = false)
     Profile profile;
