@@ -28,8 +28,8 @@ public class ProfileController {
     }
 
     @PostMapping("/AdminChangePassword/{profileId}")
-    public ResponseEntity<ReturnResult<Boolean>> AdminChangePassword(@RequestBody ChangePasswordRequest changePasswordRequest, @PathVariable String profileId) {
-        ReturnResult<Boolean> result = profileService.ChangePassword(changePasswordRequest, profileId);
+    public ResponseEntity<ReturnResult<Boolean>> AdminChangePassword(@RequestBody String newPassword, @PathVariable String profileId) {
+        ReturnResult<Boolean> result = profileService.ChangePassword(newPassword, profileId);
 
         return ResponseEntity.ok().body(result);
     }

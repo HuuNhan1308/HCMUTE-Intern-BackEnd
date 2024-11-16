@@ -74,21 +74,16 @@ public class ProfileService implements IProfileService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public ReturnResult<Boolean> ChangePassword(ChangePasswordRequest changePasswordRequest, String profileId) {
+    public ReturnResult<Boolean> ChangePassword(String newPassword, String profileId) {
         var result = new ReturnResult<Boolean>();
 
         Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), profile.getPassword())) {
-            result.setResult(false);
-            result.setMessage("Wrong old password...");
-            result.setCode(HttpStatus.BAD_REQUEST.value());
-        } else {
-            profile.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-            profileRepository.save(profile);
-            result.setResult(true);
-            result.setCode(HttpStatus.OK.value());
-        }
+        profile.setPassword(passwordEncoder.encode(newPassword));
+        profileRepository.save(profile);
+
+        result.setResult(true);
+        result.setCode(HttpStatus.OK.value());
 
         return result;
     }
