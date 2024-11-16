@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface INotificationService {
     ReturnResult<Boolean> SaveNotification(NotificationRequest notification);
-    ReturnResult<List<NotificationResponse>> GetUserNotifications();
     ReturnResult<Boolean> MarkAsRead(String notificationId);
     ReturnResult<PagedData<NotificationResponse, PageConfig>> GetUserNotificationPaging(PageConfig pageConfig);
     ReturnResult<Integer> GetQuantityOfNotification();
