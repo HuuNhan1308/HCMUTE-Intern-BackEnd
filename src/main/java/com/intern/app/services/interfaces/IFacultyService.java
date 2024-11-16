@@ -8,7 +8,6 @@ import com.intern.app.models.entity.Faculty;
 import java.util.List;
 
 public interface IFacultyService {
-    ReturnResult<List<FacultyResponse>> GetAllFaculties();
     ReturnResult<Boolean> SaveFaculty(FacultyRequest facultyRequest);
 }
 
