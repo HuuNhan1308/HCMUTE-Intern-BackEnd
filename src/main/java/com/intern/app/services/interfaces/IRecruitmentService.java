@@ -2,6 +2,7 @@ package com.intern.app.services.interfaces;
 
 import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
+import com.intern.app.models.dto.request.NotificationRequest;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentUpdateRequest;
@@ -26,4 +27,6 @@ public interface IRecruitmentService {
     ReturnResult<Boolean> UpdateRecruitment(RecruitmentUpdateRequest recruitmentUpdateRequest, String businessId);
     ReturnResult<Boolean> RejectAllRecruitmentRequest(Recruitment recruitment);
     ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllRecruitmentRequestOfRecruitmentPaging(PageConfig pageConfig, String recruitmentId);
+
+    ReturnResult<Boolean> InviteStudent(String recruitmentId, String studentId);
 }
