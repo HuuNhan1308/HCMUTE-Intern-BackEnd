@@ -259,4 +259,53 @@ public class StudentService implements IStudentService {
 
         return result;
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'BUSINESS')")
+    public ReturnResult<PagedData<StudentResponse, PageConfig>> GetAllStudentWithSeekingIntern(PageConfig pageConfig) {
+        var result = new ReturnResult<PagedData<StudentResponse, PageConfig>>();
+
+
+        // Clone the original PageConfig to keep the original unchanged
+        PageConfig customPageConfig = PageConfig.builder()
+                .pageSize(pageConfig.getPageSize())
+                .currentPage(pageConfig.getCurrentPage())
+                .orders(new ArrayList<>(pageConfig.getOrders()))
+                .filters(new ArrayList<>(pageConfig.getFilters()))
+                .build();
+
+        List<FilterMapping> filterMappings = customPageConfig.getFilters();
+        filterMappings.add(FilterMapping.builder()
+                .prop("isSeekingIntern")
+                .value("TRUE")
+                .type(FilterType.BOOLEAN)
+                .operator(FilterOperator.EQUALS)
+                .build()
+        );
+
+        customPageConfig.setFilters(filterMappings);
+
+        var data = pagingService.GetStudentPaging(customPageConfig).getResult();
+
+        // Set data for page
+        PageConfig pageConfigResult = PageConfig
+                .builder()
+                .pageSize(data.getPageConfig().getPageSize())
+                .totalRecords(data.getPageConfig().getTotalRecords())
+                .totalPage(data.getPageConfig().getTotalPage())
+                .currentPage(data.getPageConfig().getCurrentPage())
+                .orders(pageConfig.getOrders())
+                .filters(pageConfig.getFilters())
+                .build();
+
+        // Build the PagedData object
+        result.setResult(
+                PagedData.<StudentResponse, PageConfig>builder()
+                        .data(data.getData())
+                        .pageConfig(pageConfigResult)
+                        .build()
+        );
+        result.setCode(HttpStatus.OK.value());
+
+        return result;
+    }
 }

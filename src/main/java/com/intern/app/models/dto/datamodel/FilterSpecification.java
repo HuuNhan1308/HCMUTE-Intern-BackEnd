@@ -25,6 +25,10 @@ public class FilterSpecification<T extends BaseEntity> {
                         Predicate numberPredicate = this.HandleNumberPredicate(filter, root, criteriaBuilder);
                         predicates.add(numberPredicate);
                     }
+                    case BOOLEAN -> {
+                        Predicate booleanPredicate = this.HandleBooleanPredicate(filter, root, criteriaBuilder);
+                        predicates.add(booleanPredicate);
+                    }
                     case null, default -> {}
                 }
             });
@@ -117,5 +121,40 @@ public class FilterSpecification<T extends BaseEntity> {
             }
             case null, default -> throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+    }
+
+    public Predicate HandleBooleanPredicate(FilterMapping filter, Root<T> root, CriteriaBuilder criteriaBuilder) {
+        List<String> keys = new ArrayList<>(List.of(filter.getProp().split("\\.")));
+        Join<BaseEntity, BaseEntity> join = null;
+        String finalProp = keys.removeLast(); // Get the last property in the path
+
+        // Navigate joins if nested properties are present
+        if (!keys.isEmpty()) {
+            join = root.join(keys.removeFirst());
+            for (String key : keys) {
+                join = join.join(key);
+            }
+        }
+
+        Path<Boolean> objectPath = join != null ? join.get(finalProp) : root.get(finalProp);
+
+        // Parse the Boolean value
+        Boolean value;
+        try {
+            value = Boolean.valueOf(filter.getValue()); // Convert the String value to Boolean
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.INVALID_BOOLEAN_VALUE);
+        }
+
+        // Build and return the predicate
+        return getBooleanPredicate(filter, criteriaBuilder, objectPath, value);
+    }
+
+    // Helper method to build the predicate for Boolean
+    private Predicate getBooleanPredicate(FilterMapping filter, CriteriaBuilder criteriaBuilder, Path<Boolean> objectPath, Boolean value) {
+        return switch (filter.getOperator()) {
+            case EQUALS -> criteriaBuilder.equal(objectPath, value);
+            default -> throw new AppException(ErrorCode.UNSUPPORTED_FILTER_OPERATOR);
+        };
     }
 }
