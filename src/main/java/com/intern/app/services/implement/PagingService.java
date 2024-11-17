@@ -582,7 +582,6 @@ public class PagingService implements IPagingService {
         return result;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>> GetBusinessWithRecruitmentsPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>>();
 
