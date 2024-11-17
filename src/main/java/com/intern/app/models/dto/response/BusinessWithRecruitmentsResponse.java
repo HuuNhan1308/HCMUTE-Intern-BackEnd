@@ -12,17 +12,6 @@ import java.util.List;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BusinessResponse {
-    String businessId;
-
-    String name;
-    String overview;
-    String location;
-    String industry;
-    String workingDay;
-    String workingHour;
-    String businessWebsite;
-
-    ProfileResponse managedBy;
+public class BusinessWithRecruitmentsResponse extends BusinessResponse {
+    List<RecruitmentResponse> recruitments;
 }
-

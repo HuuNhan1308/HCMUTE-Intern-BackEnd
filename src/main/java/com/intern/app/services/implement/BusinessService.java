@@ -102,30 +102,53 @@ public class BusinessService implements IBusinessService {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
-        recruitmentRequest.setBusinessStatus(requestStatus);
-        recruitmentRequestRepository.save(recruitmentRequest);
+        boolean isApproved = recruitmentRequestRepository.findAllByStudentStudentId(recruitmentRequest.getStudent().getStudentId())
+                .stream()
+                .anyMatch((req) -> req.getBusinessStatus().equals(RequestStatus.APPROVED));
 
-        // SEND NOTIFICATION
-        NotificationRequest notificationRequest = NotificationRequest.builder()
-                .read(false)
-                .title("Yêu cầu thực tập của bạn đã có kết quả")
-                .content("Đã có kết quả cho yêu cầu đến bài tuyển dụng " + recruitmentRequest.getRecruitment().getTitle())
-                .ownerId(recruitmentRequest.getRecruitment().getBusiness().getManagedBy().getProfileId())
-                .profileId(recruitmentRequest.getStudent().getProfile().getProfileId())
-                .build();
-        notificationService.SaveNotification(notificationRequest);
-
-
-        // switch student IsSeekingIntern to false if approve
-        if(requestStatus == RequestStatus.APPROVED) {
-            Student student = recruitmentRequest.getStudent();
-            recruitmentService.ClearAllStudentAvailableRecruitmentRequests(student);
-            student.setIsSeekingIntern(false);
-            studentRepository.save(student);
+        if(isApproved) {
+            result.setResult(Boolean.FALSE);
+            result.setMessage("Sinh viên đã được doanh nghiệp khác chọn, vui lòng tải lại trang");
+            result.setCode(200);
         }
+        else {
+            recruitmentRequest.setBusinessStatus(requestStatus);
+            recruitmentRequestRepository.save(recruitmentRequest);
 
-        result.setResult(Boolean.TRUE);
-        result.setCode(200);
+            // SEND NOTIFICATION
+            String messageResult = "";
+            switch (recruitmentRequest.getBusinessStatus()) {
+                case APPROVED:
+                    messageResult = "chấp thuận";
+                    break;
+                case REJECT:
+                    messageResult = "từ chối";
+                    break;
+                case null, default:
+                    break;
+            }
+
+            NotificationRequest notificationRequest = NotificationRequest.builder()
+                    .read(false)
+                    .title("Yêu cầu thực tập của bạn đã có kết quả")
+                    .content("yêu cầu đến bài tuyển dụng " + recruitmentRequest.getRecruitment().getTitle() + " đã được " + messageResult)
+                    .ownerId(recruitmentRequest.getRecruitment().getBusiness().getManagedBy().getProfileId())
+                    .profileId(recruitmentRequest.getStudent().getProfile().getProfileId())
+                    .build();
+            notificationService.SaveNotification(notificationRequest);
+
+
+            // switch student IsSeekingIntern to false if approve
+            if(requestStatus == RequestStatus.APPROVED) {
+                Student student = recruitmentRequest.getStudent();
+                recruitmentService.ClearAllStudentAvailableRecruitmentRequests(student);
+                student.setIsSeekingIntern(false);
+                studentRepository.save(student);
+            }
+
+            result.setResult(Boolean.TRUE);
+            result.setCode(200);
+        }
 
         return result;
     }

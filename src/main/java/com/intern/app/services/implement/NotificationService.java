@@ -66,24 +66,6 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public ReturnResult<List<NotificationResponse>> GetUserNotifications() {
-        var result = new ReturnResult<List<NotificationResponse>>();
-
-        var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
-        Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
-        List<Notification> notifications = notificationRepository.findByProfileProfileIdAndReadFalse(profile.getProfileId());
-
-        var notificationResponses = notifications.stream().map(notificationMapper::toNotificationResponse).toList();
-
-        result.setResult(notificationResponses);
-        result.setCode(200);
-
-        return result;
-    }
-
-    @Override
     public ReturnResult<Boolean> MarkAsRead(String notificationId) {
         var result = new ReturnResult<Boolean>();
 
@@ -99,7 +81,9 @@ public class NotificationService implements INotificationService {
 
         if(notification.getRead()) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
 
+        notification.setRead(Boolean.TRUE);
         notificationRepository.save(notification);
+
         result.setResult(Boolean.TRUE);
         result.setCode(200);
 

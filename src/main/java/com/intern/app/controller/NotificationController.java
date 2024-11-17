@@ -11,7 +11,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/notification")
@@ -19,13 +18,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NotificationController {
     INotificationService notificationService;
-
-    @GetMapping("/GetUserNotifications")
-    public ResponseEntity<ReturnResult<List<NotificationResponse>>> GetUserNotifications() {
-        ReturnResult<List<NotificationResponse>> result = this.notificationService.GetUserNotifications();
-
-        return ResponseEntity.ok().body(result);
-    }
 
     @PutMapping("/MarkAsRead")
     public ResponseEntity<ReturnResult<Boolean>> MarkAsRead(@RequestParam String notificationId) {

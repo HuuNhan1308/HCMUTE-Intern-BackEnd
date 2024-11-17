@@ -8,13 +8,9 @@ import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.response.*;
 import com.intern.app.models.entity.*;
-import com.intern.app.models.enums.RequestStatus;
+import com.intern.app.models.enums.RecruitmentStatus;
 import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IPagingService;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +35,8 @@ public class PagingService implements IPagingService {
     RecruitmentRepository recruitmentRepository;
     RecruitmentRequestRepository recruitmentRequestRepository;
     BusinessRepository businessRepository;
+    FacultyRepository facultyRepository;
+    NotificationRepository notificationRepository;
 
     InstructorRequestMapper instructorRequestMapper;
     StudentMapper studentMapper;
@@ -48,9 +47,7 @@ public class PagingService implements IPagingService {
     InstructorRepository instructorRepository;
     FacultyMapper facultyMapper;
     BusinessMapper businessMapper;
-    private final FacultyRepository facultyRepository;
-    private final NotificationRepository notificationRepository;
-    private final NotificationMapper notificationMapper;
+    NotificationMapper notificationMapper;
 
     public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetInstructorsRequestPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>();
@@ -578,6 +575,87 @@ public class PagingService implements IPagingService {
         result.setResult(
                 PagedData.<NotificationResponse, PageConfig>builder()
                         .data(notificationResponses)
+                        .pageConfig(pageConfigResult)
+                        .build()
+        );
+
+        return result;
+    }
+
+    public ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>> GetBusinessWithRecruitmentsPaging(PageConfig pageConfig) {
+        var result = new ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>>();
+
+        //Specification
+        FilterSpecification<Business> filter = new FilterSpecification<>();
+        Specification<Business> businessSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
+
+        //Sort
+        Sort sort = pageConfig.getSortAndNewItem();
+
+        List<Business> businesses;
+        Page<Business> businessPage = null;
+        if (pageConfig.getPageSize() == -1) {
+            // Fetch all elements when pageSize is -1
+            pageConfig.setCurrentPage(1);
+            businesses = businessRepository.findAll(businessSpecification, sort);
+        } else {
+            // Fetch paginated data
+            Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+            businessPage = businessRepository.findAll(businessSpecification, pageable);
+            businesses = businessPage.getContent();
+        }
+
+        // transform data to response DTO
+        List<BusinessWithRecruitmentsResponse> businessResponses = businesses.stream()
+                .map(business -> {
+                    BusinessWithRecruitmentsResponse businessWithRecruitmentsResponse = businessMapper.toBusinessResponseWithRecruitments(business);
+
+                    List<RecruitmentResponse> recruitmentResponses = business.getRecruitments().stream()
+                            .filter(recruitment -> recruitment.getStatus() != RecruitmentStatus.CLOSED) // filter out closed recruitments
+                            .map(recruitment -> {
+                                RecruitmentResponse recruitmentResponse = recruitmentMapper.toRecruitmentResponse(recruitment);
+                                recruitmentResponse.setBusiness(null); // set Business to null as needed
+                                return recruitmentResponse;
+                            })
+                            .toList();
+
+
+                    businessWithRecruitmentsResponse.setRecruitments(recruitmentResponses);
+
+                    return businessWithRecruitmentsResponse;
+                })
+                .toList();
+
+        // Set data for page
+        PageConfig pageConfigResult;
+        if (pageConfig.getPageSize() == -1) {
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(businesses.size())
+                    .totalRecords(businesses.size())
+                    .totalPage(1)
+                    .currentPage(1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+
+        } else {
+            if (businessPage == null) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+            pageConfigResult = PageConfig
+                    .builder()
+                    .pageSize(businessPage.getSize())
+                    .totalRecords((int) businessPage.getTotalElements())
+                    .totalPage(businessPage.getTotalPages())
+                    .currentPage(businessPage.getNumber() + 1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        }
+
+        // Build the PagedData object
+        result.setResult(
+                PagedData.<BusinessWithRecruitmentsResponse, PageConfig>builder()
+                        .data(businessResponses)
                         .pageConfig(pageConfigResult)
                         .build()
         );

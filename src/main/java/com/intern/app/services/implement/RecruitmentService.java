@@ -151,6 +151,11 @@ public class RecruitmentService implements IRecruitmentService {
         Recruitment recruitment = recruitmentRepository.findByRecruitmentId(recruitmentRequestCreationRequest.getRecruitmentId())
                 .orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_NOT_FOUND));
 
+        //CHECK IF THE RECRUITMENT STATUS IS CLOSE SO THAT STUDENT CANT SEND REQUEST
+        if(recruitment.getStatus() == RecruitmentStatus.CLOSED) {
+            result.setMessage("Bài tuyển dụng này đã bị đóng, không gửi yêu cầu hoặc chỉnh sửa thêm được nữa");
+        }
+
         if(recruitmentRequestCreationRequest.getRecruitmentRequestId() == null) {
             //CASE ADD
             //CHECK IF STUDENT ALREADY HAVE APPROVED BY ANY RECRUITMENT?
@@ -163,6 +168,7 @@ public class RecruitmentService implements IRecruitmentService {
                 result.setResult(Boolean.FALSE);
             }
 
+            //CHECK IF STUDENT SEND TO THE SAME RECRUITMENT POST
             RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
                     .findByStudentStudentIdAndRecruitmentRecruitmentIdAndBusinessStatus(
                             student.getStudentId(),
@@ -207,10 +213,12 @@ public class RecruitmentService implements IRecruitmentService {
             if(!Objects.equals(recruitmentRequest.getStudent(), student))
                 throw new AppException(ErrorCode.UNAUTHORIZED);
 
-            recruitmentRequestMapper.updateRecruitmentRequest(recruitmentRequest, recruitmentRequestCreationRequest);
+            if(result.getMessage() == null) {
+                recruitmentRequestMapper.updateRecruitmentRequest(recruitmentRequest, recruitmentRequestCreationRequest);
+                recruitmentRequestRepository.save(recruitmentRequest);
+                result.setResult(Boolean.TRUE);
+            }
 
-            recruitmentRequestRepository.save(recruitmentRequest);
-            result.setResult(Boolean.TRUE);
         }
 
         result.setCode(200);

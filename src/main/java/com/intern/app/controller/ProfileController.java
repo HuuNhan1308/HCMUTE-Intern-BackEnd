@@ -22,13 +22,15 @@ public class ProfileController {
 
     @PostMapping("/ChangePassword")
     public ResponseEntity<ReturnResult<Boolean>> ChangePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
-        var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
+        ReturnResult<Boolean> result = profileService.ChangePassword(changePasswordRequest);
 
-        ReturnResult<Boolean> result = profileService.ChangePassword(
-                changePasswordRequest.getOldPassword(),
-                changePasswordRequest.getNewPassword(),
-                username);
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/AdminChangePassword/{profileId}")
+    public ResponseEntity<ReturnResult<Boolean>> AdminChangePassword(@RequestBody String newPassword, @PathVariable String profileId) {
+        ReturnResult<Boolean> result = profileService.ChangePassword(newPassword, profileId);
+
         return ResponseEntity.ok().body(result);
     }
 }
