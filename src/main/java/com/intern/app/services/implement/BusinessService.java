@@ -116,10 +116,22 @@ public class BusinessService implements IBusinessService {
             recruitmentRequestRepository.save(recruitmentRequest);
 
             // SEND NOTIFICATION
+            String messageResult = "";
+            switch (recruitmentRequest.getBusinessStatus()) {
+                case APPROVED:
+                    messageResult = "chấp thuận";
+                    break;
+                case REJECT:
+                    messageResult = "từ chối";
+                    break;
+                case null, default:
+                    break;
+            }
+
             NotificationRequest notificationRequest = NotificationRequest.builder()
                     .read(false)
                     .title("Yêu cầu thực tập của bạn đã có kết quả")
-                    .content("Đã có kết quả cho yêu cầu đến bài tuyển dụng " + recruitmentRequest.getRecruitment().getTitle())
+                    .content("yêu cầu đến bài tuyển dụng " + recruitmentRequest.getRecruitment().getTitle() + " đã được " + messageResult)
                     .ownerId(recruitmentRequest.getRecruitment().getBusiness().getManagedBy().getProfileId())
                     .profileId(recruitmentRequest.getStudent().getProfile().getProfileId())
                     .build();
