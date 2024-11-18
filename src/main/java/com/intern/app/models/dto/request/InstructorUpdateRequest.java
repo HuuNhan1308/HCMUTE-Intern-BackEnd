@@ -9,9 +9,9 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProfileUpdateRequest {
-    String profileId;
-    Boolean isMale;
-    String bio;
-    String phoneNumber;
+public class InstructorUpdateRequest {
+    String instructorId;
+    String facultyId;
+
+    ProfileUpdateRequest profile;
 }
