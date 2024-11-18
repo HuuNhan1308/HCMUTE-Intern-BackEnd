@@ -10,6 +10,7 @@ import com.intern.app.models.dto.response.*;
 import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.RecruitmentStatus;
 import com.intern.app.repository.*;
+import com.intern.app.services.interfaces.IAvatarService;
 import com.intern.app.services.interfaces.IPagingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,7 @@ public class PagingService implements IPagingService {
     FacultyMapper facultyMapper;
     BusinessMapper businessMapper;
     NotificationMapper notificationMapper;
+    IAvatarService avatarService;
 
     public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetInstructorsRequestPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>();
@@ -205,6 +207,7 @@ public class PagingService implements IPagingService {
         List<RecruitmentResponseShort> recruitmentResponseShorts = recruitments.stream().map(recruitment -> {
             RecruitmentResponseShort recruitmentResponseShort = recruitmentMapper.toRecruitmentResponseShort(recruitment);
             recruitmentResponseShort.setBusinessName(recruitment.getBusiness().getName());
+            recruitmentResponseShort.setBusinessImage("/api/avatar/" + recruitment.getBusiness().getManagedBy().getProfileId());
             return recruitmentResponseShort;
         }).toList();
 

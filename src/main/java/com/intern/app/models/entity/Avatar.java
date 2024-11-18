@@ -11,19 +11,18 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "upload_content")
-public class UploadContent extends BaseEntity {
+@Table(name = "avatar")
+public class Avatar extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String uploadContentId;
+    String avatarId;
 
     String fileName;
     String fileType;
 
-    @Column(name = "file_data", columnDefinition = "BYTEA")
-    private byte[] fileData;
+    String ownerId;
 
-    @OneToOne
-    @JoinColumn(name = "profile_id", nullable = false)
-    Profile profile;
+    @Column(name = "file_data", columnDefinition = "BYTEA")
+    byte[] fileData;
 }

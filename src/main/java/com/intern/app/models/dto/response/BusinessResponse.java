@@ -22,6 +22,7 @@ public class BusinessResponse {
     String workingDay;
     String workingHour;
     String businessWebsite;
+    String businessImage;
 
     ProfileResponse managedBy;
 }
