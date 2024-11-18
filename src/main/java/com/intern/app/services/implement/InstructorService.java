@@ -12,6 +12,7 @@ import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
 import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
+import com.intern.app.models.dto.request.InstructorUpdateRequest;
 import com.intern.app.models.dto.request.NotificationRequest;
 import com.intern.app.models.dto.response.*;
 import com.intern.app.models.entity.*;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,6 +56,7 @@ public class InstructorService implements IInstructorService {
     IPagingService pagingService;
     RecruitmentRequestRepository recruitmentRequestRepository;
     InstructorMapper instructorMapper;
+    ProfileMapper profileMapper;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateInstructor(InstructorCreationRequest instructorCreationRequest) {
@@ -151,6 +154,42 @@ public class InstructorService implements IInstructorService {
 
             result.setResult(Boolean.TRUE);
         }
+
+        return result;
+    }
+
+    @Override
+    public ReturnResult<Boolean> UpdateInstructor(InstructorUpdateRequest instructorUpdateRequest) {
+        var result = new ReturnResult<Boolean>();
+
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Profile profile = profileRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Instructor instructor = profile.getInstructor();
+
+        if(instructor == null) {
+            throw new AppException(ErrorCode.INSTRUCTOR_NOT_FOUND);
+        }
+
+        if(!Objects.equals(instructor.getInstructorId(), instructorUpdateRequest.getInstructorId())) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        instructorMapper.updateInstructor(instructor, instructorUpdateRequest);
+        profileMapper.updateProfile(profile, instructorUpdateRequest.getProfile());
+
+        Faculty faculty = facultyRepository.findById(instructorUpdateRequest.getFacultyId())
+                .orElseThrow(() -> new AppException(ErrorCode.FACULTY_NOT_EXISTED));
+
+        instructor.setFaculty(faculty);
+
+        instructorRepository.save(instructor);
+        profileRepository.save(profile);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
 
         return result;
     }
