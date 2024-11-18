@@ -15,7 +15,15 @@ public interface BusinessMapper {
 
     Business toBusiness(BusinessCreationRequest businessCreationRequest);
 
+    @Mapping(target = "businessImage", expression = "java(mapBusinessImage(business))")
     BusinessResponse toBusinessResponse(Business business);
+
+    default String mapBusinessImage(Business business) {
+        if (business.getManagedBy() != null && business.getManagedBy().getProfileId() != null) {
+            return "/api/avatar/" + business.getManagedBy().getProfileId();
+        }
+        return null; // Return null or a default placeholder URL
+    }
 
     @Mappings({
             @Mapping(target = "recruitments", ignore = true)

@@ -17,6 +17,8 @@ public class RecruitmentResponseShort {
     String workingDay;
     String workingHour;
     String location;
+
     String businessName;
+    String businessImage;
     RecruitmentStatus status;
 }

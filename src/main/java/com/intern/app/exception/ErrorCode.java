@@ -39,6 +39,7 @@ public enum ErrorCode {
     UNSUPPORTED_FILTER_OPERATOR(1024, "Kiểu filter không được hỗ trợ", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_FOUND(1025, "Notification không tồn tại", HttpStatus.BAD_REQUEST),
     MAJOR_NOT_EXISTED(1026, "Ngành không tồn tại", HttpStatus.BAD_REQUEST),
+    AVATAR_NOT_EXISTED(1027, "Avatar không tồn tại hoặc đã xảy ra lỗi", HttpStatus.BAD_REQUEST),
     ;
 
     int code;
