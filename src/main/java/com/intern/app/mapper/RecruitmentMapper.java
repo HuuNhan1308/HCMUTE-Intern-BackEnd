@@ -16,6 +16,10 @@ public interface RecruitmentMapper {
 
     RecruitmentResponse toRecruitmentResponse(Recruitment recruitment);
 
+    @Mappings({
+            @Mapping(target = "businessName", source = "business.name"),
+            @Mapping(target = "businessImage", source = "business.managedBy.profileId")
+    })
     RecruitmentResponseShort toRecruitmentResponseShort(Recruitment recruitment);
 
     @Mappings({

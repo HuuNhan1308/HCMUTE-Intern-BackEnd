@@ -204,12 +204,9 @@ public class PagingService implements IPagingService {
         }
 
         // transform data to response DTO
-        List<RecruitmentResponseShort> recruitmentResponseShorts = recruitments.stream().map(recruitment -> {
-            RecruitmentResponseShort recruitmentResponseShort = recruitmentMapper.toRecruitmentResponseShort(recruitment);
-            recruitmentResponseShort.setBusinessName(recruitment.getBusiness().getName());
-            recruitmentResponseShort.setBusinessImage("/api/avatar/" + recruitment.getBusiness().getManagedBy().getProfileId());
-            return recruitmentResponseShort;
-        }).toList();
+        List<RecruitmentResponseShort> recruitmentResponseShorts = recruitments.stream()
+                .map(recruitmentMapper::toRecruitmentResponseShort)
+                .toList();
 
 
         // Set data for page
@@ -589,7 +586,7 @@ public class PagingService implements IPagingService {
         var result = new ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>>();
 
         //Specification
-        FilterSpecification<Business> filter = new FilterSpecification<>();
+        FilterSpecification<Business> filter = new FilterSpecification< >();
         Specification<Business> businessSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
 
         //Sort
