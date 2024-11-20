@@ -300,13 +300,18 @@ public class InstructorService implements IInstructorService {
 
         // Additional data
         data.setData(data.getData().stream().peek(instructorRequestResponse -> {
+            List<RequestStatus> statuses = List.of(RequestStatus.APPROVED, RequestStatus.COMPLETED);
+
             RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
-                    .findByStudentStudentIdAndBusinessStatus(instructorRequestResponse.getStudent().getStudentId(), RequestStatus.APPROVED)
+                    .findByStudentStudentIdAndBusinessStatusIn(instructorRequestResponse.getStudent().getStudentId(), statuses)
                     .orElse(null);
 
             if(recruitmentRequest != null) {
                 instructorRequestResponse.setRecruitmentId(recruitmentRequest.getRecruitment().getRecruitmentId());
                 instructorRequestResponse.setRecruitmentTitle(recruitmentRequest.getRecruitment().getTitle());
+
+                if(recruitmentRequest.getBusinessStatus() == RequestStatus.COMPLETED)
+                    instructorRequestResponse.setPoint(recruitmentRequest.getPoint());
             }
 
             instructorRequestResponse.setInstructor(null);
