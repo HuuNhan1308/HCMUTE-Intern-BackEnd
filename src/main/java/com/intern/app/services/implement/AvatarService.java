@@ -74,7 +74,7 @@ public class AvatarService implements IAvatarService {
         var result = new ReturnResult<Avatar>();
 
         Profile profile = profileRepository.findById(ownerId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.AVATAR_NOT_EXISTED));
 
         Avatar avatar = avatarRepository.findByOwnerId(profile.getProfileId())
                 .orElseThrow(() -> new AppException(ErrorCode.AVATAR_NOT_EXISTED));
