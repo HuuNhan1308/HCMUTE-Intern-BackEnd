@@ -23,7 +23,7 @@ public enum ErrorCode {
     STUDENT_NOT_FOUND(1010, "Không tìm thấy học sinh", HttpStatus.NOT_FOUND),
     LOGIN_FAIL_CREDENTIALS(1011, "Tài khoản hoặc mật khẩu không đúng, vui lòng thử lại", HttpStatus.BAD_REQUEST),
     STUDENT_EXISTED_ID(1012, "ID học sinh đã tồn tại, vui lòng đăng nhập", HttpStatus.BAD_REQUEST),
-    FACULTY_NOT_EXISTED(1013, "Id khoa không tồn tại", HttpStatus.BAD_REQUEST),
+    FACULTY_NOT_EXISTED(1013, "Id khoa không tồn tại", HttpStatus.NOT_FOUND),
     INVALID_FILE(1014, "File không hợp lệ", HttpStatus.BAD_REQUEST),
     FILE_NOT_FOUND(1015, "Không tìm thấy", HttpStatus.NOT_FOUND),
     BUSINESS_NOT_FOUND(1016, "Doanh nghiệp không tồn tại", HttpStatus.NOT_FOUND),
@@ -32,14 +32,14 @@ public enum ErrorCode {
     RECRUITMENT_REQUEST_NOT_EXIST(1018, "Bài tuyển dụng không tồn tại", HttpStatus.BAD_REQUEST),
     NOT_EXCEL_FORMAT(1019, "Định dạng nội dung không phải excel, vui lòng kiểm tra lại", HttpStatus.BAD_REQUEST),
     INSTRUCTOR_NOT_FOUND(1020, "Không tìm thấy giảng viên...", HttpStatus.BAD_REQUEST),
-    INSTRUCTOR_REQUEST_NOT_FOUND(1021, "Yêu cầu không tồn tại", HttpStatus.BAD_REQUEST),
-    ROLE_NOT_EXIST(1022, "Role không tồn tại", HttpStatus.BAD_REQUEST),
-    PERMISSION_NOT_EXIST(1022, "Permission không tồn tại", HttpStatus.BAD_REQUEST),
+    INSTRUCTOR_REQUEST_NOT_FOUND(1021, "Yêu cầu không tồn tại", HttpStatus.NOT_FOUND),
+    ROLE_NOT_EXIST(1022, "Role không tồn tại", HttpStatus.NOT_FOUND),
+    PERMISSION_NOT_EXIST(1022, "Permission không tồn tại", HttpStatus.NOT_FOUND),
     INVALID_NUMERIC_VALUE(1023, "Định dạng không phải numeric, vui lòng thử lại", HttpStatus.BAD_REQUEST),
     UNSUPPORTED_FILTER_OPERATOR(1024, "Kiểu filter không được hỗ trợ", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_FOUND(1025, "Notification không tồn tại", HttpStatus.BAD_REQUEST),
-    MAJOR_NOT_EXISTED(1026, "Ngành không tồn tại", HttpStatus.BAD_REQUEST),
-    AVATAR_NOT_EXISTED(1027, "Avatar không tồn tại hoặc đã xảy ra lỗi", HttpStatus.BAD_REQUEST),
+    MAJOR_NOT_EXISTED(1026, "Ngành không tồn tại", HttpStatus.NOT_FOUND),
+    AVATAR_NOT_EXISTED(1027, "Avatar không tồn tại hoặc đã xảy ra lỗi", HttpStatus.NOT_FOUND),
     ;
 
     int code;
