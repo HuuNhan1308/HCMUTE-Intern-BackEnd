@@ -1,5 +1,6 @@
 package com.intern.app.services.implement;
 
+import com.intern.app.controller.InstructorController;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.FacultyMapper;
@@ -23,6 +24,7 @@ import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IInstructorService;
 import com.intern.app.services.interfaces.INotificationService;
 import com.intern.app.services.interfaces.IPagingService;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -195,44 +197,85 @@ public class InstructorService implements IInstructorService {
     }
 
     @PreAuthorize("hasAuthority('SET_INSTRUCTOR_REQUEST_STATUS')")
-    public ReturnResult<Boolean> SetRequestStatus(RequestStatus requestStatus, String instructorRequestId) {
+    @Transactional
+    public ReturnResult<Boolean> SetRequestStatus(RequestStatus requestStatus, List<String> instructorRequestIds) {
         var result = new ReturnResult<Boolean>();
 
-        InstructorRequest instructorRequest = instructorRequestRepository.findByInstructorRequestId(instructorRequestId)
-                .orElseThrow(() -> new AppException(ErrorCode.INSTRUCTOR_REQUEST_NOT_FOUND));
+        // Fetch the current user and profile
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Profile profile = profileRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        boolean isApproved = instructorRequestRepository.findAllByStudentStudentId(instructorRequest.getStudent().getStudentId())
-                .stream()
-                .anyMatch((req) -> req.getInstructorStatus().equals(RequestStatus.APPROVED));
+        // Fetch all instructor requests by IDs
+        List<InstructorRequest> instructorRequests = instructorRequestRepository.findByInstructorRequestIdIn(instructorRequestIds);
 
-        if(isApproved) {
-            result.setResult(Boolean.FALSE);
-            result.setMessage("Học sinh đã được giảng viên khác chọn, vui lòng tải lại trang");
-            result.setCode(200);
+        // Check if the user is an instructor and owns all the requests
+        if ("INSTRUCTOR".equals(profile.getRole().getRoleName())) {
+            Instructor instructor = profile.getInstructor();
+
+            boolean hasUnauthorizedRequests = instructorRequests.stream()
+                    .anyMatch(request -> !Objects.equals(request.getInstructor().getInstructorId(), instructor.getInstructorId()));
+
+            if (hasUnauthorizedRequests) {
+                result.setResult(Boolean.FALSE);
+                result.setMessage("Bạn không có quyền chỉnh sửa các yêu cầu không phải của mình");
+                return result;
+            }
         }
-        else {
-            instructorRequest.setInstructorStatus(requestStatus);
 
-            instructorRequestRepository.save(instructorRequest);
+        boolean hasApprovedRequests = instructorRequests.stream()
+                .anyMatch(request -> {
+                    List<InstructorRequest> studentRequests = instructorRequestRepository
+                            .findAllByStudentStudentId(request.getStudent().getStudentId());
 
-            this.ClearAllStudentAvailableInstructorRequests(instructorRequestId);
+                    return studentRequests.stream()
+                            .anyMatch(req -> {
+                                // Get the instructor, if present
+                                Instructor instructor = req.getInstructor();
 
-            // SEND NOTIFICATION
+                                // Check if the request is approved
+                                if (req.getInstructorStatus().equals(RequestStatus.APPROVED)) {
+                                    // If an instructor exists, ensure it's not the current instructor
+                                    return instructor == null ||
+                                            !instructor.getInstructorId().equals(profile.getInstructor().getInstructorId());
+                                }
+
+                                return false;
+                            });
+                });
+
+
+        if (hasApprovedRequests) {
+            result.setResult(Boolean.FALSE);
+            result.setMessage("Có một hoặc một số yêu cầu đã được chấp nhận bởi giảng viên, vui lòng tải lại trang để lấy dữ liệu mới nhất");
+            return result;
+        }
+
+        // Update the request statuses and send notifications
+        instructorRequests.forEach(request -> {
+            request.setInstructorStatus(requestStatus);
+            instructorRequestRepository.save(request);
+
+            this.ClearAllStudentAvailableInstructorRequests(request.getInstructorRequestId());
+
+            // Send notification
             NotificationRequest notificationRequest = NotificationRequest.builder()
                     .read(false)
                     .title("Yêu cầu giảng viên hướng dẫn đã có kết quả")
-                    .content("Đã có kết quả cho yêu cầu giảng viên hướng dẫn " + instructorRequest.getInstructor().getProfile().getFullname())
-                    .ownerId(instructorRequest.getInstructor().getProfile().getProfileId())
-                    .profileId(instructorRequest.getStudent().getProfile().getProfileId())
+                    .content("Đã có kết quả cho yêu cầu giảng viên hướng dẫn " + request.getInstructor().getProfile().getFullname())
+                    .ownerId(request.getInstructor().getProfile().getProfileId())
+                    .profileId(request.getStudent().getProfile().getProfileId())
                     .build();
+
             notificationService.SaveNotification(notificationRequest);
+        });
 
-            result.setResult(Boolean.TRUE);
-            result.setCode(200);
-        }
-
+        // Set success result
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
         return result;
     }
+
 
     @Override
     public ReturnResult<Boolean> ClearAllStudentAvailableInstructorRequests(String instructorRequestId) {
@@ -300,13 +343,18 @@ public class InstructorService implements IInstructorService {
 
         // Additional data
         data.setData(data.getData().stream().peek(instructorRequestResponse -> {
+            List<RequestStatus> statuses = List.of(RequestStatus.APPROVED, RequestStatus.COMPLETED);
+
             RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
-                    .findByStudentStudentIdAndBusinessStatus(instructorRequestResponse.getStudent().getStudentId(), RequestStatus.APPROVED)
+                    .findByStudentStudentIdAndBusinessStatusIn(instructorRequestResponse.getStudent().getStudentId(), statuses)
                     .orElse(null);
 
             if(recruitmentRequest != null) {
                 instructorRequestResponse.setRecruitmentId(recruitmentRequest.getRecruitment().getRecruitmentId());
                 instructorRequestResponse.setRecruitmentTitle(recruitmentRequest.getRecruitment().getTitle());
+
+                if(recruitmentRequest.getBusinessStatus() == RequestStatus.COMPLETED)
+                    instructorRequestResponse.setPoint(recruitmentRequest.getPoint());
             }
 
             instructorRequestResponse.setInstructor(null);

@@ -159,11 +159,7 @@ public class RecruitmentService implements IRecruitmentService {
         if(recruitmentRequestCreationRequest.getRecruitmentRequestId() == null) {
             //CASE ADD
             //CHECK IF STUDENT ALREADY HAVE APPROVED BY ANY RECRUITMENT?
-            RecruitmentRequest approvedRecruitmentRequest = recruitmentRequestRepository
-                    .findByStudentStudentIdAndBusinessStatus(student.getStudentId(), RequestStatus.APPROVED)
-                    .orElse(null);
-
-            if(approvedRecruitmentRequest != null) {
+            if(student.getIsSeekingIntern() == Boolean.FALSE) {
                 result.setMessage("Bạn đã được chọn bởi một doanh nghiệp khác, không thể gửi thêm yêu cầu thực tập được nữa...");
                 result.setResult(Boolean.FALSE);
             }

@@ -226,7 +226,7 @@ public class BusinessService implements IBusinessService {
             result.setMessage("Đơn ứng tuyển chưa được xét duyệt hoặc đã bị từ chối, không thể cho điểm thực tập");
         }
 
-        if(result.getMessage() != null) {
+        if(result.getMessage() == null) {
             recruitmentRequestMapper.updateRecruitmentRequestWithGrading(recruitmentRequest, recruitmentRequestGrading);
             recruitmentRequest.setBusinessStatus(RequestStatus.COMPLETED);
             recruitmentRequestRepository.save(recruitmentRequest);

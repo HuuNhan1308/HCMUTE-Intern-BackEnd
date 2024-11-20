@@ -11,6 +11,7 @@ import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.services.interfaces.IBusinessService;
 import com.intern.app.services.interfaces.IPagingService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -82,7 +83,7 @@ public class BusinessController {
     }
 
     @PostMapping("/GradePoint")
-    public ResponseEntity<ReturnResult<Boolean>> GradePoint(@RequestBody RecruitmentRequestGrading recruitmentRequestGrading) {
+    public ResponseEntity<ReturnResult<Boolean>> GradePoint(@RequestBody @Valid RecruitmentRequestGrading recruitmentRequestGrading) {
         ReturnResult<Boolean> result = businessService.GradePoint(recruitmentRequestGrading);
 
         return ResponseEntity.ok().body(result);
