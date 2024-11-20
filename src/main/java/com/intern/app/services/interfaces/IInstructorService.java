@@ -22,6 +22,7 @@ public interface IInstructorService {
     ReturnResult<Boolean> UpdateInstructor(InstructorUpdateRequest instructorUpdateRequest);
 
     ReturnResult<Boolean> SetRequestStatus(RequestStatus requestStatus, List<String> instructorRequestIds);
+    ReturnResult<Boolean> CompleteRequest(List<String> instructorRequestIds);
     ReturnResult<Boolean> ClearAllStudentAvailableInstructorRequests(String instructorRequestId);
     ReturnResult<PagedData<InstructorRequestResponse, ExtendPageConfig>> GetAllInstructorRequestOfInstructorPaging(ExtendPageConfig pageConfig, String ínstructorId);
     ReturnResult<InstructorResponse> GetInstructorData(String instructorId);

@@ -85,4 +85,11 @@ public class InstructorController {
 
         return ResponseEntity.ok().body(result);
     }
+
+    @PostMapping("/CompleteRequest")
+    ResponseEntity<ReturnResult<Boolean>> CompleteRequest(@RequestBody List<String> instructorRequestIds) {
+        ReturnResult<Boolean> result = instructorService.CompleteRequest(instructorRequestIds);
+
+        return ResponseEntity.ok().body(result);
+    }
 }
