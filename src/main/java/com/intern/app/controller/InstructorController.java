@@ -66,7 +66,7 @@ public class InstructorController {
     }
 
     @GetMapping("/GetInstructorData")
-    ResponseEntity<ReturnResult<InstructorResponse>> GetAllInstructorRequestOfInstructorPaging(@RequestParam String instructorId) {
+    ResponseEntity<ReturnResult<InstructorResponse>> GetInstructorData(@RequestParam String instructorId) {
         ReturnResult<InstructorResponse> result = instructorService.GetInstructorData(instructorId);
 
         return ResponseEntity.ok().body(result);
