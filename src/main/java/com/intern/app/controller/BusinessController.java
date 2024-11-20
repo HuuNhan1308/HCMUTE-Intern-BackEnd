@@ -4,6 +4,7 @@ import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.BusinessCreationRequest;
 import com.intern.app.models.dto.request.BusinessUpdateRequest;
+import com.intern.app.models.dto.request.RecruitmentRequestGrading;
 import com.intern.app.models.dto.response.BusinessResponse;
 import com.intern.app.models.dto.response.BusinessWithRecruitmentsResponse;
 import com.intern.app.models.dto.response.ReturnResult;
@@ -76,6 +77,13 @@ public class BusinessController {
     @PostMapping("/GetBusinessWithRecruitmentsPaging")
     public ResponseEntity<ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>>> GetBusinessWithRecruitmentsPaging(@RequestBody PageConfig pageConfig) {
         ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>> result = pagingService.GetBusinessWithRecruitmentsPaging(pageConfig);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/GradePoint")
+    public ResponseEntity<ReturnResult<Boolean>> GradePoint(@RequestBody RecruitmentRequestGrading recruitmentRequestGrading) {
+        ReturnResult<Boolean> result = businessService.GradePoint(recruitmentRequestGrading);
 
         return ResponseEntity.ok().body(result);
     }

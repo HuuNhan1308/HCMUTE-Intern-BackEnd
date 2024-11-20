@@ -4,9 +4,11 @@ import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.BusinessMapper;
 import com.intern.app.mapper.ProfileMapper;
+import com.intern.app.mapper.RecruitmentRequestMapper;
 import com.intern.app.models.dto.request.BusinessCreationRequest;
 import com.intern.app.models.dto.request.BusinessUpdateRequest;
 import com.intern.app.models.dto.request.NotificationRequest;
+import com.intern.app.models.dto.request.RecruitmentRequestGrading;
 import com.intern.app.models.dto.response.BusinessResponse;
 import com.intern.app.models.dto.response.ProfileResponse;
 import com.intern.app.models.dto.response.ReturnResult;
@@ -25,6 +27,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 
 @Slf4j
@@ -45,6 +49,7 @@ public class BusinessService implements IBusinessService {
     StudentRepository studentRepository;
     IRecruitmentService recruitmentService;
     INotificationService notificationService;
+    RecruitmentRequestMapper recruitmentRequestMapper;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreateBusiness(BusinessCreationRequest businessCreationRequest) {
@@ -194,6 +199,41 @@ public class BusinessService implements IBusinessService {
 
         result.setResult(businessResponse);
         result.setCode(200);
+
+        return result;
+    }
+
+    @Override
+    public ReturnResult<Boolean> GradePoint(RecruitmentRequestGrading recruitmentRequestGrading) {
+        var result = new ReturnResult<Boolean>();
+
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Business business = profile.getBusiness();
+        RecruitmentRequest recruitmentRequest = recruitmentRequestRepository.findByRecruitmentRequestId(recruitmentRequestGrading.getRecruitmentRequestId())
+                .orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_REQUEST_NOT_EXIST));
+
+        if(!Objects.equals(recruitmentRequest.getRecruitment().getBusiness().getBusinessId(), business.getBusinessId())) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        if(recruitmentRequest.getBusinessStatus() == RequestStatus.PENDING ||
+                recruitmentRequest.getBusinessStatus() == RequestStatus.REJECT) {
+            result.setResult(Boolean.FALSE);
+            result.setCode(200);
+            result.setMessage("Đơn ứng tuyển chưa được xét duyệt hoặc đã bị từ chối, không thể cho điểm thực tập");
+        }
+
+        if(result.getMessage() != null) {
+            recruitmentRequestMapper.updateRecruitmentRequestWithGrading(recruitmentRequest, recruitmentRequestGrading);
+            recruitmentRequest.setBusinessStatus(RequestStatus.COMPLETED);
+            recruitmentRequestRepository.save(recruitmentRequest);
+
+            result.setResult(Boolean.TRUE);
+            result.setCode(200);
+        }
 
         return result;
     }
