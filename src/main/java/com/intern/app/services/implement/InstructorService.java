@@ -19,6 +19,7 @@ import com.intern.app.models.dto.response.*;
 import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.FilterOperator;
 import com.intern.app.models.enums.FilterType;
+import com.intern.app.models.enums.RecruitmentStatus;
 import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
 import com.intern.app.services.interfaces.IInstructorService;
@@ -201,6 +202,10 @@ public class InstructorService implements IInstructorService {
     public ReturnResult<Boolean> SetRequestStatus(RequestStatus requestStatus, List<String> instructorRequestIds) {
         var result = new ReturnResult<Boolean>();
 
+        if(requestStatus == null || requestStatus == RequestStatus.COMPLETED) {
+            throw new AppException(ErrorCode.INVALID_KEY);
+        }
+
         // Fetch the current user and profile
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Profile profile = profileRepository.findByUsername(username)
@@ -244,10 +249,9 @@ public class InstructorService implements IInstructorService {
                             });
                 });
 
-
         if (hasApprovedRequests) {
             result.setResult(Boolean.FALSE);
-            result.setMessage("Có một hoặc một số yêu cầu đã được chấp nhận bởi giảng viên, vui lòng tải lại trang để lấy dữ liệu mới nhất");
+            result.setMessage("Có một hoặc một số yêu cầu đã được chấp nhận bởi giảng viên khác, vui lòng tải lại trang để lấy dữ liệu mới nhất");
             return result;
         }
 
@@ -273,6 +277,52 @@ public class InstructorService implements IInstructorService {
         // Set success result
         result.setResult(Boolean.TRUE);
         result.setCode(200);
+        return result;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('SET_INSTRUCTOR_REQUEST_STATUS')")
+    public ReturnResult<Boolean> CompleteRequest(List<String> instructorRequestIds) {
+        var result = new ReturnResult<Boolean>();
+
+        // Fetch the current user and profile
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Profile profile = profileRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        // Fetch all instructor requests by IDs
+        List<InstructorRequest> instructorRequests = instructorRequestRepository.findByInstructorRequestIdIn(instructorRequestIds);
+
+        // Check if the user is an instructor and owns all the requests
+        if ("INSTRUCTOR".equals(profile.getRole().getRoleName())) {
+            Instructor instructor = profile.getInstructor();
+
+            boolean hasUnauthorizedRequests = instructorRequests.stream()
+                    .anyMatch(request -> !Objects.equals(request.getInstructor().getInstructorId(), instructor.getInstructorId()));
+
+            if (hasUnauthorizedRequests) {
+                result.setResult(Boolean.FALSE);
+                result.setMessage("Bạn không có quyền chỉnh sửa các yêu cầu không phải của mình");
+                return result;
+            }
+        }
+
+        instructorRequests.forEach(request -> {
+            //make sure the RecruitmentRequest has Completed by this student is only one
+            List<RecruitmentRequest> recruitmentRequests = request.getStudent().getRecruitmentRequests().stream()
+                    .filter(x -> x.getBusinessStatus() == RequestStatus.COMPLETED).toList();
+
+
+            if(recruitmentRequests.size() == 1) {
+                request.setInstructorStatus(RequestStatus.COMPLETED);
+                instructorRequestRepository.save(request);
+            }
+        });
+
+        result.setCode(200);
+        result.setResult(Boolean.TRUE);
+
         return result;
     }
 
