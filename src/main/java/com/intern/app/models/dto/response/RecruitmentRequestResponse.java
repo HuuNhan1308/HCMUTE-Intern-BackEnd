@@ -14,6 +14,8 @@ public class RecruitmentRequestResponse {
     String recruitmentRequestId;
     RequestStatus businessStatus;
     String messageToBusiness;
+    Double point;
+    String messageToStudent;
 
     StudentResponse student;
     RecruitmentResponse recruitment;
