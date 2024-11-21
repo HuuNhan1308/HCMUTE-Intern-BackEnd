@@ -17,10 +17,10 @@ import java.util.List;
 public interface IStudentService {
     ReturnResult<StudentResponse> FindStudentById(String id);
     ReturnResult<StudentResponse> GetStudentByUsername(String username);
-    // NOT FINISH
     ReturnResult<Boolean> CreateStudent(StudentCreationRequest studentCreationRequest);
     ReturnResult<Boolean> UpdateStudent(StudentUpdateRequest studentUpdateRequest);
 
     ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetAllStudentInstructorsRequestPaging(PageConfig pageConfig);
     ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllStudentRecruitmentsRequestPaging(PageConfig pageConfig);
+    ReturnResult<PagedData<StudentResponse, PageConfig>> GetAllStudentWithSeekingIntern(PageConfig pageConfig);
 }

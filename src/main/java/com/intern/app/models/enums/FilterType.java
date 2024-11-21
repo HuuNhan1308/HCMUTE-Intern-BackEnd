@@ -11,4 +11,5 @@ import lombok.experimental.FieldDefaults;
 public enum FilterType {
     TEXT,
     NUMBER,
+    BOOLEAN
 }
