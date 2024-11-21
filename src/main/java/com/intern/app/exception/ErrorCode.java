@@ -40,6 +40,7 @@ public enum ErrorCode {
     NOTIFICATION_NOT_FOUND(1025, "Notification không tồn tại", HttpStatus.BAD_REQUEST),
     MAJOR_NOT_EXISTED(1026, "Ngành không tồn tại", HttpStatus.NOT_FOUND),
     AVATAR_NOT_EXISTED(1027, "Avatar không tồn tại hoặc đã xảy ra lỗi", HttpStatus.NOT_FOUND),
+    STUDENT_HAVE_NO_COMPLETED_RECRUITMENT(1028, "Có sinh viên chưa hoàn thành kì thực tập, vui lòng kiểm tra lại danh sách đã chọn", HttpStatus.BAD_REQUEST),
     ;
 
     int code;

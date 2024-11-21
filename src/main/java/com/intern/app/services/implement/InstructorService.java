@@ -314,10 +314,10 @@ public class InstructorService implements IInstructorService {
                     .filter(x -> x.getBusinessStatus() == RequestStatus.COMPLETED).toList();
 
 
-            if(recruitmentRequests.size() == 1) {
-                request.setInstructorStatus(RequestStatus.COMPLETED);
-                instructorRequestRepository.save(request);
-            }
+            if(recruitmentRequests.isEmpty()) throw new AppException(ErrorCode.STUDENT_HAVE_NO_COMPLETED_RECRUITMENT);
+
+            request.setInstructorStatus(RequestStatus.COMPLETED);
+            instructorRequestRepository.save(request);
         });
 
         result.setCode(200);
@@ -393,6 +393,10 @@ public class InstructorService implements IInstructorService {
 
         // Additional data
         data.setData(data.getData().stream().peek(instructorRequestResponse -> {
+            instructorRequestResponse.setInstructor(null);
+
+            if(instructorRequestResponse.getInstructorStatus() == RequestStatus.REJECT) return;
+
             List<RequestStatus> statuses = List.of(RequestStatus.APPROVED, RequestStatus.COMPLETED);
 
             RecruitmentRequest recruitmentRequest = recruitmentRequestRepository
@@ -407,7 +411,6 @@ public class InstructorService implements IInstructorService {
                     instructorRequestResponse.setPoint(recruitmentRequest.getPoint());
             }
 
-            instructorRequestResponse.setInstructor(null);
         }).toList());
 
         // Set data for page
