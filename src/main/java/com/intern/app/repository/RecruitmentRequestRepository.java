@@ -28,4 +28,5 @@ public interface RecruitmentRequestRepository extends AppRepository<RecruitmentR
     Optional<RecruitmentRequest> findByStudentStudentIdAndRecruitmentRecruitmentIdAndBusinessStatus(String studentId, String recruitmentId, RequestStatus status);
 
     List<RecruitmentRequest> findAllByStudentStudentId(String studentId);
+    List<RecruitmentRequest> findByRecruitmentRequestIdIn(List<String> recruitmentRequestIds);
 }

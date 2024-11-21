@@ -10,10 +10,12 @@ import com.intern.app.models.dto.response.*;
 import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.FilterOperator;
 import com.intern.app.models.enums.FilterType;
+import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
 
 import com.intern.app.services.interfaces.IPagingService;
 import com.intern.app.services.interfaces.IStudentService;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,6 +34,7 @@ import org.springframework.web.servlet.RequestToViewNameTranslator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +46,11 @@ public class StudentService implements IStudentService {
     MajorMapper majorMapper;
     ProfileRepository profileRepository;
     IPagingService pagingService;
-    private final RequestToViewNameTranslator viewNameTranslator;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final FacultyRepository facultyRepository;
-    private final MajorRepository majorRepository;
+    RoleRepository roleRepository;
+    PasswordEncoder passwordEncoder;
+    MajorRepository majorRepository;
+    InstructorRequestRepository instructorRequestRepository;
+    RecruitmentRequestRepository recruitmentRequestRepository;
 
     public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
@@ -146,6 +149,76 @@ public class StudentService implements IStudentService {
         return result;
     }
 
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('STUDENT')")
+    public ReturnResult<Boolean> DeleteInstructorRequests(List<String> instructorRequestIds) {
+        var result = new ReturnResult<Boolean>();
+
+        // Get the authenticated student's information
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Student student = studentRepository.findById(username)
+                .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
+
+        // Fetch the instructor requests by IDs
+        List<InstructorRequest> instructorRequests = instructorRequestRepository.findByInstructorRequestIdIn(instructorRequestIds);
+
+        // Validate the requests
+        for (InstructorRequest instructorRequest : instructorRequests) {
+            // Ensure the request belongs to the current student
+            if (!Objects.equals(instructorRequest.getStudent().getStudentId(), student.getStudentId())) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+
+            // Ensure the request is in a PENDING state
+            if (instructorRequest.getInstructorStatus() != RequestStatus.PENDING) {
+                throw new AppException(ErrorCode.NOT_PENDING_REQUEST);
+            }
+        }
+
+        // Perform soft delete for all valid requests
+        instructorRequestRepository.softDeleteRange(instructorRequests);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
+        return result;
+    }
+
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('STUDENT')")
+    public ReturnResult<Boolean> DeleteRecruitmentRequests(List<String> recruitmentRequestIds) {
+        var result = new ReturnResult<Boolean>();
+
+        // Get the authenticated student's information
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Student student = studentRepository.findById(username)
+                .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
+
+        // Fetch the recruitment requests by IDs
+        List<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepository.findByRecruitmentRequestIdIn(recruitmentRequestIds);
+
+        // Validate the requests
+        for (RecruitmentRequest recruitmentRequest : recruitmentRequests) {
+            // Ensure the request belongs to the current student
+            if (!Objects.equals(recruitmentRequest.getStudent().getStudentId(), student.getStudentId())) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+
+            // Ensure the request is in a PENDING state
+            if (recruitmentRequest.getBusinessStatus() != RequestStatus.PENDING) {
+                throw new AppException(ErrorCode.NOT_PENDING_REQUEST);
+            }
+        }
+
+        // Perform soft delete for all valid requests
+        recruitmentRequestRepository.softDeleteRange(recruitmentRequests);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
+        return result;
+    }
 
 
     @PreAuthorize("hasAnyRole('STUDENT')")

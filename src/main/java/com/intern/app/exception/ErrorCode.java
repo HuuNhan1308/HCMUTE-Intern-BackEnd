@@ -42,6 +42,7 @@ public enum ErrorCode {
     AVATAR_NOT_EXISTED(1027, "Avatar không tồn tại hoặc đã xảy ra lỗi", HttpStatus.NOT_FOUND),
     STUDENT_HAVE_NO_COMPLETED_RECRUITMENT(1028, "Có sinh viên chưa hoàn thành kì thực tập, vui lòng kiểm tra lại danh sách đã chọn", HttpStatus.BAD_REQUEST),
     INVALID_BOOLEAN_VALUE(1029, "Định dạng không phải boolean, vui lòng thử lại", HttpStatus.BAD_REQUEST),
+    NOT_PENDING_REQUEST(1030, "Bạn chỉ được phép xoá những yêu cầu đang chờ xét duyệt", HttpStatus.BAD_REQUEST),
     ;
 
     int code;

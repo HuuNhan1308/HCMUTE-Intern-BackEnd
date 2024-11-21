@@ -19,6 +19,8 @@ public interface IStudentService {
     ReturnResult<StudentResponse> GetStudentByUsername(String username);
     ReturnResult<Boolean> CreateStudent(StudentCreationRequest studentCreationRequest);
     ReturnResult<Boolean> UpdateStudent(StudentUpdateRequest studentUpdateRequest);
+    ReturnResult<Boolean> DeleteInstructorRequests(List<String> instructorRequestIds);
+    ReturnResult<Boolean> DeleteRecruitmentRequests(List<String> recruitmentRequestIds);
 
     ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetAllStudentInstructorsRequestPaging(PageConfig pageConfig);
     ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> GetAllStudentRecruitmentsRequestPaging(PageConfig pageConfig);
