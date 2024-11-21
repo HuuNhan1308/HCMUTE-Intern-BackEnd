@@ -262,11 +262,23 @@ public class InstructorService implements IInstructorService {
 
             this.ClearAllStudentAvailableInstructorRequests(request.getInstructorRequestId());
 
-            // Send notification
+            // Determine notification message based on status
+            String notificationContent;
+            if (requestStatus == RequestStatus.APPROVED) {
+                notificationContent = "Yêu cầu giảng viên hướng dẫn của bạn đã được chấp nhận bởi " +
+                        request.getInstructor().getProfile().getFullname() + ".";
+            } else if (requestStatus == RequestStatus.REJECT) {
+                notificationContent = "Yêu cầu giảng viên hướng dẫn của bạn đã bị từ chối bởi " +
+                        request.getInstructor().getProfile().getFullname() + ".";
+            } else {
+                notificationContent = "Trạng thái của yêu cầu giảng viên hướng dẫn đã được cập nhật.";
+            }
+
+            // Build and send notification
             NotificationRequest notificationRequest = NotificationRequest.builder()
                     .read(false)
-                    .title("Yêu cầu giảng viên hướng dẫn đã có kết quả")
-                    .content("Đã có kết quả cho yêu cầu giảng viên hướng dẫn " + request.getInstructor().getProfile().getFullname())
+                    .title("Kết quả yêu cầu giảng viên hướng dẫn")
+                    .content(notificationContent)
                     .ownerId(request.getInstructor().getProfile().getProfileId())
                     .profileId(request.getStudent().getProfile().getProfileId())
                     .build();
