@@ -13,6 +13,7 @@ public interface InstructorRequestMapper {
     @Mappings({
             @Mapping(target = "student", ignore = true),
             @Mapping(target = "instructor", ignore = true),
+            @Mapping(target = "dateCreated", source = "dateCreated")
     })
     InstructorRequestResponse toInstructorRequestResponse(InstructorRequest instructorRequest);
 

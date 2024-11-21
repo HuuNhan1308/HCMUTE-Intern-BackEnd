@@ -26,6 +26,9 @@ public interface RecruitmentRequestMapper {
     void updateRecruitmentRequest(@MappingTarget RecruitmentRequest recruitmentRequest, RecruitmentRequestCreationRequest recruitmentRequestCreationRequest);
     void updateRecruitmentRequestWithGrading(@MappingTarget RecruitmentRequest recruitmentRequest, RecruitmentRequestGrading recruitmentRequestGrading);
 
+    @Mappings({
+            @Mapping(target = "dateCreated", source = "dateCreated")
+    })
     RecruitmentRequestResponse toRecruitmentRequestResponse(RecruitmentRequest recruitmentRequest);
 }
 
