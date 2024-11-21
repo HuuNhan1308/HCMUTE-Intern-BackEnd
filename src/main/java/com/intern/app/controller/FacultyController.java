@@ -25,13 +25,6 @@ public class FacultyController {
     IPagingService pagingService;
     IFacultyService facultyService;
 
-    @GetMapping("/GetAllFaculties")
-    public ResponseEntity<ReturnResult<List<FacultyResponse>>> GetAllFaculties() {
-        ReturnResult<List<FacultyResponse>> result = facultyService.GetAllFaculties();
-
-        return ResponseEntity.ok().body(result);
-    }
-
     @PostMapping("/GetFacultyPaging")
     public ResponseEntity<ReturnResult<PagedData<FacultyResponse, PageConfig>>> GetAllFaculties(@RequestBody PageConfig pageConfig) {
         ReturnResult<PagedData<FacultyResponse, PageConfig>> result = pagingService.GetFacultyPaging(pageConfig);

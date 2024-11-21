@@ -5,6 +5,7 @@ import com.intern.app.models.dto.datamodel.PageConfig;
 import com.intern.app.models.dto.datamodel.PagedData;
 import com.intern.app.models.dto.request.InstructorCreationRequest;
 import com.intern.app.models.dto.request.InstructorRequestCreationRequest;
+import com.intern.app.models.dto.request.InstructorUpdateRequest;
 import com.intern.app.models.dto.response.InstructorRequestResponse;
 import com.intern.app.models.dto.response.InstructorResponse;
 import com.intern.app.models.dto.response.ReturnResult;
@@ -51,8 +52,8 @@ public class InstructorController {
     }
 
     @PostMapping("/SetRequestStatus")
-    ResponseEntity<ReturnResult<Boolean>> SetRequestStatus(@RequestParam String instructorRequestId, @RequestBody RequestStatus requestStatus) {
-        ReturnResult<Boolean> result = instructorService.SetRequestStatus(requestStatus, instructorRequestId);
+    ResponseEntity<ReturnResult<Boolean>> SetRequestStatus(@RequestBody List<String> instructorRequestIds, @RequestParam RequestStatus requestStatus) {
+        ReturnResult<Boolean> result = instructorService.SetRequestStatus(requestStatus, instructorRequestIds);
 
         return ResponseEntity.ok().body(result);
     }
@@ -65,7 +66,7 @@ public class InstructorController {
     }
 
     @GetMapping("/GetInstructorData")
-    ResponseEntity<ReturnResult<InstructorResponse>> GetAllInstructorRequestOfInstructorPaging(@RequestParam String instructorId) {
+    ResponseEntity<ReturnResult<InstructorResponse>> GetInstructorData(@RequestParam String instructorId) {
         ReturnResult<InstructorResponse> result = instructorService.GetInstructorData(instructorId);
 
         return ResponseEntity.ok().body(result);
@@ -74,6 +75,20 @@ public class InstructorController {
     @GetMapping("/GetMyInstructorData")
     ResponseEntity<ReturnResult<InstructorResponse>> GetMyInstructorData() {
         ReturnResult<InstructorResponse> result = instructorService.GetMyInstructorData();
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/UpdateInstructor")
+    ResponseEntity<ReturnResult<Boolean>> UpdateInstructor(@RequestBody InstructorUpdateRequest instructorUpdateRequest) {
+        ReturnResult<Boolean> result = instructorService.UpdateInstructor(instructorUpdateRequest);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/CompleteRequest")
+    ResponseEntity<ReturnResult<Boolean>> CompleteRequest(@RequestBody List<String> instructorRequestIds) {
+        ReturnResult<Boolean> result = instructorService.CompleteRequest(instructorRequestIds);
 
         return ResponseEntity.ok().body(result);
     }

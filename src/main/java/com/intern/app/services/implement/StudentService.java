@@ -130,18 +130,18 @@ public class StudentService implements IStudentService {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
-        Profile profile = profileRepository.findByUsername(username).orElse(null);
+        Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         Student student = profile.getStudent();
 
-        if (profile == null || student == null) {
+        if (student == null) {
             throw new AppException(ErrorCode.STUDENT_NOT_FOUND);
         }
 
-        studentMapper.updateStudent(student, studentUpdateRequest);
         profileMapper.updateProfile(profile, studentUpdateRequest.getProfile());
+        studentMapper.updateStudent(student, studentUpdateRequest);
 
-        studentRepository.save(student);
         profileRepository.save(profile);
+        studentRepository.save(student);
 
         return result;
     }

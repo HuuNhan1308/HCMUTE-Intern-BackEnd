@@ -18,4 +18,5 @@ public class InstructorRequestResponse {
     String messageToInstructor;
     String recruitmentId;
     String recruitmentTitle;
+    Double point;
 }

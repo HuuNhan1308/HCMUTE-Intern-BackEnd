@@ -10,6 +10,7 @@ import com.intern.app.models.dto.response.*;
 import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.RecruitmentStatus;
 import com.intern.app.repository.*;
+import com.intern.app.services.interfaces.IAvatarService;
 import com.intern.app.services.interfaces.IPagingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,7 @@ public class PagingService implements IPagingService {
     FacultyMapper facultyMapper;
     BusinessMapper businessMapper;
     NotificationMapper notificationMapper;
+    IAvatarService avatarService;
 
     public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetInstructorsRequestPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>();
@@ -76,7 +78,7 @@ public class PagingService implements IPagingService {
         List<InstructorRequestResponse> instructorRequestResponses = instructorRequests.stream().map(instructorRequest -> {
             InstructorRequestResponse instructorRequestResponse = instructorRequestMapper.toInstructorRequestResponse(instructorRequest);
             instructorRequestResponse.setInstructor(instructorMapper.toInstructorResponse(instructorRequest.getInstructor()));
-            instructorRequestResponse.setStudent(studentMapper.toStudentResponse(instructorRequest.getStudent()));
+            instructorRequestResponse.setStudent(studentMapper.toStudentResponseShort(instructorRequest.getStudent()));
 
             return instructorRequestResponse;
         }).toList();
@@ -202,11 +204,9 @@ public class PagingService implements IPagingService {
         }
 
         // transform data to response DTO
-        List<RecruitmentResponseShort> recruitmentResponseShorts = recruitments.stream().map(recruitment -> {
-            RecruitmentResponseShort recruitmentResponseShort = recruitmentMapper.toRecruitmentResponseShort(recruitment);
-            recruitmentResponseShort.setBusinessName(recruitment.getBusiness().getName());
-            return recruitmentResponseShort;
-        }).toList();
+        List<RecruitmentResponseShort> recruitmentResponseShorts = recruitments.stream()
+                .map(recruitmentMapper::toRecruitmentResponseShort)
+                .toList();
 
 
         // Set data for page
@@ -582,12 +582,11 @@ public class PagingService implements IPagingService {
         return result;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>> GetBusinessWithRecruitmentsPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>>();
 
         //Specification
-        FilterSpecification<Business> filter = new FilterSpecification<>();
+        FilterSpecification<Business> filter = new FilterSpecification< >();
         Specification<Business> businessSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
 
         //Sort

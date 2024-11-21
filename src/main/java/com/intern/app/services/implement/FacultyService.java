@@ -25,17 +25,6 @@ public class FacultyService implements IFacultyService {
     FacultyRepository facultyRepository;
     FacultyMapper facultyMapper;
 
-    public ReturnResult<List<FacultyResponse>> GetAllFaculties() {
-        var result = new ReturnResult<List<FacultyResponse>>();
-        List<Faculty> faculties = facultyRepository.findAll();
-
-        List<FacultyResponse> facultyResponses = faculties.stream().map(this.facultyMapper::toFacultyResponse).toList();
-
-        result.setResult(facultyResponses);
-
-        return result;
-    }
-
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ReturnResult<Boolean> SaveFaculty(FacultyRequest facultyRequest) {
         var result = new ReturnResult<Boolean>();
