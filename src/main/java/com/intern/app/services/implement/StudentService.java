@@ -10,10 +10,12 @@ import com.intern.app.models.dto.response.*;
 import com.intern.app.models.entity.*;
 import com.intern.app.models.enums.FilterOperator;
 import com.intern.app.models.enums.FilterType;
+import com.intern.app.models.enums.RequestStatus;
 import com.intern.app.repository.*;
 
 import com.intern.app.services.interfaces.IPagingService;
 import com.intern.app.services.interfaces.IStudentService;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,6 +34,7 @@ import org.springframework.web.servlet.RequestToViewNameTranslator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +46,11 @@ public class StudentService implements IStudentService {
     MajorMapper majorMapper;
     ProfileRepository profileRepository;
     IPagingService pagingService;
-    private final RequestToViewNameTranslator viewNameTranslator;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final FacultyRepository facultyRepository;
-    private final MajorRepository majorRepository;
+    RoleRepository roleRepository;
+    PasswordEncoder passwordEncoder;
+    MajorRepository majorRepository;
+    InstructorRequestRepository instructorRequestRepository;
+    RecruitmentRequestRepository recruitmentRequestRepository;
 
     public ReturnResult<StudentResponse> FindStudentById(String id) {
         var result = new ReturnResult<StudentResponse>();
@@ -130,22 +133,92 @@ public class StudentService implements IStudentService {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
-        Profile profile = profileRepository.findByUsername(username).orElse(null);
+        Profile profile = profileRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         Student student = profile.getStudent();
 
-        if (profile == null || student == null) {
+        if (student == null) {
             throw new AppException(ErrorCode.STUDENT_NOT_FOUND);
         }
 
-        studentMapper.updateStudent(student, studentUpdateRequest);
         profileMapper.updateProfile(profile, studentUpdateRequest.getProfile());
+        studentMapper.updateStudent(student, studentUpdateRequest);
 
-        studentRepository.save(student);
         profileRepository.save(profile);
+        studentRepository.save(student);
 
         return result;
     }
 
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('STUDENT')")
+    public ReturnResult<Boolean> DeleteInstructorRequests(List<String> instructorRequestIds) {
+        var result = new ReturnResult<Boolean>();
+
+        // Get the authenticated student's information
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Student student = studentRepository.findById(username)
+                .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
+
+        // Fetch the instructor requests by IDs
+        List<InstructorRequest> instructorRequests = instructorRequestRepository.findByInstructorRequestIdIn(instructorRequestIds);
+
+        // Validate the requests
+        for (InstructorRequest instructorRequest : instructorRequests) {
+            // Ensure the request belongs to the current student
+            if (!Objects.equals(instructorRequest.getStudent().getStudentId(), student.getStudentId())) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+
+            // Ensure the request is in a PENDING state
+            if (instructorRequest.getInstructorStatus() != RequestStatus.PENDING) {
+                throw new AppException(ErrorCode.NOT_PENDING_REQUEST);
+            }
+        }
+
+        // Perform soft delete for all valid requests
+        instructorRequestRepository.softDeleteRange(instructorRequests);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
+        return result;
+    }
+
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('STUDENT')")
+    public ReturnResult<Boolean> DeleteRecruitmentRequests(List<String> recruitmentRequestIds) {
+        var result = new ReturnResult<Boolean>();
+
+        // Get the authenticated student's information
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Student student = studentRepository.findById(username)
+                .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
+
+        // Fetch the recruitment requests by IDs
+        List<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepository.findByRecruitmentRequestIdIn(recruitmentRequestIds);
+
+        // Validate the requests
+        for (RecruitmentRequest recruitmentRequest : recruitmentRequests) {
+            // Ensure the request belongs to the current student
+            if (!Objects.equals(recruitmentRequest.getStudent().getStudentId(), student.getStudentId())) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+
+            // Ensure the request is in a PENDING state
+            if (recruitmentRequest.getBusinessStatus() != RequestStatus.PENDING) {
+                throw new AppException(ErrorCode.NOT_PENDING_REQUEST);
+            }
+        }
+
+        // Perform soft delete for all valid requests
+        recruitmentRequestRepository.softDeleteRange(recruitmentRequests);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
+        return result;
+    }
 
 
     @PreAuthorize("hasAnyRole('STUDENT')")
@@ -251,6 +324,55 @@ public class StudentService implements IStudentService {
         // Build the PagedData object
         result.setResult(
                 PagedData.<RecruitmentRequestResponse, PageConfig>builder()
+                        .data(data.getData())
+                        .pageConfig(pageConfigResult)
+                        .build()
+        );
+        result.setCode(HttpStatus.OK.value());
+
+        return result;
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'BUSINESS')")
+    public ReturnResult<PagedData<StudentResponse, PageConfig>> GetAllStudentWithSeekingIntern(PageConfig pageConfig) {
+        var result = new ReturnResult<PagedData<StudentResponse, PageConfig>>();
+
+
+        // Clone the original PageConfig to keep the original unchanged
+        PageConfig customPageConfig = PageConfig.builder()
+                .pageSize(pageConfig.getPageSize())
+                .currentPage(pageConfig.getCurrentPage())
+                .orders(new ArrayList<>(pageConfig.getOrders()))
+                .filters(new ArrayList<>(pageConfig.getFilters()))
+                .build();
+
+        List<FilterMapping> filterMappings = customPageConfig.getFilters();
+        filterMappings.add(FilterMapping.builder()
+                .prop("isSeekingIntern")
+                .value("TRUE")
+                .type(FilterType.BOOLEAN)
+                .operator(FilterOperator.EQUALS)
+                .build()
+        );
+
+        customPageConfig.setFilters(filterMappings);
+
+        var data = pagingService.GetStudentPaging(customPageConfig).getResult();
+
+        // Set data for page
+        PageConfig pageConfigResult = PageConfig
+                .builder()
+                .pageSize(data.getPageConfig().getPageSize())
+                .totalRecords(data.getPageConfig().getTotalRecords())
+                .totalPage(data.getPageConfig().getTotalPage())
+                .currentPage(data.getPageConfig().getCurrentPage())
+                .orders(pageConfig.getOrders())
+                .filters(pageConfig.getFilters())
+                .build();
+
+        // Build the PagedData object
+        result.setResult(
+                PagedData.<StudentResponse, PageConfig>builder()
                         .data(data.getData())
                         .pageConfig(pageConfigResult)
                         .build()

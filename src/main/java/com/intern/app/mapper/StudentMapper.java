@@ -13,6 +13,9 @@ import org.mapstruct.MappingTarget;
 public interface StudentMapper {
     StudentResponse toStudentResponse(Student student);
 
+    @Mapping(target = "profile.uploadContent", ignore = true)
+    StudentResponse toStudentResponseShort(Student student);
+
     Student toStudent(StudentCreationRequest studentCreationRequest);
     Student toStudent(StudentUpdateRequest studentUpdateRequest);
 

@@ -3,6 +3,7 @@ package com.intern.app.services.implement;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.BusinessMapper;
+import com.intern.app.mapper.NotificationMapper;
 import com.intern.app.mapper.RecruitmentMapper;
 import com.intern.app.mapper.RecruitmentRequestMapper;
 import com.intern.app.models.dto.datamodel.FilterMapping;
@@ -30,6 +31,7 @@ import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfigura
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -47,15 +49,13 @@ public class RecruitmentService implements IRecruitmentService {
 
     ProfileRepository profileRepository;
     RecruitmentRepository recruitmentRepository;
-    InstructorRepository instructorRepository;
     RecruitmentRequestRepository recruitmentRequestRepository;
     BusinessMapper businessMapper;
     StudentRepository studentRepository;
     PagingService pagingService;
-    IAuthenticationService authenticationService;
     BusinessRepository businessRepository;
-    RestClientAutoConfiguration restClientAutoConfiguration;
     INotificationService notificationService;
+    private final NotificationMapper notificationMapper;
 
     @PreAuthorize("hasRole('BUSINESS')")
     public ReturnResult<Boolean> CreateRecruitment(RecruitmentCreationRequest recruitmentCreationRequest) {
@@ -159,11 +159,7 @@ public class RecruitmentService implements IRecruitmentService {
         if(recruitmentRequestCreationRequest.getRecruitmentRequestId() == null) {
             //CASE ADD
             //CHECK IF STUDENT ALREADY HAVE APPROVED BY ANY RECRUITMENT?
-            RecruitmentRequest approvedRecruitmentRequest = recruitmentRequestRepository
-                    .findByStudentStudentIdAndBusinessStatus(student.getStudentId(), RequestStatus.APPROVED)
-                    .orElse(null);
-
-            if(approvedRecruitmentRequest != null) {
+            if(student.getIsSeekingIntern() == Boolean.FALSE) {
                 result.setMessage("Bạn đã được chọn bởi một doanh nghiệp khác, không thể gửi thêm yêu cầu thực tập được nữa...");
                 result.setResult(Boolean.FALSE);
             }
@@ -435,6 +431,38 @@ public class RecruitmentService implements IRecruitmentService {
                         .build()
         );
 
+
+        return result;
+    }
+
+
+    @PreAuthorize("hasAnyRole('BUSINESS')")
+    public ReturnResult<Boolean> InviteStudent(String recruitmentId, String studentId) {
+        var result = new ReturnResult<Boolean>();
+
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Profile profile = profileRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Business business = profile.getBusiness();
+
+        Recruitment recruitment = recruitmentRepository.findByRecruitmentId(recruitmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.RECRUITMENT_NOT_FOUND));
+
+        if(recruitment.getBusiness() != business)
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+
+
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .path("/recruitment/" + recruitment.getRecruitmentId())
+                .title("Bạn nhận được lời mời tuyển dụng đến từ công ty " + business.getName())
+                .content("Lời mời đến từ bài tuyển dụng: " + recruitment.getTitle() + "\nNhấn vào đây để xem chi tiết")
+                .ownerId(profile.getProfileId())
+                .profileId(studentId)
+                .build();
+
+        result = notificationService.SaveNotification(notificationRequest);
 
         return result;
     }

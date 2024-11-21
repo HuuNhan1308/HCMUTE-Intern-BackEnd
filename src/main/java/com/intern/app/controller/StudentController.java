@@ -22,6 +22,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RestController
 @RequestMapping(path = "/api/student")
@@ -85,16 +87,37 @@ public class StudentController {
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("GetAllStudentInstructorsRequestPaging")
+    @PostMapping("/GetAllStudentInstructorsRequestPaging")
     public ResponseEntity<ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>> GetAllStudentInstructorsRequestPaging(@RequestBody PageConfig page) {
         ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> result = studentService.GetAllStudentInstructorsRequestPaging(page);
 
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("GetAllStudentRecruitmentsRequestPaging")
+    @PostMapping("/GetAllStudentRecruitmentsRequestPaging")
     public ResponseEntity<ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>>> GetAllStudentRecruitmentsRequestPaging(@RequestBody PageConfig page) {
         ReturnResult<PagedData<RecruitmentRequestResponse, PageConfig>> result = studentService.GetAllStudentRecruitmentsRequestPaging(page);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/GetAllStudentWithSeekingIntern")
+    public ResponseEntity<ReturnResult<PagedData<StudentResponse, PageConfig>>> GetAllStudentWithSeekingIntern(@RequestBody PageConfig page) {
+        ReturnResult<PagedData<StudentResponse, PageConfig>> result = studentService.GetAllStudentWithSeekingIntern(page);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/DeleteInstructorRequests")
+    public ResponseEntity<ReturnResult<Boolean>> DeleteInstructorRequests(@RequestBody List<String> instructorRequestIds) {
+        ReturnResult<Boolean> result = studentService.DeleteInstructorRequests(instructorRequestIds);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/DeleteRecruitmentRequests")
+    public ResponseEntity<ReturnResult<Boolean>> DeleteRecruitmentRequests(@RequestBody List<String> recruitmentRequestIds) {
+        ReturnResult<Boolean> result = studentService.DeleteRecruitmentRequests(recruitmentRequestIds);
 
         return ResponseEntity.ok().body(result);
     }

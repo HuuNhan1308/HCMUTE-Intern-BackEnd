@@ -18,6 +18,7 @@ public class NotificationResponse {
 
     String title;
     String content;
+    String path;
     Boolean read;
 
     LocalDateTime dateCreated;

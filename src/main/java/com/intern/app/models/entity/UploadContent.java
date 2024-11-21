@@ -18,6 +18,7 @@ public class UploadContent extends BaseEntity {
     String uploadContentId;
 
     String fileName;
+    String fileType;
 
     @Column(name = "file_data", columnDefinition = "BYTEA")
     private byte[] fileData;

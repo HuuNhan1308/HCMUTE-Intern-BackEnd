@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
         result.setCode(errorCode.getCode());
         result.setMessage(errorCode.getMessage());
 
-        return ResponseEntity.badRequest().body(result);
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(result);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -41,14 +41,9 @@ public class GlobalExceptionHandler {
         String enumKey = e.getFieldError().getDefaultMessage();
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
 
-        try {
-            errorCode = ErrorCode.valueOf(enumKey);
-        } catch (IllegalArgumentException illegalArgumentException){
-
-        }
 
         result.setCode(errorCode.getCode());
-        result.setMessage(errorCode.getMessage());
+        result.setMessage(enumKey);
 
         return ResponseEntity.badRequest().body(result);
     }

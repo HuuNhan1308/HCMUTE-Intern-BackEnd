@@ -15,6 +15,7 @@ public interface BusinessMapper {
 
     Business toBusiness(BusinessCreationRequest businessCreationRequest);
 
+    @Mapping(target = "businessImage", source = "managedBy.profileId")
     BusinessResponse toBusinessResponse(Business business);
 
     @Mappings({

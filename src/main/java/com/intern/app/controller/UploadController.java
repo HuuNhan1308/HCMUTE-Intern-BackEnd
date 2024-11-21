@@ -1,5 +1,10 @@
 package com.intern.app.controller;
 
+import com.intern.app.models.dto.response.ReturnResult;
+import com.intern.app.models.entity.Avatar;
+import com.intern.app.models.entity.UploadContent;
+import com.intern.app.repository.AvatarRepository;
+import com.intern.app.services.interfaces.IAvatarService;
 import com.intern.app.services.interfaces.IUploadService;
 import org.springframework.http.MediaType;
 import com.intern.app.exception.AppException;
@@ -9,10 +14,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RestController

@@ -21,10 +21,12 @@ public interface RecruitmentRequestRepository extends AppRepository<RecruitmentR
     List<RecruitmentRequest> findByStudentAndStatus(Student student, RequestStatus status);
 
     Optional<RecruitmentRequest> findByStudentStudentIdAndBusinessStatus(String studentId, RequestStatus status);
+    Optional<RecruitmentRequest> findByStudentStudentIdAndBusinessStatusIn(String studentId, List<RequestStatus> statuses);
 
     List<RecruitmentRequest> findByRecruitmentAndBusinessStatus(Recruitment recruitment, RequestStatus status);
 
     Optional<RecruitmentRequest> findByStudentStudentIdAndRecruitmentRecruitmentIdAndBusinessStatus(String studentId, String recruitmentId, RequestStatus status);
 
     List<RecruitmentRequest> findAllByStudentStudentId(String studentId);
+    List<RecruitmentRequest> findByRecruitmentRequestIdIn(List<String> recruitmentRequestIds);
 }

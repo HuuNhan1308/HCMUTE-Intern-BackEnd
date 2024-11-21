@@ -3,6 +3,7 @@ package com.intern.app.services.implement;
 import java.util.Optional;
 
 import com.intern.app.models.entity.Notification;
+import com.intern.app.services.interfaces.IAvatarService;
 import com.intern.app.services.interfaces.INotificationService;
 import com.intern.app.services.interfaces.IUploadService;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,6 +54,7 @@ public class UploadService implements IUploadService {
                         .fileName(pdfFile.getOriginalFilename())
                         .fileData(pdfFile.getBytes())
                         .profile(profile)
+                        .fileType(pdfFile.getContentType())
                         .build();
             }
 
@@ -75,6 +77,18 @@ public class UploadService implements IUploadService {
 
         UploadContent upload = uploadContent.get();
         return upload.getFileData();
+    }
+
+    public ReturnResult<UploadContent> GetUploadContentById(String uploadContentId) {
+        var result = new ReturnResult<UploadContent>();
+
+        UploadContent uploadContent = uploadContentRepository.findByUploadContentId(uploadContentId)
+                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_FOUND));
+
+        result.setResult(uploadContent);
+        result.setCode(200);
+
+        return result;
     }
 }
 

@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
-
 @Entity
 @Getter
 @Setter
@@ -13,14 +11,18 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Internship extends BaseEntity {
+@Table(name = "avatar")
+public class Avatar extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String internshipId;
+    String avatarId;
 
-    Date startDate;
+    String fileName;
+    String fileType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
-    Student student;
+    String ownerId;
+
+    @Column(name = "file_data", columnDefinition = "BYTEA")
+    byte[] fileData;
 }

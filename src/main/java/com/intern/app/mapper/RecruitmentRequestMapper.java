@@ -3,6 +3,7 @@ package com.intern.app.mapper;
 import com.intern.app.models.dto.request.ProfileUpdateRequest;
 import com.intern.app.models.dto.request.RecruitmentCreationRequest;
 import com.intern.app.models.dto.request.RecruitmentRequestCreationRequest;
+import com.intern.app.models.dto.request.RecruitmentRequestGrading;
 import com.intern.app.models.dto.response.InstructorRequestResponse;
 import com.intern.app.models.dto.response.RecruitmentRequestResponse;
 import com.intern.app.models.entity.InstructorRequest;
@@ -23,7 +24,11 @@ public interface RecruitmentRequestMapper {
             @Mapping(target = "student", ignore = true),
     })
     void updateRecruitmentRequest(@MappingTarget RecruitmentRequest recruitmentRequest, RecruitmentRequestCreationRequest recruitmentRequestCreationRequest);
+    void updateRecruitmentRequestWithGrading(@MappingTarget RecruitmentRequest recruitmentRequest, RecruitmentRequestGrading recruitmentRequestGrading);
 
+    @Mappings({
+            @Mapping(target = "dateCreated", source = "dateCreated")
+    })
     RecruitmentRequestResponse toRecruitmentRequestResponse(RecruitmentRequest recruitmentRequest);
 }
 

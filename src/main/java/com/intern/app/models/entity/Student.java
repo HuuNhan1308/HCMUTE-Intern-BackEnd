@@ -37,7 +37,4 @@ public class Student extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "student")
     List<InstructorRequest> instructorRequest;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "student")
-    List<Internship> internships;
 }

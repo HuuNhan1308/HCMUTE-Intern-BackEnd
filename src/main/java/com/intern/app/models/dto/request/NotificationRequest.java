@@ -14,7 +14,9 @@ public class NotificationRequest {
 
     String title;
     String content;
-    Boolean read;
+    String path;
+    @Builder.Default
+    Boolean read = false;
 
     String ownerId;
     String profileId;

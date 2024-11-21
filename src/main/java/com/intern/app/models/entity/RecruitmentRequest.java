@@ -19,6 +19,8 @@ public class RecruitmentRequest extends BaseEntity {
 
     RequestStatus businessStatus;
     String messageToBusiness;
+    Double point;
+    String messageToStudent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
