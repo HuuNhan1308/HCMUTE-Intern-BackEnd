@@ -4,6 +4,8 @@ import com.intern.app.models.enums.RequestStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,5 +20,7 @@ public class InstructorRequestResponse {
     String messageToInstructor;
     String recruitmentId;
     String recruitmentTitle;
+
+    LocalDateTime dateCreated;
     Double point;
 }
