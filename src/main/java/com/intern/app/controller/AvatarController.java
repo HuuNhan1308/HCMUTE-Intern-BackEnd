@@ -28,7 +28,7 @@ public class AvatarController {
         byte[] file = avatar.getFileData();
 
         return switch (avatar.getFileType()) {
-            case "image/jpg" -> ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(file);
+            case "image/jpeg" -> ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(file);
             case "image/png" -> ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(file);
             default -> ResponseEntity.ok().body(null);
         };
