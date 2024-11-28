@@ -28,3 +28,4 @@ public class Permission extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "permission")
     List<ProfilePermission> profilePermissions;
 }
+

@@ -28,3 +28,4 @@ public class Role extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
     List<Profile> profiles;
 }
+
