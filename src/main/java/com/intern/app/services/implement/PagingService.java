@@ -50,6 +50,8 @@ public class PagingService implements IPagingService {
     BusinessMapper businessMapper;
     NotificationMapper notificationMapper;
     IAvatarService avatarService;
+    private final RolePermissionRepository rolePermissionRepository;
+    private final RolePermissionMapper rolePermissionMapper;
 
     public ReturnResult<PagedData<InstructorRequestResponse, PageConfig>> GetInstructorsRequestPaging(PageConfig pageConfig) {
         var result = new ReturnResult<PagedData<InstructorRequestResponse, PageConfig>>();
@@ -662,5 +664,71 @@ public class PagingService implements IPagingService {
 
         return result;
     }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReturnResult<PagedData<RolePermissionResponse, PageConfig>> GetRolePermissionPaging(PageConfig pageConfig) {
+        var result = new ReturnResult<PagedData<RolePermissionResponse, PageConfig>>();
+
+        // Specification
+        FilterSpecification<RolePermission> filter = new FilterSpecification<>();
+        Specification<RolePermission> rolePermissionSpecification = filter.GetSearchSpecification(pageConfig.getFilters());
+
+        // Sorting
+        Sort sort = pageConfig.getSortAndNewItem();
+
+        List<RolePermission> rolePermissions;
+        Page<RolePermission> rolePermissionPage = null;
+        if (pageConfig.getPageSize() == -1) {
+            // Fetch all elements when pageSize is -1
+            pageConfig.setCurrentPage(1);
+            rolePermissions = rolePermissionRepository.findAll(rolePermissionSpecification, sort);
+        } else {
+            // Fetch paginated data
+            Pageable pageable = PageRequest.of(pageConfig.getCurrentPage() - 1, pageConfig.getPageSize(), sort);
+            rolePermissionPage = rolePermissionRepository.findAll(rolePermissionSpecification, pageable);
+            rolePermissions = rolePermissionPage.getContent();
+        }
+
+        // Transform data to response DTO
+        List<RolePermissionResponse> rolePermissionResponses = rolePermissions.stream()
+                .map(rolePermissionMapper::toRolePermissionResponse)
+                .toList();
+
+        // Set data for page
+        PageConfig pageConfigResult;
+        if (pageConfig.getPageSize() == -1) {
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(rolePermissions.size())
+                    .totalRecords(rolePermissions.size())
+                    .totalPage(1)
+                    .currentPage(1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        } else {
+            if (rolePermissionPage == null) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+            pageConfigResult = PageConfig.builder()
+                    .pageSize(rolePermissionPage.getSize())
+                    .totalRecords((int) rolePermissionPage.getTotalElements())
+                    .totalPage(rolePermissionPage.getTotalPages())
+                    .currentPage(rolePermissionPage.getNumber() + 1)
+                    .orders(pageConfig.getOrders())
+                    .filters(pageConfig.getFilters())
+                    .build();
+        }
+
+        // Build the PagedData object
+        result.setResult(
+                PagedData.<RolePermissionResponse, PageConfig>builder()
+                        .data(rolePermissionResponses)
+                        .pageConfig(pageConfigResult)
+                        .build()
+        );
+
+        return result;
+    }
+
 }
 

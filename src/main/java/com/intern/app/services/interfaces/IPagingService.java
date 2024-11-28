@@ -14,4 +14,5 @@ public interface IPagingService {
     ReturnResult<PagedData<FacultyResponse, PageConfig>> GetFacultyPaging(PageConfig pageConfig);
     ReturnResult<PagedData<NotificationResponse, PageConfig>> GetNotificationPaging(PageConfig pageConfig);
     ReturnResult<PagedData<BusinessWithRecruitmentsResponse, PageConfig>> GetBusinessWithRecruitmentsPaging(PageConfig pageConfig);
+    ReturnResult<PagedData<RolePermissionResponse, PageConfig>> GetRolePermissionPaging(PageConfig pageConfig);
 }
