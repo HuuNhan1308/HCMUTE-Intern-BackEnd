@@ -65,8 +65,8 @@ public class RolePermissionController {
     }
 
     @GetMapping("/GetPermissionByRoleId")
-    public ResponseEntity<ReturnResult<List<PermissionResponse>>> GetPermissionByRoleId(@RequestParam String roleId) {
-        ReturnResult<List<PermissionResponse>> result = rolePermissionService.GetPermissionByRoleId(roleId);
+    public ResponseEntity<ReturnResult<List<RolePermissionResponse>>> GetPermissionByRoleId(@RequestParam String roleId) {
+        ReturnResult<List<RolePermissionResponse>> result = rolePermissionService.GetPermissionByRoleId(roleId);
 
         return ResponseEntity.ok().body(result);
     }
