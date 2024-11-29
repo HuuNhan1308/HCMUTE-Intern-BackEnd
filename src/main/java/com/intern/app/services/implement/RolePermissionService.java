@@ -138,7 +138,11 @@ public class RolePermissionService implements IRolePermissionService {
 
         List<RolePermissionResponse> permissions = rolePermissionRepository.findAll(spec, sort)
                 .stream()
-                .map(rolePermissionMapper::toRolePermissionResponse)
+                .map(rolePermission -> {
+                    RolePermissionResponse rolePermissionResponse = rolePermissionMapper.toRolePermissionResponse(rolePermission);
+                    rolePermissionResponse.setRole(null);
+                    return rolePermissionResponse;
+                })
                 .toList();
 
         result.setResult(permissions);
