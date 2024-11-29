@@ -25,3 +25,4 @@ public class RolePermission extends BaseEntity {
     @JoinColumn(name="permission_id", nullable = false)
     Permission permission;
 }
+

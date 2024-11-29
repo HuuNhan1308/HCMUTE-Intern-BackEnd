@@ -136,6 +136,7 @@ public class InstructorService implements IInstructorService {
                         .read(false)
                         .title("Bạn có một yêu cầu đến từ sinh viên")
                         .content("Yêu cầu trở thành giảng viên hướng dẫn đến từ sinh viên " + student.getProfile().getFullname())
+                        .path("/instructor/student")
                         .ownerId(student.getProfile().getProfileId())
                         .profileId(instructor.getProfile().getProfileId())
                         .build();

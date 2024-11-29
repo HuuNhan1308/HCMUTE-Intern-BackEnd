@@ -5,6 +5,7 @@ import com.intern.app.mapper.ProfileMapper;
 import com.intern.app.models.dto.request.ProfileCreationRequest;
 import com.intern.app.models.entity.*;
 import com.intern.app.repository.*;
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,31 +38,31 @@ public class DataInitialize {
     public void initializeRoles() {
 
         // ROLE
-        createRoles();
+//        createRoles();
 
         // PERMISSION
-        createPermissions();
+//        createPermissions();
 
         // BIND ROLE WITH PERMISSION
-        bindRolesPermissions();
+//        bindRolesPermissions();
 
         // FACULTY
-        createFaculties();
+//        createFaculties();
 
         // MAJOR
-        createMajors();
+//        createMajors();
 
         // STUDENT
-        createStudents();
+//        createStudents();
 
         // ADMIN
-        createProfileIfNotExists("admin", "1", "ADMIN");
+//        createProfileIfNotExists("admin", "1", "ADMIN");
 
         // Business
-        createBusinesses();
+//        createBusinesses();
 
         //Recruitment from Business
-        createRecruitments();
+//        createRecruitments();
     }
 
     private void createStudents() {
@@ -440,7 +441,7 @@ public class DataInitialize {
                         .description(faker.lorem().paragraph(4))
                         .location(faker.address().streetAddress(true))
                         .type("Part time")
-                        .keySkills("Đẹp trai")
+                        .keySkills("Xinh gái tinh quái <3")
                         .position("Thực tập sinh")
                         .workingDay("Thứ 2 - Thứ 6")
                         .workingHour("9:00 - 18:30")
