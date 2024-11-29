@@ -126,19 +126,14 @@ public class RolePermissionService implements IRolePermissionService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public ReturnResult<List<RolePermissionResponse>> GetPermissionByRoleId(String roleId) {
-        var result = new ReturnResult<List<RolePermissionResponse>>();
+    public ReturnResult<List<PermissionResponse>> GetPermissionByRoleId(String roleId) {
+        var result = new ReturnResult<List<PermissionResponse>>();
 
         roleRepository.findById(roleId).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXIST));
 
-        // Inline specification logic
-        Specification<RolePermission> spec = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("role").get("roleId"), roleId);
-        // Sort by permission.name
-        Sort sort = Sort.by(Sort.Direction.ASC, "permission.name");
-
-        List<RolePermissionResponse> permissions = rolePermissionRepository.findAll(spec, sort)
+        List<PermissionResponse> permissions = rolePermissionRepository.findPermissionsByRoleId(roleId)
                 .stream()
-                .map(rolePermissionMapper::toRolePermissionResponse)
+                .map(permissionMapper::toPermissionResponse)
                 .toList();
 
         result.setResult(permissions);

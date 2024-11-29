@@ -22,6 +22,6 @@ public interface IRolePermissionService {
 
     ReturnResult<List<RoleResponse>> GetAllRole();
     ReturnResult<List<PermissionResponse>> GetAllPermission();
-    ReturnResult<List<RolePermissionResponse>> GetPermissionByRoleId(String roleId);
+    ReturnResult<List<PermissionResponse>> GetPermissionByRoleId(String roleId);
 }
 
