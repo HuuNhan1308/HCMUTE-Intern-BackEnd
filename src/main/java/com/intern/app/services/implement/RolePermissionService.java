@@ -4,10 +4,13 @@ import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.PermissionMapper;
 import com.intern.app.mapper.RoleMapper;
+import com.intern.app.mapper.RolePermissionMapper;
+import com.intern.app.models.dto.datamodel.FilterSpecification;
 import com.intern.app.models.dto.request.PermissionCreationRequest;
 import com.intern.app.models.dto.request.RolePermissionCreationRequest;
 import com.intern.app.models.dto.response.PermissionResponse;
 import com.intern.app.models.dto.response.ReturnResult;
+import com.intern.app.models.dto.response.RolePermissionResponse;
 import com.intern.app.models.dto.response.RoleResponse;
 import com.intern.app.models.entity.Permission;
 import com.intern.app.models.entity.Role;
@@ -20,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Service;
@@ -35,7 +39,8 @@ public class RolePermissionService implements IRolePermissionService {
     PermissionRepository permissionRepository;
     RoleRepository roleRepository;
     RolePermissionRepository rolePermissionRepository;
-    private final RoleMapper roleMapper;
+    RoleMapper roleMapper;
+    RolePermissionMapper rolePermissionMapper;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreatePermission(PermissionCreationRequest permissionCreationRequest) {
@@ -111,6 +116,29 @@ public class RolePermissionService implements IRolePermissionService {
         List<PermissionResponse> permissions = permissionRepository.findAll(sort)
                 .stream()
                 .map(permissionMapper::toPermissionResponse)
+                .toList();
+
+        result.setResult(permissions);
+        result.setCode(200);
+
+        return result;
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReturnResult<List<RolePermissionResponse>> GetPermissionByRoleId(String roleId) {
+        var result = new ReturnResult<List<RolePermissionResponse>>();
+
+        roleRepository.findById(roleId).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXIST));
+
+        // Inline specification logic
+        Specification<RolePermission> spec = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("role").get("roleId"), roleId);
+        // Sort by permission.name
+        Sort sort = Sort.by(Sort.Direction.ASC, "permission.name");
+
+        List<RolePermissionResponse> permissions = rolePermissionRepository.findAll(spec, sort)
+                .stream()
+                .map(rolePermissionMapper::toRolePermissionResponse)
                 .toList();
 
         result.setResult(permissions);
