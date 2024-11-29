@@ -6,6 +6,7 @@ import com.intern.app.models.dto.request.PermissionCreationRequest;
 import com.intern.app.models.dto.request.RolePermissionCreationRequest;
 import com.intern.app.models.dto.response.PermissionResponse;
 import com.intern.app.models.dto.response.ReturnResult;
+import com.intern.app.models.dto.response.RolePermissionResponse;
 import com.intern.app.models.dto.response.RoleResponse;
 import com.intern.app.models.entity.Permission;
 import com.intern.app.models.entity.Role;
@@ -21,5 +22,6 @@ public interface IRolePermissionService {
 
     ReturnResult<List<RoleResponse>> GetAllRole();
     ReturnResult<List<PermissionResponse>> GetAllPermission();
+    ReturnResult<List<RolePermissionResponse>> GetPermissionByRoleId(String roleId);
 }
 

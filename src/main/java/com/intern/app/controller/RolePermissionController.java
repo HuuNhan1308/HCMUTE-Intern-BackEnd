@@ -9,6 +9,7 @@ import com.intern.app.models.dto.response.PermissionResponse;
 import com.intern.app.models.dto.response.ReturnResult;
 import com.intern.app.models.dto.response.RolePermissionResponse;
 import com.intern.app.models.dto.response.RoleResponse;
+import com.intern.app.models.entity.RolePermission;
 import com.intern.app.services.implement.PagingService;
 import com.intern.app.services.implement.RolePermissionService;
 import com.intern.app.services.interfaces.IRolePermissionService;
@@ -56,9 +57,16 @@ public class RolePermissionController {
         return ResponseEntity.ok().body(result);
     }
 
-        @GetMapping("/GetAllPermission")
+    @GetMapping("/GetAllPermission")
     public ResponseEntity<ReturnResult<List<PermissionResponse>>> GetAllPermission() {
         ReturnResult<List<PermissionResponse>> result = rolePermissionService.GetAllPermission();
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/GetPermissionByRoleId")
+    public ResponseEntity<ReturnResult<List<RolePermissionResponse>>> GetPermissionByRoleId(@RequestParam String roleId) {
+        ReturnResult<List<RolePermissionResponse>> result = rolePermissionService.GetPermissionByRoleId(roleId);
 
         return ResponseEntity.ok().body(result);
     }

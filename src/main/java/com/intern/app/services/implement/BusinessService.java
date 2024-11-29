@@ -137,6 +137,7 @@ public class BusinessService implements IBusinessService {
                     .read(false)
                     .title("Yêu cầu thực tập của bạn đã có kết quả")
                     .content("Yêu cầu đến bài tuyển dụng " + recruitmentRequest.getRecruitment().getTitle() + " đã được " + messageResult)
+                    .path("/student/recruitment")
                     .ownerId(recruitmentRequest.getRecruitment().getBusiness().getManagedBy().getProfileId())
                     .profileId(recruitmentRequest.getStudent().getProfile().getProfileId())
                     .build();
