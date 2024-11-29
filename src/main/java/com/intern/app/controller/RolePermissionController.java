@@ -70,4 +70,11 @@ public class RolePermissionController {
 
         return ResponseEntity.ok().body(result);
     }
+
+    @PostMapping("/DeleteRolePermission")
+    public ResponseEntity<ReturnResult<Boolean>> DeleteRolePermission(@RequestBody List<String> rolePermissionIds) {
+        ReturnResult<Boolean> result = rolePermissionService.DeleteRolePermission(rolePermissionIds);
+
+        return ResponseEntity.ok().body(result);
+    }
 }

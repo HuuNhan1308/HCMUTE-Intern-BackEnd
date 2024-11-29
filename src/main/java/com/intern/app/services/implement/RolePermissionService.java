@@ -151,6 +151,21 @@ public class RolePermissionService implements IRolePermissionService {
         return result;
     }
 
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReturnResult<Boolean> DeleteRolePermission(List<String> rolePermissionId) {
+        var result = new ReturnResult<Boolean>();
+
+        List<RolePermission> rolePermissions = rolePermissionRepository.findAllById(rolePermissionId);
+
+        rolePermissionRepository.softDeleteRange(rolePermissions);
+
+        result.setResult(Boolean.TRUE);
+        result.setCode(200);
+        return result;
+    }
+
+
 }
 
 

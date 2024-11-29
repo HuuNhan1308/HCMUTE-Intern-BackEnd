@@ -23,5 +23,6 @@ public interface IRolePermissionService {
     ReturnResult<List<RoleResponse>> GetAllRole();
     ReturnResult<List<PermissionResponse>> GetAllPermission();
     ReturnResult<List<RolePermissionResponse>> GetPermissionByRoleId(String roleId);
+    ReturnResult<Boolean> DeleteRolePermission(List<String> rolePermissionId);
 }
 
