@@ -3,9 +3,12 @@ package com.intern.app.services.implement;
 import com.intern.app.exception.AppException;
 import com.intern.app.exception.ErrorCode;
 import com.intern.app.mapper.PermissionMapper;
+import com.intern.app.mapper.RoleMapper;
 import com.intern.app.models.dto.request.PermissionCreationRequest;
 import com.intern.app.models.dto.request.RolePermissionCreationRequest;
+import com.intern.app.models.dto.response.PermissionResponse;
 import com.intern.app.models.dto.response.ReturnResult;
+import com.intern.app.models.dto.response.RoleResponse;
 import com.intern.app.models.entity.Permission;
 import com.intern.app.models.entity.Role;
 import com.intern.app.models.entity.RolePermission;
@@ -16,9 +19,12 @@ import com.intern.app.services.interfaces.IRolePermissionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
@@ -29,6 +35,7 @@ public class RolePermissionService implements IRolePermissionService {
     PermissionRepository permissionRepository;
     RoleRepository roleRepository;
     RolePermissionRepository rolePermissionRepository;
+    private final RoleMapper roleMapper;
 
     @PreAuthorize("hasRole('ADMIN')")
     public ReturnResult<Boolean> CreatePermission(PermissionCreationRequest permissionCreationRequest) {
@@ -73,6 +80,40 @@ public class RolePermissionService implements IRolePermissionService {
         });
 
         result.setResult(true);
+        result.setCode(200);
+
+        return result;
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReturnResult<List<RoleResponse>> GetAllRole() {
+        var result = new ReturnResult<List<RoleResponse>>();
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "roleName");
+        List<RoleResponse> roles = roleRepository.findAll(sort)
+                .stream()
+                .map(roleMapper::toRoleResponse)
+                .toList();
+
+        result.setResult(roles);
+        result.setCode(200);
+
+        return result;
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReturnResult<List<PermissionResponse>> GetAllPermission() {
+        var result = new ReturnResult<List<PermissionResponse>>();
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        List<PermissionResponse> permissions = permissionRepository.findAll(sort)
+                .stream()
+                .map(permissionMapper::toPermissionResponse)
+                .toList();
+
+        result.setResult(permissions);
         result.setCode(200);
 
         return result;
