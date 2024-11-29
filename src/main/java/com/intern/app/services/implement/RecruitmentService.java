@@ -192,6 +192,7 @@ public class RecruitmentService implements IRecruitmentService {
                         .read(false)
                         .title("Bạn vừa nhận được một yêu cầu thực tập mới")
                         .content("Yêu cầu thực tập đến từ bài tuyển dụng: " + recruitment.getTitle())
+                        .path("/recruitment/" + recruitment.getRecruitmentId())
                         .ownerId(student.getProfile().getProfileId())
                         .profileId(recruitment.getBusiness().getManagedBy().getProfileId())
                         .build();
