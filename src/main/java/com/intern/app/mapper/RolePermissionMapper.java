@@ -1,6 +1,8 @@
 package com.intern.app.mapper;
 
 import com.intern.app.models.dto.response.RolePermissionResponse;
+import com.intern.app.models.dto.response.RoleResponse;
+import com.intern.app.models.entity.Role;
 import com.intern.app.models.entity.RolePermission;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,3 +15,4 @@ public interface RolePermissionMapper {
     })
     RolePermissionResponse toRolePermissionResponse(RolePermission rolePermission);
 }
+
