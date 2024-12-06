@@ -34,7 +34,7 @@ public class DataInitialize {
     private final PermissionRepository permissionRepository;
     private final RolePermissionRepository rolePermissionRepository;
 
-//    @PostConstruct
+    @PostConstruct
     public void initializeRoles() {
 
         // ROLE
@@ -63,6 +63,7 @@ public class DataInitialize {
 
         //Recruitment from Business
 //        createRecruitments();
+//        updateRecruitments();
     }
 
     private void createStudents() {
@@ -368,7 +369,6 @@ public class DataInitialize {
                 "Lập Trình Viên Android",
                 "Kỹ Sư Phần Cứng",
                 "Nhân Viên Dịch Thuật",
-                "Chuyên Viên Bảo Mật Thông Tin",
                 "Thực Tập Sinh Chăm Sóc Khách Hàng",
                 "Kỹ Sư Cơ Khí",
                 "Nhân Viên Telesales",
@@ -427,21 +427,117 @@ public class DataInitialize {
                 "Kỹ Sư Công Nghệ Thông Tin",
                 "Nhân Viên Kinh Doanh Quốc Tế",
                 "Chuyên Viên Kỹ Thuật Phần Mềm",
-                "Thực Tập Sinh Hỗ Trợ IT"
+                "Thực Tập Sinh Hỗ Trợ IT",
+                "Chuyên Viên Bảo Mật Thông Tin"
+        );
+
+        List<Map<String, String>> recruitmentDetails = List.of(
+                Map.of("keyskill", "Java, Spring, Hibernate", "description", "Thực tập sinh cần có kiến thức Java cơ bản, làm quen với Spring và Hibernate."),
+                Map.of("keyskill", "Networking, Cisco, Windows Server", "description", "Quản trị mạng, cấu hình thiết bị Cisco và vận hành hệ thống Windows Server."),
+                Map.of("keyskill", "ReactJS, HTML, CSS, JavaScript", "description", "Phát triển giao diện người dùng với ReactJS, sử dụng các công nghệ HTML, CSS, JavaScript."),
+                Map.of("keyskill", "C#, .NET, SQL Server", "description", "Phát triển phần mềm trên nền tảng .NET với C#, làm việc với cơ sở dữ liệu SQL Server."),
+                Map.of("keyskill", "Technical Support, Troubleshooting, Networking", "description", "Hỗ trợ kỹ thuật, xử lý sự cố mạng và hệ thống."),
+                Map.of("keyskill", "Digital Marketing, SEO, Google Ads", "description", "Thực hiện các chiến dịch tiếp thị trực tuyến, tối ưu hóa SEO và quản lý quảng cáo Google."),
+                Map.of("keyskill", "Flutter, Kotlin, Android, iOS", "description", "Phát triển ứng dụng di động đa nền tảng với Flutter và Kotlin trên Android, iOS."),
+                Map.of("keyskill", "Project Management, Agile, Scrum", "description", "Quản lý dự án IT, sử dụng phương pháp Agile hoặc Scrum."),
+                Map.of("keyskill", "Sales, Technology Solutions, Negotiation", "description", "Kinh doanh giải pháp công nghệ, phát triển mối quan hệ và đàm phán hợp đồng."),
+                Map.of("keyskill", "Networking, Firewall, VPN", "description", "Quản lý hệ thống mạng, thiết lập Firewall và kết nối VPN."),
+                Map.of("keyskill", "Node.js, MongoDB, Express.js", "description", "Phát triển backend với Node.js, xây dựng REST API và làm việc với cơ sở dữ liệu MongoDB."),
+                Map.of("keyskill", "Data Analysis, Python, SQL", "description", "Phân tích dữ liệu với Python, sử dụng SQL để trích xuất và xử lý dữ liệu."),
+                Map.of("keyskill", "E-commerce, Online Sales, Customer Management", "description", "Quản lý bán hàng online, chăm sóc khách hàng và tối ưu hóa hiệu quả thương mại điện tử."),
+                Map.of("keyskill", "Adobe Photoshop, Illustrator, Graphic Design", "description", "Thiết kế đồ họa, sử dụng các phần mềm Photoshop và Illustrator."),
+                Map.of("keyskill", "Linux, Bash, System Engineering", "description", "Vận hành và bảo trì hệ thống Linux, tự động hóa quy trình với Bash."),
+                Map.of("keyskill", "Product Management, Roadmap Planning, UX Design", "description", "Quản lý sản phẩm, lập kế hoạch phát triển sản phẩm và tối ưu UX."),
+                Map.of("keyskill", "Python, Flask, Django", "description", "Phát triển ứng dụng web với Python, sử dụng Flask hoặc Django."),
+                Map.of("keyskill", "Software Testing, Selenium, JUnit", "description", "Thực hiện kiểm thử phần mềm với Selenium và các công cụ kiểm thử tự động."),
+                Map.of("keyskill", "Customer Service, Communication, CRM", "description", "Hỗ trợ khách hàng, giao tiếp hiệu quả và quản lý dữ liệu khách hàng qua CRM."),
+                Map.of("keyskill", "Google Ads, Facebook Ads, Content Creation", "description", "Tạo và quản lý quảng cáo trên Google, Facebook, xây dựng nội dung tiếp thị."),
+                Map.of("keyskill", "Accounting, Financial Analysis, Excel", "description", "Thực tập sinh cần kiến thức cơ bản về kế toán và phân tích tài chính, sử dụng Excel."),
+                Map.of("keyskill", "Electronics, Circuit Design, PCB Testing", "description", "Làm việc với thiết kế mạch điện tử, kiểm tra PCB và hệ thống nhúng."),
+                Map.of("keyskill", "Market Research, Business Development, Negotiation", "description", "Nghiên cứu thị trường, phát triển kinh doanh và kỹ năng đàm phán."),
+                Map.of("keyskill", "Ruby on Rails, PostgreSQL, Web Development", "description", "Phát triển ứng dụng web với Ruby on Rails, sử dụng cơ sở dữ liệu PostgreSQL."),
+                Map.of("keyskill", "Database Administration, MySQL, Query Optimization", "description", "Quản trị cơ sở dữ liệu MySQL, tối ưu hóa truy vấn và hiệu suất."),
+                Map.of("keyskill", "HVAC Systems, Maintenance, Automation", "description", "Thiết kế và bảo trì hệ thống HVAC, tích hợp tự động hóa."),
+                Map.of("keyskill", "SEO, SEM, Keyword Research", "description", "Tối ưu hóa SEO/SEM, nghiên cứu từ khóa và cải thiện hiệu suất website."),
+                Map.of("keyskill", "Human Resources, Recruitment, Training", "description", "Hỗ trợ quản lý nhân sự, tuyển dụng và đào tạo nhân viên."),
+                Map.of("keyskill", "Networking, CCNA, Firewall", "description", "Quản trị mạng với chứng chỉ CCNA, cấu hình Firewall."),
+                Map.of("keyskill", "Android, Kotlin, Firebase", "description", "Phát triển ứng dụng Android với Kotlin, tích hợp Firebase."),
+                Map.of("keyskill", "Translation, Localization, Technical Writing", "description", "Dịch thuật, bản địa hóa và soạn thảo tài liệu kỹ thuật."),
+                Map.of("keyskill", "Cybersecurity, Penetration Testing, Network Security", "description", "Bảo mật thông tin hệ thống, thực hiện kiểm thử xâm nhập và bảo vệ an ninh mạng."),
+                Map.of("keyskill", "Customer Service, Communication, Problem Solving", "description", "Thực tập sinh hỗ trợ khách hàng, cải thiện trải nghiệm người dùng và giải quyết vấn đề."),
+                Map.of("keyskill", "Mechanical Engineering, CAD, Maintenance", "description", "Thiết kế cơ khí, sử dụng phần mềm CAD và bảo trì thiết bị."),
+                Map.of("keyskill", "Telesales, CRM, Communication Skills", "description", "Bán hàng qua điện thoại, sử dụng hệ thống CRM và giao tiếp hiệu quả."),
+                Map.of("keyskill", "Product Management, Technology, Market Analysis", "description", "Quản lý sản phẩm công nghệ, phân tích thị trường và phát triển sản phẩm."),
+                Map.of("keyskill", "PHP, Laravel, MySQL", "description", "Phát triển ứng dụng web với PHP, sử dụng framework Laravel và cơ sở dữ liệu MySQL."),
+                Map.of("keyskill", "Game Development, Unity, Unreal Engine", "description", "Phát triển trò chơi sử dụng Unity hoặc Unreal Engine, thiết kế và lập trình game logic."),
+                Map.of("keyskill", "Customer Care, Problem Resolution, CRM", "description", "Chăm sóc khách hàng, giải quyết khiếu nại và tối ưu hóa hệ thống CRM."),
+                Map.of("keyskill", "Recruitment, Talent Acquisition, Communication", "description", "Tư vấn tuyển dụng, tìm kiếm tài năng và giao tiếp hiệu quả với ứng viên."),
+                Map.of("keyskill", "UX/UI Design, Figma, Prototyping", "description", "Thiết kế UX/UI, sử dụng Figma để tạo prototype và cải thiện trải nghiệm người dùng."),
+                Map.of("keyskill", "C, C++, Embedded Systems", "description", "Phát triển ứng dụng nhúng với ngôn ngữ C/C++, tối ưu hóa hiệu năng phần mềm."),
+                Map.of("keyskill", "Quality Assurance, Testing, Six Sigma", "description", "Đảm bảo chất lượng sản phẩm, kiểm thử và áp dụng quy trình Six Sigma."),
+                Map.of("keyskill", "Business Development, Negotiation, Market Research", "description", "Phát triển kinh doanh, đàm phán và nghiên cứu thị trường."),
+                Map.of("keyskill", "Risk Management, Compliance, Risk Assessment", "description", "Quản lý rủi ro, đánh giá và đảm bảo tuân thủ các quy định."),
+                Map.of("keyskill", "HTML, CSS, JavaScript, Web Development", "description", "Phát triển web với HTML, CSS và JavaScript, tối ưu hóa hiệu năng website."),
+                Map.of("keyskill", "Human Resources, Recruitment, Training", "description", "Quản lý nguồn nhân lực, tuyển dụng và đào tạo nhân viên."),
+                Map.of("keyskill", "Data Management, SQL, Data Analysis", "description", "Quản lý dữ liệu, phân tích và tối ưu hóa cơ sở dữ liệu."),
+                Map.of("keyskill", "Financial Planning, Investment Advisory, Excel", "description", "Tư vấn tài chính, lập kế hoạch đầu tư và sử dụng Excel chuyên nghiệp."),
+                Map.of("keyskill", "Blockchain, Smart Contracts, Solidity", "description", "Phát triển ứng dụng Blockchain, viết hợp đồng thông minh với Solidity."),
+                Map.of("keyskill", "GIS, Spatial Analysis, Remote Sensing", "description", "Kỹ sư GIS làm việc với phân tích không gian và cảm biến từ xa."),
+                Map.of("keyskill", "Logistics, Delivery, Inventory Management", "description", "Giao nhận hàng hóa, quản lý tồn kho và vận chuyển."),
+                Map.of("keyskill", "Public Relations, Social Media, Content Creation", "description", "Quản lý truyền thông, tạo nội dung và tương tác trên mạng xã hội."),
+                Map.of("keyskill", "Data Analysis, Python, Machine Learning", "description", "Phân tích dữ liệu, sử dụng Python và các mô hình học máy."),
+                Map.of("keyskill", "Pipeline Engineering, CAD, Maintenance", "description", "Thiết kế và bảo trì đường ống, sử dụng phần mềm CAD."),
+                Map.of("keyskill", "Legal Research, Contract Drafting, Compliance", "description", "Tư vấn pháp lý, soạn thảo hợp đồng và đảm bảo tuân thủ."),
+                Map.of("keyskill", "Accounting, Taxation, Financial Reporting", "description", "Quản lý kế toán, báo cáo tài chính và nộp thuế."),
+                Map.of("keyskill", "C#, .NET, Entity Framework", "description", "Phát triển ứng dụng với C#, sử dụng .NET Framework và Entity Framework."),
+                Map.of("keyskill", "Technical Design, CAD, Engineering Analysis", "description", "Kỹ sư thiết kế kỹ thuật, làm việc với CAD và phân tích kỹ thuật."),
+                Map.of("keyskill", "Financial Analysis, Budgeting, Forecasting", "description", "Phân tích tài chính, lập ngân sách và dự đoán kinh doanh."),
+                Map.of("keyskill", "Process Optimization, Lean Manufacturing, Automation", "description", "Tối ưu hóa quy trình, sản xuất Lean và tự động hóa."),
+                Map.of("keyskill", "System Administration, Linux, Windows Server", "description", "Quản trị hệ thống, vận hành Linux và Windows Server."),
+                Map.of("keyskill", "Information Systems, Data Management, Cloud Computing", "description", "Kỹ sư hệ thống thông tin, quản lý dữ liệu và sử dụng điện toán đám mây."),
+                Map.of("keyskill", "Real Estate, Sales, Negotiation", "description", "Kinh doanh bất động sản, phát triển khách hàng và đàm phán hợp đồng."),
+                Map.of("keyskill", "Technical Support, Troubleshooting, Networking", "description", "Hỗ trợ kỹ thuật, xử lý sự cố và quản lý hệ thống mạng."),
+                Map.of("keyskill", "Project Management, Agile, Scheduling", "description", "Thực tập sinh quản lý dự án, lập kế hoạch và sử dụng phương pháp Agile."),
+                Map.of("keyskill", "IoT Development, Embedded Systems, Sensors", "description", "Lập trình IoT, làm việc với hệ thống nhúng và cảm biến."),
+                Map.of("keyskill", "Web Development, JavaScript, HTML, CSS", "description", "Phát triển ứng dụng web, tối ưu hóa giao diện người dùng và xây dựng các tính năng tương tác."),
+                Map.of("keyskill", "Order Processing, Customer Service, ERP", "description", "Xử lý đơn hàng, chăm sóc khách hàng và quản lý dữ liệu trên hệ thống ERP."),
+                Map.of("keyskill", "Market Research, Data Analysis, Communication", "description", "Nghiên cứu thị trường, phân tích dữ liệu và trình bày kết quả."),
+                Map.of("keyskill", "Financial Management, Budgeting, Reporting", "description", "Quản lý tài chính, lập ngân sách và phân tích báo cáo."),
+                Map.of("keyskill", "Operations Management, Process Optimization, Troubleshooting", "description", "Vận hành hệ thống, tối ưu hóa quy trình và xử lý sự cố."),
+                Map.of("keyskill", "Customer Support, CRM, Problem Solving", "description", "Hỗ trợ khách hàng, sử dụng CRM và giải quyết vấn đề kịp thời."),
+                Map.of("keyskill", "Strategic Planning, Business Development, Market Analysis", "description", "Phát triển chiến lược, phân tích thị trường và đưa ra kế hoạch kinh doanh."),
+                Map.of("keyskill", "JavaScript, Node.js, React.js", "description", "Phát triển ứng dụng với JavaScript, xây dựng giao diện người dùng và backend."),
+                Map.of("keyskill", "Manufacturing, Production Planning, Quality Control", "description", "Kỹ sư sản xuất, lên kế hoạch và đảm bảo chất lượng sản phẩm."),
+                Map.of("keyskill", "Sales Management, Team Leadership, CRM", "description", "Quản lý bán hàng, dẫn dắt đội nhóm và tối ưu hệ thống CRM."),
+                Map.of("keyskill", "Strategic Consulting, Problem Solving, Business Analysis", "description", "Tư vấn chiến lược, giải quyết vấn đề và phân tích kinh doanh."),
+                Map.of("keyskill", "Training Development, HR, Communication", "description", "Đào tạo, phát triển nhân sự và cải thiện kỹ năng giao tiếp."),
+                Map.of("keyskill", "Sales Engineering, Technical Knowledge, Negotiation", "description", "Kỹ sư kinh doanh, hỗ trợ kỹ thuật và đàm phán với khách hàng."),
+                Map.of("keyskill", "Graphic Design, Adobe Photoshop, Creativity", "description", "Thiết kế đồ họa, sử dụng Adobe Photoshop và phát triển ý tưởng sáng tạo."),
+                Map.of("keyskill", "System Development, DevOps, Cloud Computing", "description", "Phát triển hệ thống, sử dụng DevOps và triển khai trên môi trường đám mây."),
+                Map.of("keyskill", "Big Data, Hadoop, Spark", "description", "Phân tích dữ liệu lớn, sử dụng Hadoop và Apache Spark."),
+                Map.of("keyskill", "Maintenance Engineering, Equipment Troubleshooting, Preventive Maintenance", "description", "Bảo trì thiết bị, xử lý sự cố và thực hiện bảo dưỡng định kỳ."),
+                Map.of("keyskill", "Business Consulting, Customer Acquisition, Negotiation", "description", "Tư vấn kinh doanh, tìm kiếm khách hàng và đàm phán hợp đồng."),
+                Map.of("keyskill", "Social Media Management, Content Creation, Analytics", "description", "Quản trị mạng xã hội, sáng tạo nội dung và phân tích hiệu quả."),
+                Map.of("keyskill", "Marketing, Campaign Planning, Market Research", "description", "Thực tập sinh tiếp thị, hỗ trợ lên kế hoạch và nghiên cứu thị trường."),
+                Map.of("keyskill", "IT Infrastructure, System Administration, Troubleshooting", "description", "Kỹ sư CNTT, quản trị hệ thống và xử lý các vấn đề kỹ thuật."),
+                Map.of("keyskill", "International Sales, Cross-Cultural Communication, Negotiation", "description", "Kinh doanh quốc tế, giao tiếp đa văn hóa và đàm phán hợp đồng."),
+                Map.of("keyskill", "Software Engineering, Coding, Debugging", "description", "Kỹ thuật phần mềm, phát triển ứng dụng và sửa lỗi phần mềm."),
+                Map.of("keyskill", "IT Support, Troubleshooting, System Monitoring", "description", "Thực tập sinh hỗ trợ IT, giám sát hệ thống và xử lý sự cố."),
+                Map.of("keyskill", "Information Security, Cybersecurity, Risk Assessment, Penetration Testing, Network Security", "description", "Đảm bảo an ninh thông tin, thực hiện đánh giá rủi ro, kiểm tra thâm nhập và triển khai các biện pháp bảo mật mạng.")
         );
 
         List<Business> allBusinesses = businessRepository.findAll();
 
-        recruitmentTitles.forEach(title -> {
-            if(recruitmentRepository.findByTitle(title).isEmpty()) {
+        for (int i = 0; i < recruitmentTitles.size(); i++) {
+            if(recruitmentRepository.findByTitle(recruitmentTitles.get(i)).isEmpty()) {
                 Business randomBusiness = allBusinesses.get(new Random().nextInt(allBusinesses.size()));
 
                 Recruitment recruitment = Recruitment.builder()
-                        .title(title)
-                        .description(faker.lorem().paragraph(4))
+                        .title(recruitmentTitles.get(i))
+                        .description(recruitmentDetails.get(i).get("description"))
                         .location(faker.address().streetAddress(true))
                         .type("Part time")
-                        .keySkills("Xinh gái tinh quái <3")
+                        .keySkills(recruitmentDetails.get(i).get("keyskill"))
                         .position("Thực tập sinh")
                         .workingDay("Thứ 2 - Thứ 6")
                         .workingHour("9:00 - 18:30")
@@ -450,7 +546,8 @@ public class DataInitialize {
 
                 recruitmentRepository.save(recruitment);
             }
-        });
+        }
+
 
     }
 }
