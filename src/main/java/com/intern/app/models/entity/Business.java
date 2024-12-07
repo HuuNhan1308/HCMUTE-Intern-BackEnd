@@ -19,6 +19,7 @@ public class Business extends BaseEntity {
     String businessId;
 
     String name;
+    @Column(length = 5000)
     String overview;
     String location;
     String industry;

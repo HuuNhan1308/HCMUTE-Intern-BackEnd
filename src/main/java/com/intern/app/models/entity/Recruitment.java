@@ -20,12 +20,13 @@ public class Recruitment extends BaseEntity {
     String recruitmentId;
 
     String title;
-    @Column(length = 1000)
+    @Column(length = 5000)
     String description;
     String location;
     String type;
     String workingDay;
     String workingHour;
+    @Column(length = 5000)
     String keySkills;
     String position;
 
