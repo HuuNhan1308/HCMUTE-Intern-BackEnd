@@ -43,6 +43,9 @@ public enum ErrorCode {
     STUDENT_HAVE_NO_COMPLETED_RECRUITMENT(1028, "Có sinh viên chưa hoàn thành kì thực tập, vui lòng kiểm tra lại danh sách đã chọn", HttpStatus.BAD_REQUEST),
     INVALID_BOOLEAN_VALUE(1029, "Định dạng không phải boolean, vui lòng thử lại", HttpStatus.BAD_REQUEST),
     NOT_PENDING_REQUEST(1030, "Bạn chỉ được phép xoá những yêu cầu đang chờ xét duyệt", HttpStatus.BAD_REQUEST),
+    INVALID_FILE_TYPE(1031, "Bạn chỉ được phép upload CV có định dạng PDF", HttpStatus.BAD_REQUEST),
+    FILE_TOO_LARGE(1032, "Dung lượng tối đa để upload là 5MB, vui lòng kiểm trả lại dung lượng", HttpStatus.BAD_REQUEST),
+    INVALID_FORMAT_PHONENUMBER(1033, "Định dạng số điện thoại không đúng, vui lòng kiểm tra lại", HttpStatus.BAD_REQUEST),
     ;
 
     int code;

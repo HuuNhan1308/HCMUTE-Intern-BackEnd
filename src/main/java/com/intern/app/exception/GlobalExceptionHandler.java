@@ -1,6 +1,7 @@
 package com.intern.app.exception;
 
 import com.intern.app.models.dto.response.ReturnResult;
+import jakarta.validation.ConstraintViolationException;
 import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

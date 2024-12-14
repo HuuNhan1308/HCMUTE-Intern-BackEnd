@@ -26,6 +26,7 @@ import com.intern.app.services.interfaces.IInstructorService;
 import com.intern.app.services.interfaces.INotificationService;
 import com.intern.app.services.interfaces.IPagingService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -183,6 +184,10 @@ public class InstructorService implements IInstructorService {
 
         instructorMapper.updateInstructor(instructor, instructorUpdateRequest);
         profileMapper.updateProfile(profile, instructorUpdateRequest.getProfile());
+
+        if (!profile.getPhoneNumber().matches("^\\+?[0-9]{10,15}$")) {
+            throw new AppException(ErrorCode.INVALID_FORMAT_PHONENUMBER);
+        }
 
         Faculty faculty = facultyRepository.findById(instructorUpdateRequest.getFacultyId())
                 .orElseThrow(() -> new AppException(ErrorCode.FACULTY_NOT_EXISTED));
