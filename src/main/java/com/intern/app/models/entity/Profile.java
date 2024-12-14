@@ -1,6 +1,7 @@
 package com.intern.app.models.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -26,6 +27,7 @@ public class Profile extends BaseEntity {
     String username;
     @Column(nullable = false)
     String password;
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number format")
     String phoneNumber;
     String email;
 

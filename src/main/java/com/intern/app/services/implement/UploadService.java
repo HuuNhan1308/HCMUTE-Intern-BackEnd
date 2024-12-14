@@ -6,6 +6,7 @@ import com.intern.app.models.entity.Notification;
 import com.intern.app.services.interfaces.IAvatarService;
 import com.intern.app.services.interfaces.INotificationService;
 import com.intern.app.services.interfaces.IUploadService;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +35,20 @@ public class UploadService implements IUploadService {
 
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
+
+        // Validate that the uploaded file is a PDF
+        String contentType = pdfFile.getContentType();
+        String originalFilename = pdfFile.getOriginalFilename().toLowerCase();
+
+        if (!"application/pdf".equals(contentType) || !originalFilename.endsWith(".pdf")) {
+            throw new AppException(ErrorCode.INVALID_FILE_TYPE);
+        }
+
+        // Validate file size (max 5MB = 5 * 1024 * 1024 bytes)
+        long maxFileSize = 5 * 1024 * 1024; // 5 MB in bytes
+        if (pdfFile.getSize() > maxFileSize) {
+            throw new AppException(ErrorCode.FILE_TOO_LARGE);
+        }
 
         if (pdfFile.getOriginalFilename() == null) {
             throw new AppException(ErrorCode.INVALID_FILE);
