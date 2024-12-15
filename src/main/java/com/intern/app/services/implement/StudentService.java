@@ -143,6 +143,10 @@ public class StudentService implements IStudentService {
         profileMapper.updateProfile(profile, studentUpdateRequest.getProfile());
         studentMapper.updateStudent(student, studentUpdateRequest);
 
+        if (!profile.getPhoneNumber().matches("^\\+?[0-9]{10,15}$")) {
+            throw new AppException(ErrorCode.INVALID_FORMAT_PHONENUMBER);
+        }
+
         profileRepository.save(profile);
         studentRepository.save(student);
 

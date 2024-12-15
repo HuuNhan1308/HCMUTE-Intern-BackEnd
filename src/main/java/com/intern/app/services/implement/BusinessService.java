@@ -259,6 +259,10 @@ public class BusinessService implements IBusinessService {
         profileMapper.updateProfile(profile, businessUpdateRequest.getManagedBy());
         businessMapper.updateBusiness(business, businessUpdateRequest);
 
+        if (!profile.getPhoneNumber().matches("^\\+?[0-9]{10,15}$")) {
+            throw new AppException(ErrorCode.INVALID_FORMAT_PHONENUMBER);
+        }
+
         profileRepository.save(profile);
         businessRepository.save(business);
 
